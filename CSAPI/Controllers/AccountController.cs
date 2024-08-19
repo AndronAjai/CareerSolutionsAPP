@@ -2,7 +2,7 @@
 
 namespace CSAPI.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : ControllerBase
     {
 
         private readonly ILogin _loginService;

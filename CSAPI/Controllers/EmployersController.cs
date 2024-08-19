@@ -11,7 +11,7 @@ namespace CSAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployersController : Controller
+    public class EmployersController : ControllerBase
     {
         private readonly CareerSolutionsDB _context;
 
