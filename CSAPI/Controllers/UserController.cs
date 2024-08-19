@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CSAPI.Models;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CSAPI.Controllers
 {
@@ -21,6 +22,7 @@ namespace CSAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public List<User> ShowAll()
         {
             return _Repo.GetAll();
@@ -28,6 +30,7 @@ namespace CSAPI.Controllers
 
         // GET api/<UserController>/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public User FindUser(int id)
         {
             return _Repo.FindById(id);
@@ -35,6 +38,7 @@ namespace CSAPI.Controllers
 
         // POST api/<UserController>
         [HttpPost]
+        [AllowAnonymous]
         public HttpStatusCode Post([FromBody] User us)
         {
             _Repo.AddUser(us);
@@ -43,6 +47,7 @@ namespace CSAPI.Controllers
 
         // PUT api/<UserController>/5
         [HttpPut("{id}")]
+        [AllowAnonymous]
         public HttpStatusCode Put(int id, [FromBody] User us)
         {
             _Repo.UpdateUser(id, us);
@@ -51,6 +56,7 @@ namespace CSAPI.Controllers
 
         // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
+        [AllowAnonymous]
         public HttpStatusCode Delete(int id)
         {
             _Repo.DeleteUser(id);

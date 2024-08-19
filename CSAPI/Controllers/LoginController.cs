@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CSAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CSAPI.Controllers
 {
@@ -19,6 +20,7 @@ namespace CSAPI.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public IActionResult LoginUser([FromBody] Login user)
         {
             if (user is null)
