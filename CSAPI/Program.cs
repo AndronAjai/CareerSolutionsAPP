@@ -1,6 +1,5 @@
 using CSAPI.Models;
 using Microsoft.EntityFrameworkCore;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -11,13 +10,10 @@ using CSAPI.Controllers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-//builder.Services.AddControllers();
 builder.Services.AddControllersWithViews();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Configure Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("V1", new OpenApiInfo
@@ -51,9 +47,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-//builder.Services.AddScoped<ICacheService, CacheService>();
-
-
+// Register services and repositories
 builder.Services.AddDbContext<CareerSolutionsDB>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CnString")));
 builder.Services.AddTransient<ILogin, LoginRepo>();
 builder.Services.AddTransient<IUserRepo, UserRepo>();
@@ -63,23 +57,33 @@ builder.Services.AddTransient<IEmployerRepo, EmployerRepo>();
 builder.Services.AddTransient<IBranchOfficeRepo, BranchOfficesRepo>();
 builder.Services.AddTransient<IApplicationRepo, ApplicationRepo>();
 
-builder.Services.AddAuthentication(opt => {
+// Configure Authentication with JWT and Role-Based Authorization
+builder.Services.AddAuthentication(opt =>
+{
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-    .AddJwtBearer(options =>
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = ConfigurationManager.AppSetting["JWT:ValidIssuer"],
-            ValidAudience = ConfigurationManager.AppSetting["JWT:ValidAudience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = ConfigurationManager.AppSetting["JWT:ValidIssuer"],
+        ValidAudience = ConfigurationManager.AppSetting["JWT:ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]))
+    };
+});
+
+// Ensure that role-based authorization is configured
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Employer", policy => policy.RequireRole("Employer"));
+    options.AddPolicy("JobSeeker", policy => policy.RequireRole("JobSeeker"));
+});
 
 var app = builder.Build();
 
@@ -87,7 +91,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    //app.UseSwaggerUI();
     app.UseSwaggerUI(options => {
         options.SwaggerEndpoint("/swagger/V1/swagger.json", "Product WebAPI");
     });
@@ -97,27 +100,29 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Define endpoint routing with role-based policies
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
       name: "areas",
       pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
-      );
-
+    );
 
     endpoints.MapControllerRoute(
       name: "default",
       pattern: "{controller=Account}/{action=Index}/{id?}"
-      );
+    );
+
+    // Apply role-based authorization to endpoints
+    endpoints.MapControllers().RequireAuthorization();
 });
 
 app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 app.Run();
