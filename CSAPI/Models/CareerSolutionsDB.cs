@@ -26,7 +26,15 @@ namespace CSAPI.Models
         // Syntax based  on ClassName(Entity) table name
         public DbSet<BranchOffice> BranchOffices { get; set; }
 
+        internal Employer AddEmployer(int id)
+        {
+            throw new NotImplementedException();
+        }
 
+        internal void DeleteEmployer(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [Table("BranchOffices")]
