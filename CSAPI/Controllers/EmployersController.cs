@@ -13,27 +13,31 @@ namespace CSAPI.Controllers
     [ApiController]
     public class EmployersController : ControllerBase
     {
-        private readonly CareerSolutionsDB _context;
+        IEmployerRepo _Repo;
 
-        public Employer EmployerID { get; private set; }
-
-        public EmployersController(CareerSolutionsDB context)
+        public EmployersController(IEmployerRepo repo)
         {
-            _context = context;
+            _Repo = repo;
+        }
+        // GET: api/<ApplicationController>
+        [HttpGet]
+        public List<Employer> ShowAll()
+        {
+            return _Repo.GetAll();
         }
 
         // GET api/<CategoryController>/5
         [HttpGet("{id}")]
-        public Employer AddEmployer(int id)
+        public Employer FindEmployer(int id)
         {
-            return _context.AddEmployer(id);
+            return _Repo.FindById(id);
         }
 
         // POST api/<JobSeekerController>
         [HttpPost]
         public HttpStatusCode Post([FromBody] Employer emp)
         {
-            _context.Add(emp);
+            _Repo.AddEmployer(emp);
             return HttpStatusCode.Created;
         }
 
@@ -41,7 +45,7 @@ namespace CSAPI.Controllers
         [HttpPut("{id}")]
         public HttpStatusCode Put(int id, [FromBody] Employer emp)
         {
-            _context.UpdateRange(id, emp);
+            _Repo.UpdateEmployer(id, emp);
             return HttpStatusCode.NoContent;
         }
 
@@ -49,17 +53,12 @@ namespace CSAPI.Controllers
         [HttpDelete("{id}")]
         public HttpStatusCode Delete(int id)
         {
-            _context.DeleteEmployer(id);
-            if (id == null)
-            {
-                throw new ArgumentNullException("id");
-            }
-            _context.Employers.Remove(EmployerID);
+            _Repo.DeleteEmployer(id);
             return HttpStatusCode.NoContent;
         }
-        private bool EmployersExists(int id)
-        {
-            return _context.Employers.Any(user => user.EmployerID == id);
-        }
+        //private bool EmployersExists(int id)
+        //{
+        //    return _context.Employers.Any(user => user.EmployerID == id);
+        //}
     }
 }

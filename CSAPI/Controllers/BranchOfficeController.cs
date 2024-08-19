@@ -13,26 +13,32 @@ namespace CSAPI.Controllers
     [ApiController]
     public class BranchOfficeController : ControllerBase
     {
-        private readonly CareerSolutionsDB _context;
+        IBranchOfficeRepo _Repo;
 
-        public BranchOfficeController(CareerSolutionsDB context)
+        public BranchOfficeController(IBranchOfficeRepo repo)
         {
-            _context = context;
+            _Repo = repo;
+        }
+
+        // GET: api/<ApplicationController>
+        [HttpGet]
+        public List<BranchOffice> ShowAll()
+        {
+            return _Repo.GetAll();
         }
 
         // GET api/BranchOffice/5
         [HttpGet("{id}")]
         public BranchOffice GetBranchOffice(int id)
         {
-            return _context.BranchOffices.Find(id);
+            return _Repo.FindById(id);
         }
 
         // POST api/BranchOffice
         [HttpPost]
         public HttpStatusCode Post([FromBody] BranchOffice branchOffice)
         {
-            _context.BranchOffices.Add(branchOffice);
-            _context.SaveChanges();
+            _Repo.AddBranchOffices(branchOffice);
             return HttpStatusCode.Created;
         }
 
@@ -40,13 +46,7 @@ namespace CSAPI.Controllers
         [HttpPut("{id}")]
         public HttpStatusCode Put(int id, [FromBody] BranchOffice branchOffice)
         {
-            if (id != branchOffice.BranchOfficeID)
-            {
-                return HttpStatusCode.BadRequest;
-            }
-
-            _context.Entry(branchOffice).State = EntityState.Modified;
-            _context.SaveChanges();
+            _Repo.UpdateBranchOffices(id, branchOffice);
             return HttpStatusCode.NoContent;
         }
 
@@ -54,20 +54,13 @@ namespace CSAPI.Controllers
         [HttpDelete("{id}")]
         public HttpStatusCode Delete(int id)
         {
-            var branchOffice = _context.BranchOffices.Find(id);
-            if (branchOffice == null)
-            {
-                return HttpStatusCode.NotFound;
-            }
-
-            _context.BranchOffices.Remove(branchOffice);
-            _context.SaveChanges();
+            _Repo.DeleteBranchOffices(id);
             return HttpStatusCode.NoContent;
         }
 
-        private bool BranchOfficeExists(int id)
-        {
-            return _context.BranchOffices.Any(bo => bo.BranchOfficeID == id);
-        }
+        //private bool BranchOfficeExists(int id)
+        //{
+        //    return _context.BranchOffices.Any(bo => bo.BranchOfficeID == id);
+        //}
     }
 }
