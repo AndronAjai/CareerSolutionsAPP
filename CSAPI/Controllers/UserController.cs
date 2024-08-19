@@ -11,68 +11,50 @@ namespace CSAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly CareerSolutionsDB _context;
+        private readonly IUserRepo _Repo;
 
-        public UsersController(CareerSolutionsDB context)
+        public UserController(IUserRepo repo)
         {
-            _context = context;
+            _Repo = repo;
         }
 
-        // GET api/Users/5
+        [HttpGet]
+        public List<User> ShowAll()
+        {
+            return _Repo.GetAll();
+        }
+
+        // GET api/<UserController>/5
         [HttpGet("{id}")]
-        public User GetUser(int id)
+        public User FindUser(int id)
         {
-            return _context.Users.Find(id);
+            return _Repo.FindById(id);
         }
 
-        // POST api/Users
+        // POST api/<UserController>
         [HttpPost]
-        public HttpStatusCode Post([FromBody] User user)
+        public HttpStatusCode Post([FromBody] User us)
         {
-            if (_context.Users.Any(u => u.Username == user.Username || u.Email == user.Email))
-            {
-                return HttpStatusCode.Conflict;
-            }
-
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            _Repo.AddUser(us);
             return HttpStatusCode.Created;
         }
 
-        // PUT api/Users/5
+        // PUT api/<UserController>/5
         [HttpPut("{id}")]
-        public HttpStatusCode Put(int id, [FromBody] User user)
+        public HttpStatusCode Put(int id, [FromBody] User us)
         {
-            if (id != user.UserID)
-            {
-                return HttpStatusCode.BadRequest;
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-            _context.SaveChanges();
+            _Repo.UpdateUser(id, us);
             return HttpStatusCode.NoContent;
         }
 
-        // DELETE api/Users/5
+        // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
         public HttpStatusCode Delete(int id)
         {
-            var user = _context.Users.Find(id);
-            if (user == null)
-            {
-                return HttpStatusCode.NotFound;
-            }
-
-            _context.Users.Remove(user);
-            _context.SaveChanges();
+            _Repo.DeleteUser(id);
             return HttpStatusCode.NoContent;
-        }
-
-        private bool UsersExists(int id)
-        {
-            return _context.Users.Any(user => user.UserID == id);
         }
     }
 }
