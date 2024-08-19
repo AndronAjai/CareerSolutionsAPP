@@ -56,6 +56,12 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<CareerSolutionsDB>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CnString")));
 builder.Services.AddTransient<ILogin, LoginRepo>();
+builder.Services.AddTransient<IUserRepo, UserRepo>();
+builder.Services.AddTransient<IJobsRepo, JobsRepo>();
+builder.Services.AddTransient<IJobSeekerRepo, JobSeekerRepo>();
+builder.Services.AddTransient<IEmployerRepo, EmployerRepo>();
+builder.Services.AddTransient<IBranchOfficeRepo, BranchOfficesRepo>();
+builder.Services.AddTransient<IApplicationRepo, ApplicationRepo>();
 
 builder.Services.AddAuthentication(opt => {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
