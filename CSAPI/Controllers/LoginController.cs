@@ -5,42 +5,54 @@ using System.Security.Claims;
 using System.Text;
 using CSAPI.Models;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace CSAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class LoginController : ControllerBase
     {
-        ILogin login;
-        public AuthenticationController(ILogin _login)
+        private readonly ILogin _login;
+
+        public LoginController(ILogin login)
         {
-            login = _login;
+            _login = login;
         }
+
         [HttpPost("login")]
         public IActionResult LoginUser([FromBody] Login user)
         {
-
             if (user is null)
             {
                 return BadRequest("Invalid user request!!!");
             }
 
-            if (login.ValidateUser(user.UserName, user.Password,user.Role))
+            if (_login.ValidateUser(user.UserName, user.Password, user.Role))
             {
+                // Create the security key and credentials
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                var tokeOptions = new JwtSecurityToken(
+
+                // Add user-specific claims, including the role
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Role, user.Role)
+                };
+
+                // Create the token
+                var tokenOptions = new JwtSecurityToken(
                     issuer: ConfigurationManager.AppSetting["JWT:ValidIssuer"],
                     audience: ConfigurationManager.AppSetting["JWT:ValidAudience"],
-                    claims: new List<Claim>(),
-                    expires: DateTime.Now.AddMinutes(6),
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(60),  // You can adjust the expiration as needed
                     signingCredentials: signinCredentials
                 );
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
                 return Ok(new JWTTokenResponse { Token = tokenString });
             }
+
             return Unauthorized();
         }
     }
@@ -54,35 +66,33 @@ namespace CSAPI.Controllers
     {
         public string? UserName { get; set; }
         public string? Password { get; set; }
-
         public string? Role { get; set; }
     }
 
     public interface ILogin
     {
-        bool ValidateUser(string uname, string pwd,string role);
+        bool ValidateUser(string uname, string pwd, string role);
     }
+
     public class LoginRepo : ILogin
     {
-        CareerSolutionsDB context;
-        public LoginRepo(CareerSolutionsDB _context)
-        {
-            context = _context;
-        }
-        public bool ValidateUser(string uname, string pwd,string role)
-        {
-            //User user = context.Users.Find(uname);
-            User user = context.Users.SingleOrDefault(u => u.Username == uname);
+        private readonly CareerSolutionsDB _context;
 
-            if ((user.Password == pwd) && (user.Role == role))
+        public LoginRepo(CareerSolutionsDB context)
+        {
+            _context = context;
+        }
+
+        public bool ValidateUser(string uname, string pwd, string role)
+        {
+            var user = _context.Users.SingleOrDefault(u => u.Username == uname);
+
+            if (user != null && user.Password == pwd && user.Role == role)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
 
+            return false;
         }
     }
 }
