@@ -1,15 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSAPI.Models
 {
-
     public class CareerSolutionsDB : DbContext
 
     {
 
         public CareerSolutionsDB(DbContextOptions<CareerSolutionsDB> options) : base(options)
+
         {
 
         }
@@ -26,15 +28,67 @@ namespace CSAPI.Models
         // Syntax based  on ClassName(Entity) table name
         public DbSet<BranchOffice> BranchOffices { get; set; }
 
-        internal Employer AddEmployer(int id)
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            throw new NotImplementedException();
+            // Define primary keys
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.UserID);
+
+            modelBuilder.Entity<JobSeeker>()
+                .HasKey(js => js.JobSeekerID);
+
+            modelBuilder.Entity<Employer>()
+                .HasKey(e => e.EmployerID);
+
+            modelBuilder.Entity<Job>()
+                .HasKey(j => j.JobID);
+
+            modelBuilder.Entity<Application>()
+                .HasKey(a => a.ApplicationID);
+
+            modelBuilder.Entity<BranchOffice>()
+                .HasKey(b => b.BranchOfficeID);
+
+            // Define foreign key relationships and behaviors
+            modelBuilder.Entity<User>()
+                .HasOne<BranchOffice>()
+                .WithMany()
+                .HasForeignKey(u => u.BranchOfficeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<JobSeeker>()
+                .HasOne<User>()
+                .WithOne()
+                .HasForeignKey<JobSeeker>(js => js.JobSeekerID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Employer>()
+                .HasOne<User>()
+                .WithOne()
+                .HasForeignKey<Employer>(e => e.EmployerID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Job>()
+                .HasOne<Employer>()
+                .WithMany()
+                .HasForeignKey(j => j.EmployerID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Application>()
+                .HasOne<Job>()
+                .WithMany()
+                .HasForeignKey(a => a.JobID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Application>()
+                .HasOne<JobSeeker>()
+                .WithMany()
+                .HasForeignKey(a => a.JobSeekerID)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
-        internal void DeleteEmployer(int id)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 
     [Table("BranchOffices")]
@@ -63,7 +117,7 @@ namespace CSAPI.Models
 
         // Navigation properties
 
-        public ICollection<User> Users { get; set; } = new List<User>();
+        //public ICollection<User> Users { get; set; } = new List<User>();
 
     }
 
@@ -100,13 +154,13 @@ namespace CSAPI.Models
 
         public DateTime RegistrationDate { get; set; }
 
-        //[ForeignKey("BranchOffices")]
+        [ForeignKey("BranchOffices")]
 
         public int? BranchOfficeID { get; set; }
 
         // Navigation properties
 
-        public BranchOffice BranchOffice { get; set; }
+        //public BranchOffice BranchOffice { get; set; }
 
     }
 
@@ -118,7 +172,7 @@ namespace CSAPI.Models
 
         [Key]
 
-        //[ForeignKey("Users")]
+        [ForeignKey("Users")]
 
         public int JobSeekerID { get; set; }
 
@@ -168,9 +222,9 @@ namespace CSAPI.Models
 
         // Navigation properties
 
-        public ICollection<Application> Applications { get; set; } = new List<Application>();
+        //public ICollection<Application> Applications { get; set; } = new List<Application>();
 
-        public User User { get; set; } // Navigation property to User
+        //public User User { get; set; } // Navigation property to User
 
     }
 
@@ -182,7 +236,7 @@ namespace CSAPI.Models
 
         [Key]
 
-        //[ForeignKey("Users")]
+        [ForeignKey("Users")]
 
         public int EmployerID { get; set; }
 
@@ -216,11 +270,11 @@ namespace CSAPI.Models
 
         // Navigation properties
 
-        public ICollection<Job> Jobs { get; set; } = new List<Job>();
+        //public ICollection<Job> Jobs { get; set; } = new List<Job>();
 
-        public ICollection<Application> Applications { get; set; } = new List<Application>();
+        //public ICollection<Application> Applications { get; set; } = new List<Application>();
 
-        public User User { get; set; } // Navigation property to User
+        //public User User { get; set; } // Navigation property to User
 
     }
 
@@ -235,7 +289,7 @@ namespace CSAPI.Models
 
         public int JobID { get; set; }
 
-        //[ForeignKey("Employers")]
+        [ForeignKey("Employers")]
 
         public int EmployerID { get; set; }
 
@@ -281,9 +335,9 @@ namespace CSAPI.Models
 
         // Navigation properties
 
-        public Employer Employer { get; set; }
+        //public Employer Employer { get; set; }
 
-        public ICollection<Application> Applications { get; set; } = new List<Application>();
+        //public ICollection<Application> Applications { get; set; } = new List<Application>();
 
     }
 
@@ -297,10 +351,10 @@ namespace CSAPI.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ApplicationID { get; set; }
 
-        //[ForeignKey("Jobs")]
+        [ForeignKey("Jobs")]
         public int JobID { get; set; }
 
-        //[ForeignKey("JobSeekers")]
+        [ForeignKey("JobSeekers")]
         public int JobSeekerID { get; set; }
 
         public DateTime ApplicationDate { get; set; }
@@ -309,12 +363,11 @@ namespace CSAPI.Models
 
         // Navigation properties
 
-        public Job Job { get; set; }
+        //public Job Job { get; set; }
 
-        public JobSeeker JobSeeker { get; set; }
+        //public JobSeeker JobSeeker { get; set; }
         //public Employer Employer { get; set; }
 
     }
-
 
 }

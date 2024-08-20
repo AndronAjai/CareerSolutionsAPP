@@ -1,62 +1,83 @@
-﻿namespace CSAPI.Models
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
+namespace CSAPI.Models
 {
     public interface IUserRepo
     {
-        List<User> GetAll();
-        User FindById(int id);
-        void AddUser(User user);
-        void UpdateUser(int id, User user);
-        void DeleteUser(int id);
+        Task<List<User>> GetAllAsync();
+        Task<User> FindByIdAsync(int id);
+        Task<bool> AddUserAsync(User user);
+        Task<bool> UpdateUserAsync(int id, User user);
+        Task<bool> DeleteUserAsync(int id);
     }
 
     public class UserRepo : IUserRepo
     {
-        CareerSolutionsDB _context;
+        private readonly CareerSolutionsDB _context;
+
         public UserRepo(CareerSolutionsDB context)
         {
             _context = context;
         }
 
-        public void AddUser(User user)
+        public async Task<List<User>> GetAllAsync()
         {
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<User> FindByIdAsync(int id)
+        {
+            return await _context.Users.FindAsync(id);
+        }
+
+        public async Task<bool> AddUserAsync(User user)
+        {
+            // Check if the BranchOffice exists before adding the user
+            if (!await IsBranchOfficeExistsAsync(user.BranchOfficeID))
+                return false;
+
             _context.Users.Add(user);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public void DeleteUser(int id)
+        public async Task<bool> UpdateUserAsync(int id, User user)
         {
-            User user = _context.Users.Find(id);
-            _context.Users.Remove(user);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
-        }
+            var updatedUser = await _context.Users.FindAsync(id);
+            if (updatedUser == null)
+                return false;
 
-        public User FindById(int id)
-        {
-            return _context.Users.Find(id);
-            //throw new NotImplementedException();
-        }
-
-        public List<User> GetAll()
-        {
-            List<User> userList = _context.Users.ToList();
-            return userList;
-            //throw new NotImplementedException();
-        }
-
-        public void UpdateUser(int id, User user)
-        {
-            User updatedUser = _context.Users.Find(id);
+            // Check if the BranchOffice exists before updating the user
+            if (!await IsBranchOfficeExistsAsync(user.BranchOfficeID))
+                return false;
 
             updatedUser.Username = user.Username;
             updatedUser.Password = user.Password;
             updatedUser.Email = user.Email;
             updatedUser.BranchOfficeID = user.BranchOfficeID;
 
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            var userToDelete = await _context.Users.FindAsync(id);
+            if (userToDelete == null)
+                return false;
+
+            _context.Users.Remove(userToDelete);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        private async Task<bool> IsBranchOfficeExistsAsync(int? branchOfficeID)
+        {
+            return branchOfficeID.HasValue && await _context.BranchOffices.AnyAsync(b => b.BranchOfficeID == branchOfficeID.Value);
         }
     }
-
 }
