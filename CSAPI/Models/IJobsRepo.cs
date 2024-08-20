@@ -1,77 +1,115 @@
-﻿namespace CSAPI.Models
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DbCreationApp.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace CSAPI.Models
 {
     public interface IJobsRepo
     {
-        List<Job> GetAll();
-        Job FindById(int id);
-        void AddJobs(Job j);
-        void UpdateJobs(int id, Job j);
-        void DeleteJobs(int id);
+        Task<List<Job>> GetAllAsync();
+        Task<Job> FindByIdAsync(int id);
+        Task<bool> AddJobAsync(Job job);
+        Task<bool> UpdateJobAsync(int id, Job job);
+        Task<bool> DeleteJobAsync(int id);
+        Task<bool> IsEmployerExistsAsync(int employerId); // New method to check if Employer exists
     }
 
     public class JobsRepo : IJobsRepo
     {
-        CareerSolutionsDB _context;
+        private readonly CareerSolutionsDB _context;
+
         public JobsRepo(CareerSolutionsDB context)
         {
             _context = context;
         }
-        public void AddJobs(Job j)
+
+        public async Task<List<Job>> GetAllAsync()
         {
-            _context.Jobs.Add(j);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            return await _context.Jobs.ToListAsync();
         }
 
-        public void DeleteJobs(int id)
+        public async Task<Job> FindByIdAsync(int id)
         {
-            Job j = _context.Jobs.Find(id);
-            _context.Jobs.Remove(j);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            return await _context.Jobs.FindAsync(id);
         }
 
-        public Job FindById(int id)
+        public async Task<bool> AddJobAsync(Job job)
         {
-            return _context.Jobs.Find(id);
-            //throw new NotImplementedException();
+            if (!await IsEmployerExistsAsync(job.EmployerID))
+            {
+                return false; // Employer does not exist, cannot create the job
+            }
+
+            try
+            {
+                _context.Jobs.Add(job);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false; // Handle exceptions as needed
+            }
         }
 
-        public List<Job> GetAll()
+        public async Task<bool> UpdateJobAsync(int id, Job job)
         {
-            List<Job> jList = _context.Jobs.ToList();
-            return jList;
-            //throw new NotImplementedException();
+            var existingJob = await _context.Jobs.FindAsync(id);
+            if (existingJob == null || !await IsEmployerExistsAsync(job.EmployerID))
+            {
+                return false;
+            }
+
+            existingJob.EmployerID = job.EmployerID;
+            existingJob.JobTitle = job.JobTitle;
+            existingJob.JobDescription = job.JobDescription;
+            existingJob.IndustryType = job.IndustryType;
+            existingJob.Specialization = job.Specialization;
+            existingJob.RequiredSkills = job.RequiredSkills;
+            existingJob.ExperienceLevel = job.ExperienceLevel;
+            existingJob.Location = job.Location;
+            existingJob.SalaryRange = job.SalaryRange;
+            existingJob.PostedDate = job.PostedDate;
+            existingJob.ApplicationDeadline = job.ApplicationDeadline;
+            existingJob.JobType = job.JobType;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false; // Handle exceptions as needed
+            }
         }
 
-        public void UpdateJobs(int id, Job j)
+        public async Task<bool> DeleteJobAsync(int id)
         {
-            Job updatedJobs = _context.Jobs.Find(id);
+            var job = await _context.Jobs.FindAsync(id);
+            if (job == null)
+            {
+                return false;
+            }
 
-            updatedJobs.JobID = j.JobID;
-            updatedJobs.EmployerID = j.EmployerID;
-            updatedJobs.JobTitle = j.JobTitle;
-            updatedJobs.JobDescription = j.JobDescription;
-            updatedJobs.IndustryType = j.IndustryType;
-            updatedJobs.Specialization = j.Specialization;
-            updatedJobs.RequiredSkills = j.RequiredSkills;
-            updatedJobs.ExperienceLevel = j.ExperienceLevel;
-            updatedJobs.Location = j.Location;
-            updatedJobs.SalaryRange = j.SalaryRange;
-            updatedJobs.PostedDate = j.PostedDate;
-            updatedJobs.ApplicationDeadline = j.ApplicationDeadline;
-            updatedJobs.JobType = j.JobType;
+            _context.Jobs.Remove(job);
 
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false; // Handle exceptions as needed
+            }
         }
 
+        public async Task<bool> IsEmployerExistsAsync(int employerId)
+        {
+            return await _context.Employers.AnyAsync(e => e.EmployerID == employerId);
+        }
     }
 }
-
-//namespace CareerSolutionWebApiApp.Models
-//{
-//    public interface Interface
-//    {
-//    }
-//}

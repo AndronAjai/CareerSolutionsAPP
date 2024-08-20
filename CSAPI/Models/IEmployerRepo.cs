@@ -1,62 +1,88 @@
-﻿namespace CSAPI.Models
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DbCreationApp.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace CSAPI.Models
 {
     public interface IEmployerRepo
     {
-        List<Employer> GetAll();
-        Employer FindById(int id);
-        void AddEmployer(Employer emp);
-        void UpdateEmployer(int id, Employer emp);
-        void DeleteEmployer(int id);
+        Task<List<Employer>> GetAllAsync();
+        Task<Employer> FindByIdAsync(int id);
+        Task<bool> AddEmployerAsync(Employer emp);
+        Task<bool> UpdateEmployerAsync(int id, Employer emp);
+        Task<bool> DeleteEmployerAsync(int id);
+        Task<bool> IsUserExistsAsync(int userId); // Check if UserID exists in Users table
     }
 
     public class EmployerRepo : IEmployerRepo
     {
-        CareerSolutionsDB _context;
+        private readonly CareerSolutionsDB _context;
+
         public EmployerRepo(CareerSolutionsDB context)
         {
             _context = context;
         }
-        public void AddEmployer(Employer emp)
+
+        public async Task<List<Employer>> GetAllAsync()
         {
+            return await _context.Employers.ToListAsync();
+        }
+
+        public async Task<Employer> FindByIdAsync(int id)
+        {
+            return await _context.Employers.FindAsync(id);
+        }
+
+        public async Task<bool> AddEmployerAsync(Employer emp)
+        {
+            if (!await IsUserExistsAsync(emp.UserID))
+            {
+                return false; // UserID does not exist, cannot create employer
+            }
+
             _context.Employers.Add(emp);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public void DeleteEmployer(int id)
+        public async Task<bool> UpdateEmployerAsync(int id, Employer emp)
         {
-            Employer emp = _context.Employers.Find(id);
+            var existingEmployer = await _context.Employers.FindAsync(id);
+            if (existingEmployer == null || !await IsUserExistsAsync(emp.UserID))
+            {
+                return false;
+            }
+
+            existingEmployer.CompanyName = emp.CompanyName;
+            existingEmployer.ContactPerson = emp.ContactPerson;
+            existingEmployer.PhoneNumber = emp.PhoneNumber;
+            existingEmployer.CompanyAddress = emp.CompanyAddress;
+            existingEmployer.IndustryType = emp.IndustryType;
+            existingEmployer.WebsiteURL = emp.WebsiteURL;
+            existingEmployer.UserID = emp.UserID; // Ensure UserID is updated
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteEmployerAsync(int id)
+        {
+            var emp = await _context.Employers.FindAsync(id);
+            if (emp == null)
+            {
+                return false;
+            }
+
             _context.Employers.Remove(emp);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Employer FindById(int id)
+        public async Task<bool> IsUserExistsAsync(int userId)
         {
-            return _context.Employers.Find(id);
-            //throw new NotImplementedException();
-        }
-
-        public List<Employer> GetAll()
-        {
-            List<Employer> empList = _context.Employers.ToList();
-            return empList;
-            throw new NotImplementedException();
-        }
-
-        public void UpdateEmployer(int id, Employer emp)
-        {
-            Employer updatedEmp = _context.Employers.Find(id);
-
-            updatedEmp.CompanyName = emp.CompanyName;
-            updatedEmp.ContactPerson = emp.ContactPerson;
-            updatedEmp.PhoneNumber = emp.PhoneNumber;
-            updatedEmp.CompanyAddress = emp.CompanyAddress;
-            updatedEmp.IndustryType = emp.IndustryType;
-            updatedEmp.WebsiteURL = emp.WebsiteURL;
-           
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            return await _context.Users.AnyAsync(u => u.UserID == userId);
         }
     }
 }

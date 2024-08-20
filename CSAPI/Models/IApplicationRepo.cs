@@ -1,62 +1,67 @@
-﻿
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DbCreationApp.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace CSAPI.Models
 {
     public interface IApplicationRepo
     {
-        List<Application> GetAll();
-        Application FindById(int id);
-        void AddApplication(Application app);
-        void UpdateApplication(int id, Application app);
-        void DeleteApplication(int id);
+        Task<List<Application>> GetAllAsync();
+        Task<Application> FindByIdAsync(int id);
+        Task AddApplicationAsync(Application app);
+        Task UpdateApplicationAsync(int id, Application app);
+        Task DeleteApplicationAsync(int id);
     }
 
     public class ApplicationRepo : IApplicationRepo
     {
-        CareerSolutionsDB _context;
+        private readonly CareerSolutionsDB _context;
+
         public ApplicationRepo(CareerSolutionsDB context)
         {
             _context = context;
         }
-        public void AddApplication(Application app)
+
+        public async Task AddApplicationAsync(Application app)
         {
             _context.Applications.Add(app);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteApplication(int id)
+        public async Task DeleteApplicationAsync(int id)
         {
-            Application app = _context.Applications.Find(id);
-            _context.Applications.Remove(app);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            var app = await _context.Applications.FindAsync(id);
+            if (app != null)
+            {
+                _context.Applications.Remove(app);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Application FindById(int id)
+        public async Task<Application> FindByIdAsync(int id)
         {
-            return _context.Applications.Find(id);
-            //throw new NotImplementedException();
+            return await _context.Applications.FindAsync(id);
         }
 
-        public List<Application> GetAll()
+        public async Task<List<Application>> GetAllAsync()
         {
-            List<Application> appList = _context.Applications.ToList();
-            return appList;
-            //throw new NotImplementedException();
+            return await _context.Applications.ToListAsync();
         }
 
-        public void UpdateApplication(int id, Application app)
+        public async Task UpdateApplicationAsync(int id, Application app)
         {
-            Application updatedApp = _context.Applications.Find(id);
+            var updatedApp = await _context.Applications.FindAsync(id);
+            if (updatedApp != null)
+            {
+                updatedApp.JobID = app.JobID;
+                updatedApp.JobSeekerID = app.JobSeekerID;
+                updatedApp.ApplicationDate = app.ApplicationDate;
+                updatedApp.Status = app.Status;
 
-            updatedApp.JobID = app.JobID;
-            updatedApp.JobSeekerID = app.JobSeekerID;
-            updatedApp.ApplicationDate = app.ApplicationDate;
-            updatedApp.Status = app.Status;
-
-            _context.SaveChanges();
-
-            //throw new NotImplementedException();
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

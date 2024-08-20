@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace CSAPI.Models
+namespace DbCreationApp.Models
 {
     public class CareerSolutionsDB : DbContext
 
@@ -60,13 +60,13 @@ namespace CSAPI.Models
             modelBuilder.Entity<JobSeeker>()
                 .HasOne<User>()
                 .WithOne()
-                .HasForeignKey<JobSeeker>(js => js.JobSeekerID)
+                .HasForeignKey<User>(js => js.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Employer>()
                 .HasOne<User>()
                 .WithOne()
-                .HasForeignKey<Employer>(e => e.EmployerID)
+                .HasForeignKey<User>(e => e.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Job>()
@@ -171,9 +171,6 @@ namespace CSAPI.Models
     {
 
         [Key]
-
-        [ForeignKey("Users")]
-
         public int JobSeekerID { get; set; }
 
         [Required]
@@ -219,6 +216,8 @@ namespace CSAPI.Models
         public string? PreferredIndustry { get; set; }
 
         public string? PreferredSpecialization { get; set; }
+        [ForeignKey("User")]
+        public int UserID { get; set; }
 
         // Navigation properties
 
@@ -235,9 +234,6 @@ namespace CSAPI.Models
     {
 
         [Key]
-
-        [ForeignKey("Users")]
-
         public int EmployerID { get; set; }
 
         [Required]
@@ -267,6 +263,9 @@ namespace CSAPI.Models
         [StringLength(100)]
 
         public string? WebsiteURL { get; set; }
+
+        [ForeignKey("User")]
+        public int UserID { get; set; }
 
         // Navigation properties
 

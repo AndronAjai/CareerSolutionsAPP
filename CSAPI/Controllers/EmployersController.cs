@@ -1,64 +1,79 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CSAPI.Models;
-using System.Net;
+using DbCreationApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CSAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class EmployersController : ControllerBase
     {
-        IEmployerRepo _Repo;
+        private readonly IEmployerRepo _repo;
 
         public EmployersController(IEmployerRepo repo)
         {
-            _Repo = repo;
+            _repo = repo;
         }
-        // GET: api/<ApplicationController>
+
+        // GET: api/Employers
         [HttpGet]
-        public List<Employer> ShowAll()
+        public async Task<ActionResult<IEnumerable<Employer>>> ShowAll()
         {
-            return _Repo.GetAll();
+            var employers = await _repo.GetAllAsync();
+            return Ok(employers);
         }
 
-        // GET api/<CategoryController>/5
+        // GET: api/Employers/5
         [HttpGet("{id}")]
-        public Employer FindEmployer(int id)
+        public async Task<ActionResult<Employer>> FindEmployer(int id)
         {
-            return _Repo.FindById(id);
+            var employer = await _repo.FindByIdAsync(id);
+            if (employer == null)
+            {
+                return NotFound();
+            }
+            return Ok(employer);
         }
 
-        // POST api/<JobSeekerController>
+        // POST: api/Employers
         [HttpPost]
-        public HttpStatusCode Post([FromBody] Employer emp)
+        public async Task<ActionResult> Post([FromBody] Employer emp)
         {
-            _Repo.AddEmployer(emp);
-            return HttpStatusCode.Created;
+            var success = await _repo.AddEmployerAsync(emp);
+            if (!success)
+            {
+                return BadRequest("Invalid data or user does not exist.");
+            }
+            return StatusCode((int)HttpStatusCode.Created);
         }
 
-        // PUT api/<JobSeekerController>/5
+        // PUT: api/Employers/5
         [HttpPut("{id}")]
-        public HttpStatusCode Put(int id, [FromBody] Employer emp)
+        public async Task<ActionResult> Put(int id, [FromBody] Employer emp)
         {
-            _Repo.UpdateEmployer(id, emp);
-            return HttpStatusCode.NoContent;
+            var success = await _repo.UpdateEmployerAsync(id, emp);
+            if (!success)
+            {
+                return NotFound("Employer not found or user does not exist.");
+            }
+            return NoContent();
         }
 
-        // DELETE api/<JobSeekerController>/5
+        // DELETE: api/Employers/5
         [HttpDelete("{id}")]
-        public HttpStatusCode Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            _Repo.DeleteEmployer(id);
-            return HttpStatusCode.NoContent;
+            var success = await _repo.DeleteEmployerAsync(id);
+            if (!success)
+            {
+                return NotFound();
+            }
+            return NoContent();
         }
-        //private bool EmployersExists(int id)
-        //{
-        //    return _context.Employers.Any(user => user.EmployerID == id);
-        //}
     }
 }
