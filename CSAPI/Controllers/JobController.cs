@@ -1,57 +1,79 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using CSAPI.Models;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.AspNetCore.Authorization;
+using DbCreationApp.Models;
 
 namespace CareerSolutionWebApiApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class JobController : ControllerBase
     {
-        IJobsRepo _Repo;
+        private readonly IJobsRepo _repo;
 
         public JobController(IJobsRepo repo)
         {
-            _Repo = repo;
+            _repo = repo;
         }
 
-        // GET: api/<JobController>
+        // GET: api/Job
         [HttpGet]
-        public List<Job> ShowAll()
+        public async Task<ActionResult<IEnumerable<Job>>> ShowAll()
         {
-            return _Repo.GetAll();
+            var jobs = await _repo.GetAllAsync();
+            return Ok(jobs);
         }
 
-        // GET api/<JobController>/5
+        // GET: api/Job/5
         [HttpGet("{id}")]
-        public Job FindJob(int id)
+        public async Task<ActionResult<Job>> FindJob(int id)
         {
-            return _Repo.FindById(id);
+            var job = await _repo.FindByIdAsync(id);
+            if (job == null)
+            {
+                return NotFound();
+            }
+            return Ok(job);
         }
 
-        // POST api/<JobController>
+        // POST: api/Job
         [HttpPost]
-        public HttpStatusCode Post([FromBody] Job job)
+        public async Task<ActionResult> Post([FromBody] Job job)
         {
-            _Repo.AddJobs(job);
-            return HttpStatusCode.Created;
+            var success = await _repo.AddJobAsync(job);
+            if (!success)
+            {
+                return BadRequest("Invalid data or employer does not exist.");
+            }
+            return StatusCode((int)HttpStatusCode.Created);
         }
 
-        // PUT api/<JobController>/5
+        // PUT: api/Job/5
         [HttpPut("{id}")]
-        public HttpStatusCode Put(int id, [FromBody] Job job)
+        public async Task<ActionResult> Put(int id, [FromBody] Job job)
         {
-            _Repo.UpdateJobs(id, job);
-            return HttpStatusCode.NoContent;
+            var success = await _repo.UpdateJobAsync(id, job);
+            if (!success)
+            {
+                return NotFound();
+            }
+            return NoContent();
         }
 
-        // DELETE api/<JobController>/5
+        // DELETE: api/Job/5
         [HttpDelete("{id}")]
-        public HttpStatusCode Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            _Repo.DeleteJobs(id);
-            return HttpStatusCode.NoContent;
+            var success = await _repo.DeleteJobAsync(id);
+            if (!success)
+            {
+                return NotFound();
+            }
+            return NoContent();
         }
     }
 }

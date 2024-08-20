@@ -1,59 +1,79 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using CSAPI.Models;
-
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using DbCreationApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CareerSolutionWebApiApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class JobSeekerController : ControllerBase
     {
-        IJobSeekerRepo _Repo;
+        private readonly IJobSeekerRepo _repo;
 
         public JobSeekerController(IJobSeekerRepo repo)
         {
-            _Repo = repo;
+            _repo = repo;
         }
 
-        // GET: api/<JobSeekerController>
+        // GET: api/JobSeeker
         [HttpGet]
-        public List<JobSeeker> ShowAll()
+        public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAll()
         {
-            return _Repo.GetAll();
+            var jobSeekers = await _repo.GetAllAsync();
+            return Ok(jobSeekers);
         }
 
-        // GET api/<JobSeekerController>/5
+        // GET: api/JobSeeker/5
         [HttpGet("{id}")]
-        public JobSeeker FindJobSeeker(int id)
+        public async Task<ActionResult<JobSeeker>> FindJobSeeker(int id)
         {
-            return _Repo.FindById(id);
+            var jobSeeker = await _repo.FindByIdAsync(id);
+            if (jobSeeker == null)
+            {
+                return NotFound();
+            }
+            return Ok(jobSeeker);
         }
 
-        // POST api/<JobSeekerController>
+        // POST: api/JobSeeker
         [HttpPost]
-        public HttpStatusCode Post([FromBody] JobSeeker js)
+        public async Task<ActionResult> Post([FromBody] JobSeeker js)
         {
-            _Repo.AddJobSeeker(js);
-            return HttpStatusCode.Created;
+            var success = await _repo.AddJobSeekerAsync(js);
+            if (!success)
+            {
+                return BadRequest("Invalid data or user does not exist.");
+            }
+            return StatusCode((int)HttpStatusCode.Created);
         }
 
-        // PUT api/<JobSeekerController>/5
+        // PUT: api/JobSeeker/5
         [HttpPut("{id}")]
-        public HttpStatusCode Put(int id, [FromBody] JobSeeker js)
+        public async Task<ActionResult> Put(int id, [FromBody] JobSeeker js)
         {
-            _Repo.UpdateJobSeeker(id, js);
-            return HttpStatusCode.NoContent;
+            var success = await _repo.UpdateJobSeekerAsync(id, js);
+            if (!success)
+            {
+                return NotFound("JobSeeker not found or user does not exist.");
+            }
+            return NoContent();
         }
 
-        // DELETE api/<JobSeekerController>/5
+        // DELETE: api/JobSeeker/5
         [HttpDelete("{id}")]
-        public HttpStatusCode Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            _Repo.DeleteJobSeeker(id);
-            return HttpStatusCode.NoContent;
+            var success = await _repo.DeleteJobSeekerAsync(id);
+            if (!success)
+            {
+                return NotFound();
+            }
+            return NoContent();
         }
     }
 }
