@@ -1,62 +1,68 @@
-﻿
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DbCreationApp.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace CSAPI.Models
 {
     public interface IBranchOfficeRepo
     {
-        List<BranchOffice> GetAll();
-        BranchOffice FindById(int id);
-        void AddBranchOffices(BranchOffice j);
-        void UpdateBranchOffices(int id, BranchOffice js);
-        void DeleteBranchOffices(int id);
+        Task<List<BranchOffice>> GetAllAsync();
+        Task<BranchOffice> FindByIdAsync(int id);
+        Task AddBranchOfficesAsync(BranchOffice branchOffice);
+        Task UpdateBranchOfficesAsync(int id, BranchOffice branchOffice);
+        Task DeleteBranchOfficesAsync(int id);
     }
 
     public class BranchOfficesRepo : IBranchOfficeRepo
     {
-        CareerSolutionsDB _context;
+        private readonly CareerSolutionsDB _context;
+
         public BranchOfficesRepo(CareerSolutionsDB context)
         {
             _context = context;
         }
-        public void AddBranchOffices(BranchOffice b)
+
+        public async Task<List<BranchOffice>> GetAllAsync()
         {
-            _context.BranchOffices.Add(b);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            return await _context.BranchOffices.ToListAsync();
         }
 
-        public void DeleteBranchOffices(int id)
+        public async Task<BranchOffice> FindByIdAsync(int id)
         {
-            BranchOffice b = _context.BranchOffices.Find(id);
-            _context.BranchOffices.Remove(b);
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            return await _context.BranchOffices.FindAsync(id);
         }
 
-        public BranchOffice FindById(int id)
+        public async Task AddBranchOfficesAsync(BranchOffice branchOffice)
         {
-            return _context.BranchOffices.Find(id);
-            //throw new NotImplementedException();
+            await _context.BranchOffices.AddAsync(branchOffice);
+            await _context.SaveChangesAsync();
         }
 
-        public List<BranchOffice> GetAll()
+        public async Task UpdateBranchOfficesAsync(int id, BranchOffice branchOffice)
         {
-            List<BranchOffice> bList = _context.BranchOffices.ToList();
-            return bList;
-            //throw new NotImplementedException();
+            BranchOffice updatedBranchOffice = await _context.BranchOffices.FindAsync(id);
+
+            if (updatedBranchOffice != null)
+            {
+                updatedBranchOffice.BranchName = branchOffice.BranchName;
+                updatedBranchOffice.BranchAddress = branchOffice.BranchAddress;
+                updatedBranchOffice.PhoneNumber = branchOffice.PhoneNumber;
+
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public void UpdateBranchOffices(int id, BranchOffice b)
+        public async Task DeleteBranchOfficesAsync(int id)
         {
-            BranchOffice updatedBranchOffices = _context.BranchOffices.Find(id);
+            BranchOffice branchOffice = await _context.BranchOffices.FindAsync(id);
 
-            updatedBranchOffices.BranchOfficeID = b.BranchOfficeID;
-            updatedBranchOffices.BranchName = b.BranchName;
-            updatedBranchOffices.BranchAddress = b.BranchAddress;
-            updatedBranchOffices.PhoneNumber = b.PhoneNumber;
-            _context.SaveChanges();
-            //throw new NotImplementedException();
+            if (branchOffice != null)
+            {
+                _context.BranchOffices.Remove(branchOffice);
+                await _context.SaveChangesAsync();
+            }
         }
-
     }
 }
-

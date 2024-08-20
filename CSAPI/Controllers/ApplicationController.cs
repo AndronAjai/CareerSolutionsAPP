@@ -1,62 +1,60 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
 using System.Net;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using CSAPI.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using DbCreationApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CareerSolutionWebApiApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class ApplicationController : ControllerBase
     {
-        IApplicationRepo _Repo;
+        private readonly IApplicationRepo _repo;
 
         public ApplicationController(IApplicationRepo repo)
         {
-            _Repo = repo;
+            _repo = repo;
         }
 
-        // GET: api/<ApplicationController>
+        // GET: api/Application
         [HttpGet]
-        public List<Application> ShowAll()
+        public async Task<List<Application>> ShowAll()
         {
-            return _Repo.GetAll();
+            return await _repo.GetAllAsync();
         }
 
-        // GET api/<ApplicationController>/5
+        // GET api/Application/5
         [HttpGet("{id}")]
-        public Application FindApplication(int id)
+        public async Task<Application> FindApplication(int id)
         {
-            return _Repo.FindById(id);
+            return await _repo.FindByIdAsync(id);
         }
 
-        // POST api/<ApplicationController>
+        // POST api/Application
         [HttpPost]
-        public HttpStatusCode Post([FromBody] Application app)
+        public async Task<HttpStatusCode> Post([FromBody] Application app)
         {
-            _Repo.AddApplication(app);
+            await _repo.AddApplicationAsync(app);
             return HttpStatusCode.Created;
         }
-    
 
-        // PUT api/<ApplicationController>/5
+        // PUT api/Application/5
         [HttpPut("{id}")]
-        public HttpStatusCode Put(int id, [FromBody] Application app)
+        public async Task<HttpStatusCode> Put(int id, [FromBody] Application app)
         {
-            _Repo.UpdateApplication(id, app);
+            await _repo.UpdateApplicationAsync(id, app);
             return HttpStatusCode.NoContent;
         }
 
-        // DELETE api/<ApplicationController>/5
+        // DELETE api/Application/5
         [HttpDelete("{id}")]
-        public HttpStatusCode Delete(int id)
+        public async Task<HttpStatusCode> Delete(int id)
         {
-            _Repo.DeleteApplication(id);
+            await _repo.DeleteApplicationAsync(id);
             return HttpStatusCode.NoContent;
         }
     }
