@@ -14,53 +14,86 @@ namespace CSAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepo _Repo;
+        private readonly IUserRepo _repo;
 
         public UserController(IUserRepo repo)
         {
-            _Repo = repo;
+            _repo = repo;
         }
 
+        // GET: api/User
         [HttpGet]
         [AllowAnonymous]
-        public List<User> ShowAll()
+        public async Task<ActionResult<IEnumerable<User>>> ShowAll()
         {
-            return _Repo.GetAll();
+            var users = await _repo.GetAllAsync();
+            return Ok(users);
         }
 
-        // GET api/<UserController>/5
+        // GET: api/User/5
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public User FindUser(int id)
+        public async Task<ActionResult<User>> FindUser(int id)
         {
-            return _Repo.FindById(id);
+            var user = await _repo.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
 
-        // POST api/<UserController>
+        // POST: api/User
         [HttpPost]
         [AllowAnonymous]
-        public HttpStatusCode Post([FromBody] User us)
+        public async Task<ActionResult> Post([FromBody] User us)
         {
-            _Repo.AddUser(us);
-            return HttpStatusCode.Created;
+            var success = await _repo.AddUserAsync(us);
+            if (!success)
+            {
+                return BadRequest("Invalid BranchOfficeID.");
+            }
+            return StatusCode((int)HttpStatusCode.Created);
         }
 
-        // PUT api/<UserController>/5
+        // PUT: api/User/5
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public HttpStatusCode Put(int id, [FromBody] User us)
+        public async Task<ActionResult> Put(int id, [FromBody] User us)
         {
-            _Repo.UpdateUser(id, us);
-            return HttpStatusCode.NoContent;
+            var user = await _repo.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var success = await _repo.UpdateUserAsync(id, us);
+            if (!success)
+            {
+                return BadRequest("Invalid BranchOfficeID.");
+            }
+
+            return NoContent();
         }
 
-        // DELETE api/<UserController>/5
+        // DELETE: api/User/5
         [HttpDelete("{id}")]
         [AllowAnonymous]
-        public HttpStatusCode Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            _Repo.DeleteUser(id);
-            return HttpStatusCode.NoContent;
+            var user = await _repo.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var success = await _repo.DeleteUserAsync(id);
+            if (!success)
+            {
+                return BadRequest("Could not delete the user.");
+            }
+
+            return NoContent();
         }
     }
 }
