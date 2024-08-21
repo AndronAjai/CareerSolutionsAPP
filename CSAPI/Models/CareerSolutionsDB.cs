@@ -11,7 +11,6 @@ namespace CSAPI.Models
     {
 
         public CareerSolutionsDB(DbContextOptions<CareerSolutionsDB> options) : base(options)
-
         {
 
         }
