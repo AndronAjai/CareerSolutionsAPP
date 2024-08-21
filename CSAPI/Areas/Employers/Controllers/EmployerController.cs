@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 
 namespace CSAPI.Areas.Employers.Controllers
@@ -153,6 +155,7 @@ namespace CSAPI.Areas.Employers.Controllers
         {
             var jobseeker = await _jobSeekerRepo.GetAllAsync();
             return Ok(jobseeker);
+
         }
     }
 }

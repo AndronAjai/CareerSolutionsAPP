@@ -12,7 +12,7 @@ namespace CSAPI.Models
         Task<Application> FindByIdAsync(int id);
         Task AddApplicationAsync(Application app);
         Task UpdateApplicationAsync(int id, Application app);
-        Task DeleteApplicationAsync(int id);
+        Task<bool> DeleteApplicationAsync(int id);
     }
 
     public class ApplicationRepo : IApplicationRepo
@@ -30,14 +30,16 @@ namespace CSAPI.Models
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteApplicationAsync(int id)
+        public async Task<bool> DeleteApplicationAsync(int id)
         {
             var app = await _context.Applications.FindAsync(id);
             if (app != null)
             {
                 _context.Applications.Remove(app);
                 await _context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
         public async Task<Application> FindByIdAsync(int id)

@@ -12,7 +12,7 @@ namespace CSAPI.Models
         Task<BranchOffice> FindByIdAsync(int id);
         Task AddBranchOfficesAsync(BranchOffice branchOffice);
         Task UpdateBranchOfficesAsync(int id, BranchOffice branchOffice);
-        Task DeleteBranchOfficesAsync(int id);
+        Task<bool> DeleteBranchOfficesAsync(int id);
     }
 
     public class BranchOfficesRepo : IBranchOfficeRepo
@@ -54,7 +54,8 @@ namespace CSAPI.Models
             }
         }
 
-        public async Task DeleteBranchOfficesAsync(int id)
+
+        public async Task<bool> DeleteBranchOfficesAsync(int id)
         {
             BranchOffice branchOffice = await _context.BranchOffices.FindAsync(id);
 
@@ -62,7 +63,9 @@ namespace CSAPI.Models
             {
                 _context.BranchOffices.Remove(branchOffice);
                 await _context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
     }
 }
