@@ -7,6 +7,7 @@ using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using DbCreationApp.Models;
 
+
 namespace CSAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -29,8 +30,27 @@ namespace CSAPI.Controllers
                 return BadRequest("Invalid user request!!!");
             }
 
-            if (_login.ValidateUser(user.UserName, user.Password, user.Role))
+            if (_login.ValidateUser(user.UserName, user.Password, user.Role,out int uid))
             {
+
+                //change 3 Login cookies
+                // Assuming new_obj_id is fetched or created somehow
+                
+                
+
+                // Configure the cookie options
+                var cookieOptions = new CookieOptions
+                    {
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(30), // Set cookie expiration time
+                    HttpOnly = true, // Make the cookie inaccessible to JavaScript
+                    Secure = true, // Only send cookie over HTTPS
+                    SameSite = SameSiteMode.Strict // Enforce SameSite policy
+                    };
+
+                // Add the UserId cookie
+                Response.Cookies.Append("UserId",uid.ToString(), cookieOptions);
+
+
                 // Create the security key and credentials
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
@@ -74,7 +94,7 @@ namespace CSAPI.Controllers
 
     public interface ILogin
     {
-        bool ValidateUser(string uname, string pwd, string role);
+        bool ValidateUser(string uname, string pwd, string role, out int userid);
     }
 
     public class LoginRepo : ILogin
@@ -86,16 +106,18 @@ namespace CSAPI.Controllers
             _context = context;
         }
 
-        public bool ValidateUser(string uname, string pwd, string role)
+        public bool ValidateUser(string uname, string pwd, string role,out int uid)
         {
             var user = _context.Users.SingleOrDefault(u => u.Username == uname);
-
+            uid = 0;
+            bool status = false;
             if (user != null && user.Password == pwd && user.Role == role)
             {
-                return true;
+                uid = user.UserID;
+                status = true;
             }
 
-            return false;
+            return status;
         }
     }
 }
