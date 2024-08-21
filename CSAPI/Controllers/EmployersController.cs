@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CSAPI.Models;
-using DbCreationApp.Models;
+using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CSAPI.Controllers

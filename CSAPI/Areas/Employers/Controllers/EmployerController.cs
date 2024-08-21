@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CSAPI.Areas.Employer.Controllers
+namespace CSAPI.Areas.Employers.Controllers
 {
     [Area("Employer")]
     [Route("api/employer/[controller]")]
