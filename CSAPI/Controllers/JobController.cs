@@ -4,7 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
-using DbCreationApp.Models;
+using CSAPI.Models;
 
 namespace CareerSolutionWebApiApp.Controllers
 {
