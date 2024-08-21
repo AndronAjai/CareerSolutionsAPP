@@ -128,7 +128,6 @@ namespace CSAPI.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-
         public int UserID { get; set; }
 
         [Required]
@@ -154,7 +153,6 @@ namespace CSAPI.Models
         public DateTime RegistrationDate { get; set; }
 
         [ForeignKey("BranchOffices")]
-
         public int? BranchOfficeID { get; set; }
 
         // Navigation properties
@@ -170,12 +168,12 @@ namespace CSAPI.Models
     {
 
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int JobSeekerID { get; set; }
 
         [Required]
 
         [StringLength(50)]
-
         public string FirstName { get; set; }
 
         [Required]
@@ -215,6 +213,7 @@ namespace CSAPI.Models
         public string? PreferredIndustry { get; set; }
 
         public string? PreferredSpecialization { get; set; }
+
         [ForeignKey("User")]
         public int UserID { get; set; }
 
@@ -233,6 +232,7 @@ namespace CSAPI.Models
     {
 
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EmployerID { get; set; }
 
         [Required]
