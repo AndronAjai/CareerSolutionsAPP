@@ -6,6 +6,7 @@ using System.Text;
 using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using DbCreationApp.Models;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace CSAPI.Controllers
 {
@@ -24,45 +25,38 @@ namespace CSAPI.Controllers
         [AllowAnonymous]
         public IActionResult LoginUser([FromBody] Login user)
         {
-            if (user is null)
+            if (user == null)
             {
                 return BadRequest("Invalid user request!!!");
             }
 
             if (_login.ValidateUser(user.UserName, user.Password, user.Role))
             {
-                // Create the security key and credentials
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-                // Add user-specific claims, including the role
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(ClaimTypes.Role, user.Role)
                 };
 
-                // Create the token
                 var tokenOptions = new JwtSecurityToken(
                     issuer: ConfigurationManager.AppSetting["JWT:ValidIssuer"],
                     audience: ConfigurationManager.AppSetting["JWT:ValidAudience"],
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(60),  // You can adjust the expiration as needed
+                    expires: DateTime.Now.AddMinutes(60),
                     signingCredentials: signinCredentials
                 );
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
-                return Ok(new JWTTokenResponse { Token = tokenString });
+                // Return token and role in response
+                return Ok(new { Token = tokenString, Role = user.Role });
             }
 
             return Unauthorized();
         }
-    }
-
-    public class JWTTokenResponse
-    {
-        public string? Token { get; set; }
     }
 
     public class Login

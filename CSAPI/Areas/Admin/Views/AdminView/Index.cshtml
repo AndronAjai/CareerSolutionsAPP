@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<h2>Welcome to the Admin Dashboard</h2>
+
+<p>Your token is: @ViewBag.Token</p>
+
+<script>
+    // Example usage of the token
+    var token = '@ViewBag.Token';
+
+    fetch('/api/admin/admin/dashboard', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+</script>

@@ -1,0 +1,75 @@
+﻿@{
+    Layout = null;  // Use this if you don't want to include the default layout
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    
+    <form id="loginForm">
+        <div>
+            <label for="userName">Username:</label>
+            <input type="text" id="userName" name="userName" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div>   
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+                <option value="Admin">Admin</option>
+                <option value="Employer">Employer</option>
+                <option value="JobSeeker">Job Seeker</option>
+            </select>
+        </div>
+        <button type="button" id="loginButton">Login</button>
+        <div>
+            <h1 id="tk"></h1>
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('loginButton').addEventListener('click', function () {
+
+            var userName = document.getElementById('userName').value;
+            var password = document.getElementById('password').value;
+            var role = document.getElementById('role').value;
+            
+
+            fetch('/api/login/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ UserName: userName, Password: password, Role: role })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.Token && data.Role) {
+                   
+                    document.getElementById("tk").innerHTML = data.Token;
+                    localStorage.setItem('token', data.Token);
+                    switch (data.Role) {
+                        case 'Admin':
+                            window.location.href = '/Admin/AdminView/Index'; // Adjust URL if needed
+                            break;
+                        // Handle other roles
+                    }
+                } else {
+                    alert('Invalid login attempt');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
