@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DbCreationApp.Models;
+using CSAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSAPI.Models
