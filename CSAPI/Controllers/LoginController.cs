@@ -12,6 +12,7 @@ namespace CSAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class LoginController : ControllerBase
     {
         private readonly ILogin _login;

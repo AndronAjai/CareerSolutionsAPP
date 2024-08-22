@@ -117,19 +117,19 @@ app.UseEndpoints(endpoints =>
       pattern: "{controller=Account}/{action=Index}/{id?}"
     );
 
-    endpoints.MapControllerRoute(
-        name: "login",
-        pattern: "login",
-        defaults: new { controller = "LoginView", action = "Index" });
+    //endpoints.MapControllerRoute(
+    //    name: "login",
+    //    pattern: "login",
+    //    defaults: new { controller = "LoginView", action = "Index" });
 
-    endpoints.MapControllerRoute(
-        name: "admin",
-        pattern: "admin",
-        defaults: new { controller = "AdminView", action = "Index" });
+    //endpoints.MapControllerRoute(
+    //    name: "admin",
+    //    pattern: "admin",
+    //    defaults: new { controller = "AdminView", action = "Index" });
 
     endpoints.MapControllers();
     // Apply role-based authorization to endpoints
-    endpoints.MapControllers().RequireAuthorization();
+    //endpoints.MapControllers().RequireAuthorization();
 });
 
 //app.UseEndpoints(endpoints =>
