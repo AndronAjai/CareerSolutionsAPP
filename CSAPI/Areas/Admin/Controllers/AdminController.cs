@@ -7,18 +7,11 @@ using System.Net;
 namespace CSAPI.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Route("api/admin/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
-        //    [HttpGet("dashboard")]
-        //    public IActionResult GetDashboard()
-        //    {
-        //        // Admin-specific logic
-        //        return Ok("Admin Dashboard Data");
-        //    }
-
         IBranchOfficeRepo _Repo;
         IUserRepo _UserRepo;
         IEmployerRepo _EmployerRepo;
@@ -26,34 +19,15 @@ namespace CSAPI.Areas.Admin.Controllers
         IJobsRepo _JobsRepo;
         IApplicationRepo _ApplicationRepo;
 
-        public AdminController(IBranchOfficeRepo repo)
+        public AdminController(IBranchOfficeRepo repo, IUserRepo repo1, IEmployerRepo repo2, IJobSeekerRepo repo3,  IJobsRepo repo4, IApplicationRepo repo5)
         {
             _Repo = repo;
-        }
-
-        public AdminController(IUserRepo repo)
-        {
-            _UserRepo = repo;
-        }
-
-        public AdminController(IEmployerRepo repo)
-        {
-            _EmployerRepo = repo;
-        }
-
-        public AdminController(IJobSeekerRepo repo)
-        {
-            _JobSeekerRepo = repo;
-        }
-
-        public AdminController(IJobsRepo repo)
-        {
-            _JobsRepo = repo;
-        }
-
-        public AdminController(IApplicationRepo repo)
-        {
-            _ApplicationRepo = repo;
+            _UserRepo = repo1;
+            _EmployerRepo = repo2;
+            _JobSeekerRepo = repo3;
+            _JobsRepo = repo4;
+            _ApplicationRepo = repo5;
+            
         }
 
         //Branch Table--------------------------------------------------------------
