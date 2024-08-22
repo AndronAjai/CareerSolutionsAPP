@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using CSAPI.Models;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
-using CSAPI.Models;
+
 
 namespace CSAPI.Controllers
 {
