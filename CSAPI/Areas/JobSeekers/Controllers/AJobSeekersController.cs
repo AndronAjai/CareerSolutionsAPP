@@ -35,7 +35,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
 
 
         // Job Seeker Can View all the Branch Office Relations 
-        [HttpGet("BOR")]
+        [HttpGet("viewBOR")]
         public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAll()
             {
             List<BranchOffice>? jsviewbor = await _AbrRepo.GetAllAsync();
@@ -127,18 +127,19 @@ namespace CSAPI.Areas.JobSeekers.Controllers
 
         // Job seeker Basic Controlling
         // GET: api/JobSeeker
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAlljs()
-            {
-            var jobSeekers = await _AjsRepo.GetAllAsync();
-            return Ok(jobSeekers);
-            }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAlljs()
+        //    {
+        //    var jobSeekers = await _AjsRepo.GetAllAsync();
+        //    return Ok(jobSeekers);
+        //    }
 
         // GET: api/JobSeeker/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<JobSeeker>> FindJobSeeker(int id)
+        [HttpGet("viewjsprofile")]
+        public async Task<ActionResult<JobSeeker>> FindJobSeeker()
             {
-            var jobSeeker = await _AjsRepo.FindByIdAsync(id);
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var jobSeeker = await _AjsRepo.FindByIdAsync(userIdCookie);
             if (jobSeeker == null)
                 {
                 return NotFound();
@@ -147,7 +148,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             }
 
         // POST: api/JobSeeker
-        [HttpPost]
+        [HttpPost("Addjsprofile")]
         public async Task<ActionResult> Post([FromBody] JobSeeker js)
             {
             var success = await _AjsRepo.AddJobSeekerAsync(js);
@@ -159,10 +160,11 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             }
 
         // PUT: api/JobSeeker/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] JobSeeker js)
+        [HttpPut("editjsuserprofile")]
+        public async Task<ActionResult> Put( [FromBody] JobSeeker js)
             {
-            var success = await _AjsRepo.UpdateJobSeekerAsync(id, js);
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var success = await _AjsRepo.UpdateJobSeekerAsync(userIdCookie, js);
             if (!success)
                 {
                 return NotFound("JobSeeker not found or user does not exist.");
@@ -171,10 +173,11 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             }
 
         // DELETE: api/JobSeeker/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        [HttpDelete("Deletejsuserprofile")]
+        public async Task<ActionResult> Delete()
             {
-            var success = await _AjsRepo.DeleteJobSeekerAsync(id);
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var success = await _AjsRepo.DeleteJobSeekerAsync(userIdCookie);
             if (!success)
                 {
                 return NotFound();

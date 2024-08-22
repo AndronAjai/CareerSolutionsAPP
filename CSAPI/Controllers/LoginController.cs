@@ -56,6 +56,7 @@ namespace CSAPI.Controllers
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                 // Add user-specific claims, including the role
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
