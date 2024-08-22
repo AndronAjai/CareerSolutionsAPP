@@ -130,7 +130,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAlljs()
             {
-            var jobSeekers = await _repo.GetAllAsync();
+            var jobSeekers = await _AjsRepo.GetAllAsync();
             return Ok(jobSeekers);
             }
 
@@ -138,7 +138,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<JobSeeker>> FindJobSeeker(int id)
             {
-            var jobSeeker = await _repo.FindByIdAsync(id);
+            var jobSeeker = await _AjsRepo.FindByIdAsync(id);
             if (jobSeeker == null)
                 {
                 return NotFound();
