@@ -1,134 +1,149 @@
-
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-
+using CSAPI.Areas.Employers.Models;
 
 namespace CSAPI.Areas.Employers.Controllers
 {
     [Area("Employers")]
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class EmployerController : ControllerBase
     {
-        IEmployerRepo _repo;
-        IApplicationRepo _applicationRepo;
-        IJobsRepo _jobsRepo;
-        IJobSeekerRepo _jobSeekerRepo;
+       
+        private readonly IEmployerRepo _repo;
+        private readonly IApplicationRepo _applicationRepo;
+        private readonly IJobsRepo _jobsRepo;
+        private readonly IUserRepo _userRepo;
+        EmployerAreaRepo _eRepo;
+        IJobSeekerRepo _JobSeekerRepo;
+        IBranchOfficeRepo _BranchOfficeRepo;
 
-        public EmployerController(IEmployerRepo repo, IApplicationRepo applicationRepo, IJobsRepo jobsRepo, IJobSeekerRepo jobSeekerRepo)
+        public EmployerController(IEmployerRepo repo, IApplicationRepo applicationRepo, IJobsRepo jobsRepo, IUserRepo userRepo, EmployerAreaRepo empRepo, JobSeekerRepo jobseekerRepo, BranchOfficesRepo branchOfficesRepo)
         {
             _repo = repo;
             _applicationRepo = applicationRepo;
             _jobsRepo = jobsRepo;
-            _jobSeekerRepo = jobSeekerRepo;
+            _userRepo = userRepo;
+            _eRepo = empRepo;
+            _JobSeekerRepo = jobseekerRepo;
+            _BranchOfficeRepo = branchOfficesRepo;
         }
 
-        // GET: api/Employers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employer>>> ShowAll()
-        {
-            var employers = await _repo.GetAllAsync();
-            return Ok(employers);
-        }
+        //EmployerTable-------------------------------------------------------------------------------------------------
 
-        // GET: api/Employers/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Employer>> FindEmployer(int id)
+        [HttpGet("MyAccount")]
+        public async Task<ActionResult<Employer>> ShowMyAccount()
         {
-            var employer = await _repo.FindByIdAsync(id);
-            if (employer == null)
+            
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            Employer e = await _repo.FindByIdAsync(Empid);
+
+            if (e == null)
             {
-                return NotFound();
+                return NotFound("Employer not found.");
             }
-            return Ok(employer);
+           
+            return Ok(e);
         }
 
-        // POST: api/Employers
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] Employer emp)
+        [HttpPut("UpdateInfo")]
+        public async Task<bool> UpdateInfo([FromBody] Employer updatedEmployer)
         {
-            var success = await _repo.AddEmployerAsync(emp);
-            if (!success)
-            {
-                return BadRequest("Invalid data or user does not exist.");
-            }
-            return StatusCode((int)HttpStatusCode.Created);
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            Employer e = await _repo.FindByIdAsync(Empid);
+            return await _repo.UpdateEmployerAsync(Empid,e);         
         }
 
-        // PUT: api/Employers/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] Employer emp)
+        [HttpDelete("DeleteAccount")]
+        public async Task<bool> DeleteAccount()
         {
-            var success = await _repo.UpdateEmployerAsync(id, emp);
-            if (!success)
-            {
-                return NotFound("Employer not found or user does not exist.");
-            }
-            return NoContent();
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            Employer e = await _repo.FindByIdAsync(Empid);
+            return await _repo.DeleteEmployerAsync(Empid);     
         }
 
-        // DELETE: api/Employers/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
-        {
-            var success = await _repo.DeleteEmployerAsync(id);
-            if (!success)
-            {
-                return NotFound();
-            }
-            return NoContent();
-        }
+        //ApplicationTable---------------------------------------------------------------------------------------------------------------
 
-        // GET: api/Employer/Applications
         [HttpGet("AllApplications")]
-        public async Task<ActionResult<IEnumerable<Application>>> ShowAllApplications()
+        public async Task<IQueryable<Application>> ShowAllApplications()
         {
-            var applications = await _applicationRepo.GetAllAsync();
-            return Ok(applications);
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            return await _eRepo.GetMyApplications(Empid);
+           
         }
 
-        // GET: api/Employer/Applications/5
         [HttpGet("ApplicationDetails/{id}")]
-        public async Task<ActionResult<Application>> GetApplication(int id)
+        public async Task<Application> GetApplication(int id)
         {
-            var application = await _applicationRepo.FindByIdAsync(id);
-            if (application == null)
-            {
-                return NotFound();
-            }
-            return Ok(application);
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            var app = _eRepo.GetApplication(id);
+
+            return await app;
         }
 
-        // GET: api/Employer/Jobs
+        [HttpGet("AllApplications/{id}")]
+        public async Task<IQueryable<Application>> ShowApplicationsForJob(int jobid)
+        {
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            return await _eRepo.GetApplicationsOfJob(jobid);
+
+            //Job job = await _jobsRepo.FindByIdAsync(jobid);
+            //if (job.EmployerID == Empid)
+            //{
+            //    return await _eRepo.GetApplicationsOfJob(jobid);
+            //}
+
+        }
+
+        //JobTable-----------------------------------------------------------------------------------------------------------------------
+
         [HttpGet("AllJobs")]
-        public async Task<ActionResult<IEnumerable<Job>>> ShowAllJobs()
+        public async Task<IQueryable<Job>> ShowAllJobs()
         {
-            var jobs = await _jobsRepo.GetAllAsync();
-            return Ok(jobs);
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            return await _eRepo.GetMyJobs(Empid);
         }
 
-        // POST: api/Employer/Jobs
+        [HttpGet("Jobs/{id}")]
+        public async Task<Job> GetJob(int id)
+        {
+            var job = await _jobsRepo.FindByIdAsync(id);
+            return job;
+        }
+
+
         [HttpPost("AddJob")]
         public async Task<ActionResult> PostJob([FromBody] Job job)
         {
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            job.EmployerID = Empid;
             var success = await _jobsRepo.AddJobAsync(job);
             if (!success)
             {
-                return BadRequest("Invalid job data.");
+                return NotFound("Job not found or data invalid.");
             }
-            return StatusCode((int)HttpStatusCode.Created);
+            return StatusCode((int)HttpStatusCode.Created);          
+            
         }
 
-        // PUT: api/Employer/Jobs/5
         [HttpPut("UpdateJob/{id}")]
         public async Task<ActionResult> UpdateJob(int id, [FromBody] Job job)
         {
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            job.EmployerID = Empid;
             var success = await _jobsRepo.UpdateJobAsync(id, job);
             if (!success)
             {
@@ -137,25 +152,156 @@ namespace CSAPI.Areas.Employers.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Employer/Jobs/5
-        [HttpDelete("DeleteJob/{id}")]
-        public async Task<ActionResult> DeleteJob(int id)
+        [HttpDelete("DeleteJob/{jobId}")]
+        public async Task<ActionResult> DeleteJob(int jobId)
         {
-            var success = await _jobsRepo.DeleteJobAsync(id);
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
+            //int authenticatedEmployerId = int.Parse(User.FindFirst("EmployerID").Value);
+            
+            var job = await _jobsRepo.FindByIdAsync(jobId);
+
+            if (job == null || job.EmployerID != Empid)
+            {
+                return NotFound("Job not found or you're not authorized to delete this job.");
+            }
+
+            var success = await _jobsRepo.DeleteJobAsync(jobId);
             if (!success)
             {
-                return NotFound();
+                return BadRequest("Failed to delete the job.");
             }
             return NoContent();
         }
 
-        // GET: api/Employer/JobSeeker
-        [HttpGet("AllJobSeeker")]
-        public async Task<ActionResult<IEnumerable<Job>>> ShowAllJobSeeker()
-        {
-            var jobseeker = await _jobSeekerRepo.GetAllAsync();
-            return Ok(jobseeker);
+        //JobSeekerTable------------------------------------------------------------------------------------------------------
 
+        [HttpGet("AllJobSeeker")]
+        public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAllJobSeeker()
+        {
+            var jobseeker = await _JobSeekerRepo.GetAllAsync();
+            return Ok(jobseeker);
         }
+
+        [HttpGet("JobSeeker/{id}")]
+        public async Task<JobSeeker> GetJobSeeker(int id)
+        {
+            var jobseeker = await _JobSeekerRepo.FindByIdAsync(id);
+            return jobseeker;
+        }
+
+        //BranchOfficeTable------------------------------------------------------------------------------------------------------
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<BranchOffice>>> ShowAll()
+        {
+            var branchoffice = await _BranchOfficeRepo.GetAllAsync();
+            
+            return Ok(branchoffice);
+        }
+
+        [HttpGet("BranchDetails/{id}")]
+        public async Task<BranchOffice> GetBranch(int id)
+        {
+            var branch = await _BranchOfficeRepo.FindByIdAsync(id);
+            return branch;
+        }
+
+        //UserTable----------------------------------------------------------------------------------------------------------------
+
+        [HttpGet("UserDetails/{id}")]
+        public async Task<User> GetUser()
+        {
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //int Empid = _eRepo.GetEmpID(userIdCookie);
+            var user = _userRepo.FindByIdAsync(userIdCookie);
+
+            return await user;
+        }
+
+        //[HttpGet("MyProfile")]
+        //public async Task<ActionResult<User>> GetMyProfile()
+        //{
+        //    int authenticatedUserId = int.Parse(User.FindFirst("UserID").Value);
+        //    var user = await _userRepo.FindByIdAsync(authenticatedUserId);
+        //    if (user == null || user.Role != "Employer")
+        //    {
+        //        return NotFound("Employer not found or unauthorized access.");
+        //    }
+        //    return Ok(user);
+        //}
+
+        //[HttpDelete("DeleteMyAccount")]
+        //public async Task<ActionResult> DeleteMyAccount()
+        //{
+        //    int authenticatedUserId = int.Parse(User.FindFirst("UserID").Value);
+        //    var success = await _userRepo.DeleteUserAsync(authenticatedUserId);
+        //    if (!success)
+        //    {
+        //        return NotFound("Employer not found or already deleted.");
+        //    }
+        //    return NoContent();
+        //}
+
+
+        //UpdateInfo Function
+        //if (existingEmployer == null || existingEmployer.EmployerID != id)
+        //{
+        //    return Forbid("You are not authorized to update this employer's details.");
+        //}
+        //var success = await _repo.UpdateEmployerAsync(id, emp);
+        //if (!success)
+        //{
+        //    return NotFound("Employer not found or user does not exist.");
+        //}
+        //return NoContent();
+
+
+        //DeleteAccount Function
+        //int authenticatedEmployerId = int.Parse(User.FindFirst("EmployerID").Value);
+        //var employer = await _repo.FindByIdAsync(authenticatedEmployerId);
+        //if (employer == null)
+        //{
+        //    return NotFound("Employer not found or already deleted.");
+        //}
+        //var success = await _repo.DeleteEmployerAsync(authenticatedEmployerId);
+        //if (!success)
+        //{
+        //    return BadRequest("Unable to delete employer account.");
+        //}
+        //return NoContent();
+
+        //GetApplications
+        //int authenticatedEmployerId = int.Parse(User.FindFirst("EmployerID").Value);
+        //var applications = await _applicationRepo.GetAllAsync(a => a.Job.EmployerID == authenticatedEmployerId);
+        //return Ok(applications);
+
+        //GetOneApplication
+        //    int authenticatedEmployerId = int.Parse(User.FindFirst("EmployerID").Value);
+        //    var application = await _applicationRepo.FindByIdAsync(id);
+        //    if (application == null || application.Job.EmployerID != authenticatedEmployerId)
+        //    {
+        //        return NotFound("Application not found or access denied.");
+        //    }
+        //    return Ok(application);
+        //}
+
+        //DeleteApplication
+        //[HttpDelete("DeleteApplication/{id}")]
+        //public async Task<ActionResult> DeleteApplication(int id)
+        //{
+        //    int authenticatedEmployerId = int.Parse(User.FindFirst("EmployerID").Value);
+        //    var application = await _applicationRepo.FindByIdAsync(id);
+        //    if (application == null || application.Job.EmployerID != authenticatedEmployerId)
+        //    {
+        //        return NotFound("Application not found or access denied.");
+        //    }
+        //    var success = await _applicationRepo.DeleteApplicationAsync(id);
+        //    if (!success)
+        //    {
+        //        return BadRequest("Failed to delete application.");
+        //    }
+        //    return NoContent();
+        //}
     }
 }
