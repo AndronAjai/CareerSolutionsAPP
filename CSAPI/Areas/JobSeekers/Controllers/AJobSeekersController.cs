@@ -21,13 +21,15 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         IApplicationRepo _AapnRepo;
         AIApplicationRepo _AzapnRepo;
         IUserRepo _AusRepo;
+        IJobSeekerRepo _AjsRepo;
 
-        public AJobSeekersController(IBranchOfficeRepo Arepo, IJobsRepo AjbRepo, IApplicationRepo AapnRepo, IUserRepo AusRepo)
+        public AJobSeekersController(IBranchOfficeRepo Arepo, IJobsRepo AjbRepo, IApplicationRepo AapnRepo, IUserRepo AusRepo, IJobSeekerRepo AjsRepo)
             {
             _AbrRepo = Arepo;
             _AjbRepo = AjbRepo;
             _AapnRepo = AapnRepo;
             _AusRepo = AusRepo;
+            _AjsRepo = AjsRepo;
             }
 
 
@@ -123,6 +125,62 @@ namespace CSAPI.Areas.JobSeekers.Controllers
 
 
 
+        // Job seeker Basic Controlling
+        // GET: api/JobSeeker
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAlljs()
+            {
+            var jobSeekers = await _repo.GetAllAsync();
+            return Ok(jobSeekers);
+            }
+
+        // GET: api/JobSeeker/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<JobSeeker>> FindJobSeeker(int id)
+            {
+            var jobSeeker = await _repo.FindByIdAsync(id);
+            if (jobSeeker == null)
+                {
+                return NotFound();
+                }
+            return Ok(jobSeeker);
+            }
+
+        // POST: api/JobSeeker
+        [HttpPost]
+        public async Task<ActionResult> Post([FromBody] JobSeeker js)
+            {
+            var success = await _AjsRepo.AddJobSeekerAsync(js);
+            if (!success)
+                {
+                return BadRequest("Invalid data or user does not exist.");
+                }
+            return StatusCode((int)HttpStatusCode.Created);
+            }
+
+        // PUT: api/JobSeeker/5
+        [HttpPut("{id}")]
+        public async Task<ActionResult> Put(int id, [FromBody] JobSeeker js)
+            {
+            var success = await _AjsRepo.UpdateJobSeekerAsync(id, js);
+            if (!success)
+                {
+                return NotFound("JobSeeker not found or user does not exist.");
+                }
+            return NoContent();
+            }
+
+        // DELETE: api/JobSeeker/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+            {
+            var success = await _AjsRepo.DeleteJobSeekerAsync(id);
+            if (!success)
+                {
+                return NotFound();
+                }
+            return NoContent();
+            }
 
 
 
