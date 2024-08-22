@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using ConfigurationManager = CSAPI.ConfigurationManager;
 using CSAPI.Controllers;
-using DbCreationApp.Models;
+using CSAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

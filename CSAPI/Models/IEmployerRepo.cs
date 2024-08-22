@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DbCreationApp.Models;
+
+using CSAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSAPI.Models
@@ -13,7 +14,7 @@ namespace CSAPI.Models
         Task<bool> AddEmployerAsync(Employer emp);
         Task<bool> UpdateEmployerAsync(int id, Employer emp);
         Task<bool> DeleteEmployerAsync(int id);
-        Task<bool> IsUserExistsAsync(int userId); // Check if UserID exists in Users table
+        Task<bool> IsUserExistsAsync(int userId); 
     }
 
     public class EmployerRepo : IEmployerRepo

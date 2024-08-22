@@ -3,36 +3,39 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CSAPI.Models;
-using DbCreationApp.Models;
+
 using Microsoft.AspNetCore.Authorization;
 
 namespace CSAPI.Controllers
 {
+    [Area("Employer")]
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
+    [Authorize(Roles = "Employer")]
     public class EmployersController : ControllerBase
     {
-        private readonly IEmployerRepo _repo;
+        private readonly IEmployerRepo _employerRepo;
+        private readonly IApplicationRepo _applicationRepo;
 
-        public EmployersController(IEmployerRepo repo)
+        public EmployersController(IEmployerRepo employerRepo, IApplicationRepo applicationRepo)
         {
-            _repo = repo;
+            _employerRepo = employerRepo;
+            _applicationRepo = applicationRepo;
         }
 
         // GET: api/Employers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employer>>> ShowAll()
+        public async Task<ActionResult<IEnumerable<EmployersController>>> ShowAll()
         {
-            var employers = await _repo.GetAllAsync();
+            var employers = await _employerRepo.GetAllAsync();
             return Ok(employers);
         }
 
         // GET: api/Employers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employer>> FindEmployer(int id)
+        public async Task<ActionResult<EmployersController>> FindEmployer(int id)
         {
-            var employer = await _repo.FindByIdAsync(id);
+            var employer = await _employerRepo.FindByIdAsync(id);
             if (employer == null)
             {
                 return NotFound();
@@ -44,11 +47,7 @@ namespace CSAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Employer emp)
         {
-            var success = await _repo.AddEmployerAsync(emp);
-            if (!success)
-            {
-                return BadRequest("Invalid data or user does not exist.");
-            }
+            await _employerRepo.AddEmployerAsync(emp);
             return StatusCode((int)HttpStatusCode.Created);
         }
 
@@ -56,7 +55,7 @@ namespace CSAPI.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] Employer emp)
         {
-            var success = await _repo.UpdateEmployerAsync(id, emp);
+            var success = await _employerRepo.UpdateEmployerAsync(id, emp);
             if (!success)
             {
                 return NotFound("Employer not found or user does not exist.");
@@ -66,13 +65,21 @@ namespace CSAPI.Controllers
 
         // DELETE: api/Employers/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteEmployer(int id)
         {
-            var success = await _repo.DeleteEmployerAsync(id);
+            var success = await _employerRepo.DeleteEmployerAsync(id);
             if (!success)
             {
                 return NotFound();
             }
+            return NoContent();
+        }
+
+        // DELETE: api/Employers/Applications/5
+        [HttpDelete("DeleteApplication/{id}")]
+        public async Task<ActionResult> DeleteApplication(int id)
+        {
+            await _applicationRepo.DeleteApplicationAsync(id);
             return NoContent();
         }
     }
