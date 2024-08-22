@@ -16,7 +16,7 @@ namespace CSAPI.Models
 
         Task<IEnumerable<Application>> FindByJobSeekerIdAsync(int jobSeekerId);
 
-        Task<bool> UpdateJobSeekerIdAsync(int id, Application app);
+        Task<bool> UpdateJobSeekerIdAsync(int id, IEnumerable<Application> Apj);
     }
 
     public class ApplicationRepo : IApplicationRepo
@@ -110,29 +110,49 @@ namespace CSAPI.Models
             return true;
             }
 
-        public  async Task<bool> UpdateJobSeekerIdAsync(int jobSeekerId, Application app)
+
+
+
+
+        public async Task<bool> UpdateJobSeekerIdAsync(int jobSeekerId, IEnumerable<Application> apps)
             {
+            // Check if any rows exist with the given jobSeekerId
+            var existingApplications = await _context.Applications
+                .Where(a => a.JobSeekerID == jobSeekerId)
+                .ToListAsync();
 
-            // Check if the Jobseekerid,jobid exists before updating the Jobseeker
-            if (!await IsJobIdExistsAsync(app.JobID, app.JobSeekerID))
-                return false;
-
-            var  update_rows =  _context.Applications
-                                 .Where(e => e.JobSeekerID == jobSeekerId)
-                                 .ToListAsync();
-
-            foreach (var eachrows in await update_rows)
+            if (!existingApplications.Any())
                 {
-
-                eachrows.JobID = app.JobID;
-                eachrows.JobSeekerID = app.JobSeekerID;
-                eachrows.ApplicationDate = app.ApplicationDate;
-                eachrows.Status = app.Status;
+                // No rows found with the given jobSeekerId
+                return false;
                 }
 
-            await _context.SaveChangesAsync();
-            return true;
+            // conversion of FrontEnd values to List
+            List<Application> newData=apps.ToList();
+ 
+            foreach (var applicationRow in existingApplications)
+                {
+                // comparision of each updated row(id) to frontendValues(id)
+                for (int i = 0; i < newData.Count; i++)
+                    {
+                    
+                    if (applicationRow.ApplicationID == newData[i].ApplicationID)
+                        {
+                        // Update the application details
 
+                        applicationRow.JobID = newData[i].JobID;
+                        applicationRow.JobSeekerID = newData[i].JobSeekerID;
+                        applicationRow.ApplicationDate = newData[i].ApplicationDate;
+                        applicationRow.Status = newData[i].Status;
+
+                        } 
+                    }
+                }
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            return true;
             }
 
 

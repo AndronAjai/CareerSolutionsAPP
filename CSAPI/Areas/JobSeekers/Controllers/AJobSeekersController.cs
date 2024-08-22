@@ -20,13 +20,14 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         IJobsRepo _AjbRepo;
         IApplicationRepo _AapnRepo;
         AIApplicationRepo _AzapnRepo;
+        IUserRepo _AusRepo;
 
-        public AJobSeekersController(IBranchOfficeRepo Arepo, IJobsRepo AjbRepo, IApplicationRepo AapnRepo)
+        public AJobSeekersController(IBranchOfficeRepo Arepo, IJobsRepo AjbRepo, IApplicationRepo AapnRepo, IUserRepo AusRepo)
             {
             _AbrRepo = Arepo;
             _AjbRepo = AjbRepo;
             _AapnRepo = AapnRepo;
-
+            _AusRepo = AusRepo;
             }
 
 
@@ -48,6 +49,8 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             }
 
 
+        // Job Seeker Can View His own Application
+
         [HttpGet("ViewjsApplication")]
         public async Task<ActionResult<IEnumerable<Application>>> jsviewAppln()
             {
@@ -63,9 +66,10 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             return Ok(viewjsappln);
             }
 
+        // Job Seeker Can Update His own Application
         [HttpPut("UpdatejsApplication")]
 
-        public async Task<ActionResult<IEnumerable<Application>>> jsupdateAppln(int id,[FromBody] Application Apj)
+        public async Task<ActionResult<IEnumerable<Application>>> jsupdateAppln([FromBody] IEnumerable<Application>  Apj)
             {
             // Retrieve the 'UserId' cookie from the request
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
@@ -77,6 +81,8 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             var success = await _AapnRepo.UpdateJobSeekerIdAsync(userIdCookie, Apj);
             return Ok(success);
             }
+
+        // Job Seeker Can Delete His own Application(need to implement(few confusions)
 
         [HttpDelete("DeletejsApplication")]
         public async Task<ActionResult<IEnumerable<Application>>> jsdeleteAppln(int id)
@@ -95,6 +101,24 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 }
 
             return NoContent();
+            }
+
+
+        // Job Seeker Can View His own User profile
+
+        [HttpGet("ViewjsUser")]
+        public async Task<ActionResult<IEnumerable<Application>>> jsviewUser()
+            {
+
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+
+
+            var viewjsappln = await _AusRepo.FindByIdAsync(userIdCookie);
+            if (viewjsappln == null)
+                {
+                return NotFound();
+                }
+            return Ok(viewjsappln);
             }
 
 
