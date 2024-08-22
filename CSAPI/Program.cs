@@ -114,7 +114,7 @@ app.UseEndpoints(endpoints =>
 
     endpoints.MapControllerRoute(
       name: "default",
-      pattern: "{controller=Account}/{action=Index}/{id?}"
+      pattern: "{controller=LoginView}/{action=Index}/{id?}"
     );
 
     //endpoints.MapControllerRoute(

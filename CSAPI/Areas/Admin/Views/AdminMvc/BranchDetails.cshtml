@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #007BFF;
+            text-align: center;
+        }
+        .details {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Branch Details</h2>
+        
+        <div class="details">
+            <p>Fetching details for branch ID: @ViewBag.BranchId</p>
+            <div id="branchDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        var token = localStorage.getItem('token');
+        var branchId = @ViewBag.BranchId;
+
+        fetch(`/api/admin/BranchDetails/${branchId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('branchDetails').innerHTML = JSON.stringify(data, null, 2);
+        })
+        .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html>
