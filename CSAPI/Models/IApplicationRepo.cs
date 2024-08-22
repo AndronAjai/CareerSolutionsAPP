@@ -42,8 +42,13 @@ namespace CSAPI.Models
             
         }
 
-        public async Task<bool> DeleteApplicationAsync(int id)
+        public async Task<bool> DeleteApplicationAsync(int usrid)
         {
+            var id  = await _context.JobSeekers
+                .Where(a => a.UserID == usrid)
+               .Select(a => a.JobSeekerID)
+                .FirstOrDefaultAsync();
+
             var app = await _context.Applications.FindAsync(id);
             if (app != null)
             {
@@ -68,8 +73,14 @@ namespace CSAPI.Models
         }
 
         // change 4 
-        public async Task<IEnumerable<Application>> FindByJobSeekerIdAsync(int jobSeekerId)
+        public async Task<IEnumerable<Application>> FindByJobSeekerIdAsync(int usrid)
             {
+
+            var jobSeekerId = await _context.JobSeekers
+            .Where(a => a.UserID == usrid)
+            .Select(a => a.JobSeekerID)
+            .FirstOrDefaultAsync();
+
             return await _context.Applications
                                  .Where(e => e.JobSeekerID == jobSeekerId)
                                  .ToListAsync();
@@ -114,9 +125,14 @@ namespace CSAPI.Models
 
 
 
-        public async Task<bool> UpdateJobSeekerIdAsync(int jobSeekerId, IEnumerable<Application> apps)
+        public async Task<bool> UpdateJobSeekerIdAsync(int usrid, IEnumerable<Application> apps)
             {
             // Check if any rows exist with the given jobSeekerId
+
+            var jobSeekerId = await _context.JobSeekers
+                    .Where(a => a.UserID == usrid)
+                    .Select(a => a.JobSeekerID)
+                    .FirstOrDefaultAsync();
             var existingApplications = await _context.Applications
                 .Where(a => a.JobSeekerID == jobSeekerId)
                 .ToListAsync();

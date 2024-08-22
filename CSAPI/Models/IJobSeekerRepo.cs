@@ -30,8 +30,13 @@ namespace CSAPI.Models
             return await _context.JobSeekers.ToListAsync();
         }
 
-        public async Task<JobSeeker> FindByIdAsync(int id)
+        public async Task<JobSeeker> FindByIdAsync(int usrid)
         {
+            var id = await _context.JobSeekers
+            .Where(a => a.UserID == usrid)
+            .Select(a => a.JobSeekerID)
+            .FirstOrDefaultAsync();
+
             return await _context.JobSeekers.FindAsync(id);
         }
 
@@ -47,8 +52,13 @@ namespace CSAPI.Models
             return true;
         }
 
-        public async Task<bool> UpdateJobSeekerAsync(int id, JobSeeker js)
+        public async Task<bool> UpdateJobSeekerAsync(int usrid, JobSeeker js)
+
         {
+            var id = await _context.JobSeekers
+            .Where(a => a.UserID == usrid)
+            .Select(a => a.JobSeekerID)
+            .FirstOrDefaultAsync();
             var existingJobSeeker = await _context.JobSeekers.FindAsync(id);
             if (existingJobSeeker == null || !await IsUserExistsAsync(js.UserID))
             {
@@ -73,8 +83,13 @@ namespace CSAPI.Models
             return true;
         }
 
-        public async Task<bool> DeleteJobSeekerAsync(int id)
+        public async Task<bool> DeleteJobSeekerAsync(int usrid)
         {
+            var id = await _context.JobSeekers
+            .Where(a => a.UserID == usrid)
+            .Select(a => a.JobSeekerID)
+            .FirstOrDefaultAsync();
+
             var js = await _context.JobSeekers.FindAsync(id);
             if (js == null)
             {

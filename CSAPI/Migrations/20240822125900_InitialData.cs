@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CSAPI.Migrations
 {
-    public partial class IntialData : Migration
+    public partial class InitialData : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -25,29 +25,6 @@ namespace CSAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    UserID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BranchOfficeID = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.UserID);
-                    table.ForeignKey(
-                        name: "FK_Users_BranchOffices_BranchOfficeID",
-                        column: x => x.BranchOfficeID,
-                        principalTable: "BranchOffices",
-                        principalColumn: "BranchOfficeID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Employers",
                 columns: table => new
                 {
@@ -64,12 +41,6 @@ namespace CSAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Employers", x => x.EmployerID);
-                    table.ForeignKey(
-                        name: "FK_Employers_Users_UserID",
-                        column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,12 +66,6 @@ namespace CSAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JobSeekers", x => x.JobSeekerID);
-                    table.ForeignKey(
-                        name: "FK_JobSeekers_Users_UserID",
-                        column: x => x.UserID,
-                        principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,7 +95,42 @@ namespace CSAPI.Migrations
                         column: x => x.EmployerID,
                         principalTable: "Employers",
                         principalColumn: "EmployerID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    UserID = table.Column<int>(type: "int", nullable: false).Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BranchOfficeID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserID);
+                    table.ForeignKey(
+                        name: "FK_Users_BranchOffices_BranchOfficeID",
+                        column: x => x.BranchOfficeID,
+                        principalTable: "BranchOffices",
+                        principalColumn: "BranchOfficeID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_Employers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Employers",
+                        principalColumn: "EmployerID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_JobSeekers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "JobSeekers",
+                        principalColumn: "JobSeekerID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -142,35 +142,24 @@ namespace CSAPI.Migrations
                     JobID = table.Column<int>(type: "int", nullable: false),
                     JobSeekerID = table.Column<int>(type: "int", nullable: false),
                     ApplicationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmployerID = table.Column<int>(type: "int", nullable: true)
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Applications", x => x.ApplicationID);
                     table.ForeignKey(
-                        name: "FK_Applications_Employers_EmployerID",
-                        column: x => x.EmployerID,
-                        principalTable: "Employers",
-                        principalColumn: "EmployerID");
-                    table.ForeignKey(
                         name: "FK_Applications_Jobs_JobID",
                         column: x => x.JobID,
                         principalTable: "Jobs",
                         principalColumn: "JobID",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Applications_JobSeekers_JobSeekerID",
                         column: x => x.JobSeekerID,
                         principalTable: "JobSeekers",
                         principalColumn: "JobSeekerID",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Applications_EmployerID",
-                table: "Applications",
-                column: "EmployerID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_JobID",
@@ -183,19 +172,9 @@ namespace CSAPI.Migrations
                 column: "JobSeekerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employers_UserID",
-                table: "Employers",
-                column: "UserID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Jobs_EmployerID",
                 table: "Jobs",
                 column: "EmployerID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_JobSeekers_UserID",
-                table: "JobSeekers",
-                column: "UserID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_BranchOfficeID",
@@ -209,19 +188,19 @@ namespace CSAPI.Migrations
                 name: "Applications");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "Jobs");
+
+            migrationBuilder.DropTable(
+                name: "BranchOffices");
 
             migrationBuilder.DropTable(
                 name: "JobSeekers");
 
             migrationBuilder.DropTable(
                 name: "Employers");
-
-            migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "BranchOffices");
         }
     }
 }
