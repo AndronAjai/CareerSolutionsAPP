@@ -5,8 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
-using DbCreationApp.Models;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+
 
 namespace CSAPI.Controllers
 {
@@ -92,5 +91,6 @@ namespace CSAPI.Controllers
 
             return false;
         }
+    }
     
 }
