@@ -36,13 +36,13 @@ namespace CSAPI.Controllers
         }
 
         // GET: api/User
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<User>>> ShowAll()
-        {
-            var users = await _repo.GetAllAsync();
-            return Ok(users);
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public async Task<ActionResult<IEnumerable<User>>> ShowAll()
+        //{
+        //    var users = await _repo.GetAllAsync();
+        //    return Ok(users);
+        //}
 
 
         //// GET: api/User/5
