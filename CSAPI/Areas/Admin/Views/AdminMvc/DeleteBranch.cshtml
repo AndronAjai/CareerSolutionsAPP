@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Branch Office</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Branch Office</h2>
+        <p>Are you sure you want to delete the branch office: <strong id="branchName"></strong>?</p>
+        <button id="deleteButton" class="btn">Yes, Delete</button>
+        <a href="/Admin/AdminMVC/Branches" class="btn">Cancel</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var branchId = "@ViewBag.BranchId";
+            var token = localStorage.getItem('token');
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch(`/api/admin/BranchDetails/${branchId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('branchName').textContent = data.branchName;
+            })
+            .catch(error => console.error('Error:', error));
+
+            document.getElementById('deleteButton').addEventListener('click', function() {
+                fetch(`/api/admin/DeleteBranch/${branchId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Branch deleted successfully!');
+                        window.location.href = '/Admin/AdminMVC/Branches';
+                    } else {
+                        alert('Failed to delete branch.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    </script>
+</body>
+</html>
