@@ -32,9 +32,8 @@
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\" />
-    <Folder Include="Areas\Employers\Data\" />
-    <Folder Include="Areas\Employers\Models\" />
-    <Folder Include="Areas\Employers\Views\" />
+    <Folder Include="Areas\EmployerArea\Data\" />
+    <Folder Include="Areas\EmployerArea\Views\" />
     <Folder Include="Areas\JobSeekers\Data\" />
     <Folder Include="Areas\JobSeekers\Models\" />
     <Folder Include="Areas\JobSeekers\Views\" />

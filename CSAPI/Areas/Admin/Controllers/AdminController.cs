@@ -266,7 +266,7 @@ namespace CSAPI.Areas.Admin.Controllers
 
         [HttpGet("AllApplications")]
         //[AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Application>>> ShowAllApplications()
+        public async Task<ActionResult<IEnumerable<JobApplication>>> ShowAllApplications()
         {
             var app = await _ApplicationRepo.GetAllAsync();
             return Ok(app);
@@ -275,7 +275,7 @@ namespace CSAPI.Areas.Admin.Controllers
         // GET: api/User/5
         [HttpGet("ApplicationDetails/{id}")]
         //[AllowAnonymous]
-        public async Task<ActionResult<Application>> FindApplication(int id)
+        public async Task<ActionResult<JobApplication>> FindApplication(int id)
         {
             var application = await _ApplicationRepo.FindByIdAsync(id);
             if (application == null)
