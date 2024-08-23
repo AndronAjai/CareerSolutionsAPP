@@ -8,10 +8,10 @@ namespace CSAPI.Models
 {
     public interface IApplicationRepo
     {
-        Task<List<Application>> GetAllAsync();
-        Task<Application> FindByIdAsync(int id);
-        Task AddApplicationAsync(Application app);
-        Task UpdateApplicationAsync(int id, Application app);
+        Task<List<JobApplication>> GetAllAsync();
+        Task<JobApplication> FindByIdAsync(int id);
+        Task AddApplicationAsync(JobApplication app);
+        Task UpdateApplicationAsync(int id, JobApplication app);
         Task<bool> DeleteApplicationAsync(int id);
     }
 
@@ -24,7 +24,7 @@ namespace CSAPI.Models
             _context = context;
         }
 
-        public async Task AddApplicationAsync(Application app)
+        public async Task AddApplicationAsync(JobApplication app)
         {
             _context.Applications.Add(app);
             await _context.SaveChangesAsync();
@@ -42,17 +42,17 @@ namespace CSAPI.Models
             return false;
         }
 
-        public async Task<Application> FindByIdAsync(int id)
+        public async Task<JobApplication> FindByIdAsync(int id)
         {
             return await _context.Applications.FindAsync(id);
         }
 
-        public async Task<List<Application>> GetAllAsync()
+        public async Task<List<JobApplication>> GetAllAsync()
         {
             return await _context.Applications.ToListAsync();
         }
 
-        public async Task UpdateApplicationAsync(int id, Application app)
+        public async Task UpdateApplicationAsync(int id, JobApplication app)
         {
             var updatedApp = await _context.Applications.FindAsync(id);
             if (updatedApp != null)
