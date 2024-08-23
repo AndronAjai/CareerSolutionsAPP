@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Branch Offices</title>
+    <title>Users</title>
     <link rel="stylesheet" href="~/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <h2>Branch Offices</h2>
-        <a href="/Admin/AdminMVC/AddBranch" class="btn add-btn">Add New Branch</a>
+        <h2>Users</h2>
+        
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Phone Number</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Registration Date</th>
+                    <th>Branch Office ID</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="branchTableBody">
-                <!-- Branches will be populated here -->
+            <tbody id="userTableBody">
+                <!-- Users will be populated here -->
             </tbody>
         </table>
     </div>
@@ -36,36 +39,32 @@
                 return;
             }
 
-            // Fetch all branches
-            fetch('/api/admin/AllBranches', {
+            // Fetch all users
+            fetch('/api/admin/AllUsers', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                var tableBody = document.getElementById('branchTableBody');
-                data.forEach(branch => {
+                var tableBody = document.getElementById('userTableBody');
+                data.forEach(user => {
                     var row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${branch.branchOfficeID}</td>
-                        <td>${branch.branchName}</td>
-                        <td>${branch.branchAddress}</td>
-                        <td>${branch.phoneNumber}</td>
+                        <td>${user.userID}</td>
+                        <td>${user.username}</td>
+                        <td>${user.password}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${new Date(user.registrationDate).toLocaleDateString()}</td>
+                        <td>${user.branchOfficeID || 'N/A'}</td>
                         <td>
-                            <a href="/Admin/AdminMVC/BranchDetails/${branch.branchOfficeID}" class="btn">Details</a>
-                            <a href="/Admin/AdminMVC/UpdateBranch/${branch.branchOfficeID}" class="btn">Update</a>
-                            <a href="/Admin/AdminMVC/DeleteBranch/${branch.branchOfficeID}" class="btn">Delete</a>
+                            <a href="/Admin/AdminMVC/UserDetails/${user.userID}" class="btn">Details</a>
+                            <a href="/Admin/AdminMVC/UserDelete/${user.userID}" class="btn">Delete</a>
                         </td>
                     `;
-
                     tableBody.appendChild(row);
                 });
             })

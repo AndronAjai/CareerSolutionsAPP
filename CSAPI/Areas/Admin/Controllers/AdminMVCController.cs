@@ -51,6 +51,12 @@ namespace CSAPI.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult UserDelete(int id)
+        {
+            ViewBag.UserId = id;
+            return View();
+        }
+
         // Employer Views
         public IActionResult Employers()
         {
@@ -58,6 +64,12 @@ namespace CSAPI.Areas.Admin.Controllers
         }
 
         public IActionResult EmployerDetails(int id)
+        {
+            ViewBag.EmployerId = id;
+            return View();
+        }
+
+        public IActionResult EmployerDelete(int id)
         {
             ViewBag.EmployerId = id;
             return View();

@@ -34,7 +34,6 @@ namespace CSAPI.Areas.Admin.Controllers
         //Branch Table--------------------------------------------------------------
 
         [HttpGet("AllBranches")]
-        //[AllowAnonymous]
         public async Task<ActionResult<IEnumerable<BranchOffice>>> ShowAllBranches()
         {
             var branch = await _Repo.GetAllAsync();
@@ -70,7 +69,6 @@ namespace CSAPI.Areas.Admin.Controllers
         }
 
         [HttpDelete("DeleteBranch/{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult> DeleteBranch(int id)
         {
             var branch = await _Repo.FindByIdAsync(id);
@@ -92,7 +90,6 @@ namespace CSAPI.Areas.Admin.Controllers
         //Users Table---------------------------------------------------------------
 
         [HttpGet("AllUsers")]
-        //[AllowAnonymous]
         public async Task<ActionResult<IEnumerable<User>>> ShowAll()
         {
             var users = await _UserRepo.GetAllAsync();
@@ -101,7 +98,6 @@ namespace CSAPI.Areas.Admin.Controllers
 
         // GET: api/User/5
         [HttpGet("UserDetails/{id}")]
-        //[AllowAnonymous]
         public async Task<ActionResult<User>> FindUser(int id)
         {
             var user = await _UserRepo.FindByIdAsync(id);
@@ -113,7 +109,6 @@ namespace CSAPI.Areas.Admin.Controllers
         }
 
         [HttpDelete("DeleteUser/{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult> DeleteUser(int id)
         {
             var user = await _UserRepo.FindByIdAsync(id);
@@ -135,7 +130,6 @@ namespace CSAPI.Areas.Admin.Controllers
         //Employer Table-----------------------------------------------------------
 
         [HttpGet("AllEmployers")]
-        //[AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Employer>>> ShowAllEmployer()
         {
             var employers = await _EmployerRepo.GetAllAsync();
@@ -144,7 +138,6 @@ namespace CSAPI.Areas.Admin.Controllers
 
         // GET: api/User/5
         [HttpGet("EmployerDetails/{id}")]
-        //[AllowAnonymous]
         public async Task<ActionResult<Employer>> FindEmployer(int id)
         {
             var employer = await _EmployerRepo.FindByIdAsync(id);
@@ -156,7 +149,6 @@ namespace CSAPI.Areas.Admin.Controllers
         }
 
         [HttpDelete("DeleteEmployer/{id}")]
-        [AllowAnonymous]
         public async Task<ActionResult> DeleteEmployer(int id)
         {
             var employer = await _EmployerRepo.FindByIdAsync(id);
@@ -178,7 +170,6 @@ namespace CSAPI.Areas.Admin.Controllers
         //Job Seeker Table-------------------------------------------------------------
 
         [HttpGet("AllJobSeekers")]
-        //[AllowAnonymous]
         public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAllJobSeeker()
         {
             var js = await _JobSeekerRepo.GetAllAsync();

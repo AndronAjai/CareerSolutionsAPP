@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Branch Offices</title>
+    <title>Employers</title>
     <link rel="stylesheet" href="~/css/styles.css">
+
 </head>
 <body>
     <div class="container">
-        <h2>Branch Offices</h2>
-        <a href="/Admin/AdminMVC/AddBranch" class="btn add-btn">Add New Branch</a>
+        <h2>Employers</h2>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Name</th>
-                    <th>Address</th>
+                    <th>Company Name</th>
+                    <th>Contact Person</th>
                     <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Industry Type</th>
+                    <th>Website</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="branchTableBody">
-                <!-- Branches will be populated here -->
+            <tbody id="employerTableBody">
+                <!-- Employers will be populated here -->
             </tbody>
         </table>
     </div>
@@ -36,8 +39,8 @@
                 return;
             }
 
-            // Fetch all branches
-            fetch('/api/admin/AllBranches', {
+            // Fetch all employers
+            fetch('/api/admin/AllEmployers', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -51,18 +54,20 @@
                 return response.json();
             })
             .then(data => {
-                var tableBody = document.getElementById('branchTableBody');
-                data.forEach(branch => {
+                var tableBody = document.getElementById('employerTableBody');
+                data.forEach(employer => {
                     var row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${branch.branchOfficeID}</td>
-                        <td>${branch.branchName}</td>
-                        <td>${branch.branchAddress}</td>
-                        <td>${branch.phoneNumber}</td>
+                        <td>${employer.employerID}</td>
+                        <td>${employer.companyName}</td>
+                        <td>${employer.contactPerson}</td>
+                        <td>${employer.phoneNumber}</td>
+                        <td>${employer.companyAddress}</td>
+                        <td>${employer.industryType}</td>
+                        <td>${employer.websiteURL}</td>
                         <td>
-                            <a href="/Admin/AdminMVC/BranchDetails/${branch.branchOfficeID}" class="btn">Details</a>
-                            <a href="/Admin/AdminMVC/UpdateBranch/${branch.branchOfficeID}" class="btn">Update</a>
-                            <a href="/Admin/AdminMVC/DeleteBranch/${branch.branchOfficeID}" class="btn">Delete</a>
+                            <a href="/Admin/AdminMVC/EmployerDetails/${employer.employerID}" class="btn">Details</a>
+                            <a href="/Admin/AdminMVC/EmployerDelete/${employer.employerID}" class="btn">Delete</a>
                         </td>
                     `;
 
