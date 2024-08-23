@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Branch</title>
+    <title>Delete Branch Office</title>
     <style>
+        /* CSS styles */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                color: #333;
+                margin: 0;
+                padding: 20px;
+            }
+
         .container {
             max-width: 800px;
             margin: auto;
@@ -20,44 +22,148 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             color: #007BFF;
             text-align: center;
+            margin-bottom: 20px;
         }
-        .form-group {
-            margin-top: 20px;
+
+        .form-item, .detail-item {
+            margin-bottom: 15px;
         }
-        .form-group button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007BFF;
+
+        .form-item label, .detail-item span {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-item input, .form-item textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-item textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
             color: white;
+            background-color: #007BFF;
             border: none;
             border-radius: 5px;
+            text-decoration: none;
             cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            margin-top: 10px;
         }
-        .form-group button:hover {
+
+        .btn:hover {
             background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .add-btn {
+            display: block;
+            width: 150px;
+            margin: 20px auto;
+            background-color: #28a745;
+            text-align: center;
+        }
+
+        .add-btn:hover {
+            background-color: #218838;
+        }
+
+        .detail-item {
+            font-size: 18px;
+        }
+
+        .detail-item span:first-child {
+            font-weight: bold;
+        }
+
+        .table-container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Delete Branch</h2>
-        
-        <p>Are you sure you want to delete the branch with ID: @ViewBag.BranchId?</p>
-
-        <div class="form-group">
-            <button id="deleteBranchButton">Delete Branch</button>
-        </div>
+        <h2>Delete Branch Office</h2>
+        <p>Are you sure you want to delete the branch office: <strong id="branchName"></strong>?</p>
+        <button id="deleteButton" class="btn">Yes, Delete</button>
+        <a href="/Admin/AdminMVC/Branches" class="btn">Cancel</a>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            var branchId = "@ViewBag.BranchId";
             var token = localStorage.getItem('token');
-            var branchId = @ViewBag.BranchId;
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
 
-            document.getElementById('deleteBranchButton').addEventListener('click', function() {
+            fetch(`/api/admin/BranchDetails/${branchId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('branchName').textContent = data.branchName;
+            })
+            .catch(error => console.error('Error:', error));
+
+            document.getElementById('deleteButton').addEventListener('click', function() {
                 fetch(`/api/admin/DeleteBranch/${branchId}`, {
                     method: 'DELETE',
                     headers: {
@@ -67,10 +173,10 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        alert('Branch deleted successfully.');
-                        window.location.href = '/Admin/AdminMVC/Branches'; // Redirect to the branches list page
+                        alert('Branch deleted successfully!');
+                        window.location.href = '/Admin/AdminMVC/Branches';
                     } else {
-                        alert('Error deleting branch.');
+                        alert('Failed to delete branch.');
                     }
                 })
                 .catch(error => console.error('Error:', error));

@@ -33,6 +33,12 @@ namespace CSAPI.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult DeleteBranch(int id)
+        {
+            ViewBag.BranchId = id;
+            return View();
+        }
+
         // User Views
         public IActionResult Users()
         {
