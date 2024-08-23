@@ -66,6 +66,7 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Address</th>
+                    <th>Phone Number</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -79,29 +80,42 @@
         document.addEventListener('DOMContentLoaded', function() {
             var token = localStorage.getItem('token');
 
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
             // Fetch all branches
-            fetch('/api/admin/Branches', {
+            fetch('/api/admin/AllBranches', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 var tableBody = document.getElementById('branchTableBody');
                 data.forEach(branch => {
                     var row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${branch.id}</td>
-                        <td>${branch.name}</td>
-                        <td>${branch.address}</td>
+                        <td>${branch.branchOfficeID}</td>
+                        <td>${branch.branchName}</td>
+                        <td>${branch.branchAddress}</td>
+                        <td>${branch.phoneNumber}</td>
                         <td>
-                            <a href="/Admin/AdminMVC/BranchDetails/${branch.id}" class="btn">Details</a>
-                            <a href="/Admin/AdminMVC/UpdateBranch/${branch.id}" class="btn">Update</a>
-                            <a href="/Admin/AdminMVC/DeleteBranch/${branch.id}" class="btn">Delete</a>
+                            <a href="/Admin/AdminMVC/BranchDetails/${branch.branchOfficeID}" class="btn">Details</a>
+                            <a href="/Admin/AdminMVC/UpdateBranch/${branch.branchOfficeID}" class="btn">Update</a>
+                            <a href="/Admin/AdminMVC/DeleteBranch/${branch.branchOfficeID}" class="btn">Delete</a>
                         </td>
                     `;
+
                     tableBody.appendChild(row);
                 });
             })
