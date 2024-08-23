@@ -22,21 +22,21 @@ namespace CareerSolutionWebApiApp.Controllers
 
         // GET: api/Application
         [HttpGet]
-        public async Task<List<Application>> ShowAll()
+        public async Task<List<JobApplication>> ShowAll()
         {
             return await _repo.GetAllAsync();
         }
 
         // GET api/Application/5
         [HttpGet("{id}")]
-        public async Task<Application> FindApplication(int id)
+        public async Task<JobApplication> FindApplication(int id)
         {
             return await _repo.FindByIdAsync(id);
         }
 
         // POST api/Application
         [HttpPost]
-        public async Task<HttpStatusCode> Post([FromBody] Application app)
+        public async Task<HttpStatusCode> Post([FromBody] JobApplication app)
         {
             await _repo.AddApplicationAsync(app);
             return HttpStatusCode.Created;
@@ -44,7 +44,7 @@ namespace CareerSolutionWebApiApp.Controllers
 
         // PUT api/Application/5
         [HttpPut("{id}")]
-        public async Task<HttpStatusCode> Put(int id, [FromBody] Application app)
+        public async Task<HttpStatusCode> Put(int id, [FromBody] JobApplication app)
         {
             await _repo.UpdateApplicationAsync(id, app);
             return HttpStatusCode.NoContent;

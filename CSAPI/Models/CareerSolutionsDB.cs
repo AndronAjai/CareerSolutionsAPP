@@ -23,7 +23,7 @@ namespace CSAPI.Models
 
         public DbSet<Job> Jobs { get; set; }
 
-        public DbSet<Application> Applications { get; set; }
+        public DbSet<JobApplication> Applications { get; set; }
         // Syntax based  on ClassName(Entity) table name
         public DbSet<BranchOffice> BranchOffices { get; set; }
 
@@ -43,7 +43,7 @@ namespace CSAPI.Models
             modelBuilder.Entity<Job>()
                 .HasKey(j => j.JobID);
 
-            modelBuilder.Entity<Application>()
+            modelBuilder.Entity<JobApplication>()
                 .HasKey(a => a.ApplicationID);
 
             modelBuilder.Entity<BranchOffice>()
@@ -74,13 +74,13 @@ namespace CSAPI.Models
                 .HasForeignKey(j => j.EmployerID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Application>()
+            modelBuilder.Entity<JobApplication>()
                 .HasOne<Job>()
                 .WithMany()
                 .HasForeignKey(a => a.JobID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Application>()
+            modelBuilder.Entity<JobApplication>()
                 .HasOne<JobSeeker>()
                 .WithMany()
                 .HasForeignKey(a => a.JobSeekerID)
@@ -341,7 +341,7 @@ namespace CSAPI.Models
 
     [Table("Applications")]
 
-    public class Application
+    public class JobApplication
 
     {
 

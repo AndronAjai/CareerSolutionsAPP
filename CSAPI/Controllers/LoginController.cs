@@ -30,8 +30,21 @@ namespace CSAPI.Controllers
                 return BadRequest("Invalid user request!!!");
             }
 
-            if (_login.ValidateUser(user.UserName, user.Password, user.Role))
+            if (_login.ValidateUser(user.UserName, user.Password, user.Role,out int uid))
             {
+                //addednow
+                var cookieOptions = new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(30), // Set cookie expiration time
+                    HttpOnly = true, // Make the cookie inaccessible to JavaScript
+                    Secure = true, // Only send cookie over HTTPS
+                    SameSite = SameSiteMode.Strict // Enforce SameSite policy
+                };
+
+                // Add the UserId cookie
+                Response.Cookies.Append("UserId", uid.ToString(), cookieOptions);
+                //addednow--
+
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
@@ -68,7 +81,7 @@ namespace CSAPI.Controllers
 
     public interface ILogin
     {
-        bool ValidateUser(string uname, string pwd, string role);
+        bool ValidateUser(string uname, string pwd, string role,out int uid);
     }
 
     public class LoginRepo : ILogin
@@ -80,12 +93,15 @@ namespace CSAPI.Controllers
             _context = context;
         }
 
-        public bool ValidateUser(string uname, string pwd, string role)
+        public bool ValidateUser(string uname, string pwd, string role,out int uid)
         {
             var user = _context.Users.SingleOrDefault(u => u.Username == uname);
 
+            uid = 0;
+
             if (user != null && user.Password == pwd && user.Role == role)
             {
+                uid = user.UserID;
                 return true;
             }
 
