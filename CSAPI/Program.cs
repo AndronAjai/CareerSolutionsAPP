@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using ConfigurationManager = CSAPI.ConfigurationManager;
 using CSAPI.Controllers;
-using CSAPI.Models;
+using CSAPI.Areas.EmployerArea.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +57,9 @@ builder.Services.AddTransient<IJobSeekerRepo, JobSeekerRepo>();
 builder.Services.AddTransient<IEmployerRepo, EmployerRepo>();
 builder.Services.AddTransient<IBranchOfficeRepo, BranchOfficesRepo>();
 builder.Services.AddTransient<IApplicationRepo, ApplicationRepo>();
+
+//addednow
+builder.Services.AddTransient<IEmployerAreaRepo, EmployerAreaRepo>();
 
 // Configure Authentication with JWT and Role-Based Authorization
 builder.Services.AddAuthentication(opt =>
