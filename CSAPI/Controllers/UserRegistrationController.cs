@@ -41,7 +41,7 @@ namespace CSAPI.Controllers
                 return BadRequest("Invalid user registration request!");
             }
 
-            var userId = us.UserID;
+            var userId = User.UserID;
 
             // Store the UserId in a cookie
             Response.Cookies.Append("UId", userId.ToString(), new CookieOptions
@@ -82,17 +82,17 @@ namespace CSAPI.Controllers
             //};
 
             // Save the new user to the database
-            var success = await _repo.AddUserAsync(User);
-            if (!success)
-            {
-                return BadRequest("Invalid BranchOfficeID.");
-            }
+        //    var success = await _repo.AddUserAsync(User);
+        //    if (!success)
+        //    {
+        //        return BadRequest("Invalid BranchOfficeID.");
+        //    }
             
             
 
 
-            return StatusCode((int)HttpStatusCode.Created, "User registered successfully!");
-        }
+        //    return StatusCode((int)HttpStatusCode.Created, "User registered successfully!");
+        //}
 
         // GET: api/User
         //[HttpGet]
