@@ -32,6 +32,17 @@ namespace CSAPI.Controllers
             {
                 return BadRequest("Invalid BranchOfficeID.");
             }
+            
+            var userId = us.UserID;
+
+            // Store the UserId in a cookie
+            Response.Cookies.Append("UId", userId.ToString(), new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,   
+                SameSite = SameSiteMode.Strict 
+            });
+
             return StatusCode((int)HttpStatusCode.Created);
         }
 
