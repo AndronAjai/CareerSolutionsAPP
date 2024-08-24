@@ -39,6 +39,7 @@
     <Folder Include="Areas\JobSeekers\Data\" />
     <Folder Include="Areas\JobSeekers\Models\" />
     <Folder Include="Areas\JobSeekers\Views\" />
+    <Folder Include="Resumes\" />
   </ItemGroup>
 
   <ItemGroup>
