@@ -138,7 +138,7 @@ namespace CSAPI.Models
 
         [Required]
 
-        [StringLength(25)]
+        [StringLength(1000)]
 
         public string Password { get; set; }
 
@@ -154,6 +154,7 @@ namespace CSAPI.Models
 
         [ForeignKey("BranchOffices")]
         public int? BranchOfficeID { get; set; }
+        //public string Salt { get; internal set; }
 
         // Navigation properties
 

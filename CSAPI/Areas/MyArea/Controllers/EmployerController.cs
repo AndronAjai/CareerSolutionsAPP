@@ -75,7 +75,7 @@ namespace CSAPI.Areas.MyArea.Controllers
         //ApplicationTable---------------------------------------------------------------------------------------------------------------
 
         [HttpGet("AllApplications")]
-        public async Task<IQueryable<Application>> ShowAllApplications()
+        public async Task<IQueryable<JobApplication>> ShowAllApplications()
         {
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -84,7 +84,7 @@ namespace CSAPI.Areas.MyArea.Controllers
         }
 
         [HttpGet("ApplicationDetails/{id}")]
-        public async Task<Application> GetApplication(int id)
+        public async Task<JobApplication> GetApplication(int id)
         {
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -94,7 +94,7 @@ namespace CSAPI.Areas.MyArea.Controllers
         }
 
         [HttpGet("AllApplications/{id}")]
-        public async Task<IQueryable<Application>> ShowApplicationsForJob(int id)
+        public async Task<IQueryable<JobApplication>> ShowApplicationsForJob(int id)
         {
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             int Empid = _eRepo.GetEmpID(userIdCookie);

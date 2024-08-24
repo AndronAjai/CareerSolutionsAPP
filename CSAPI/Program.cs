@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using ConfigurationManager = CSAPI.ConfigurationManager;
 using CSAPI.Controllers;
 using CSAPI.Areas.EmployerArea.Models;
 
@@ -50,15 +49,13 @@ builder.Services.AddSwaggerGen(options =>
 
 // Register services and repositories
 builder.Services.AddDbContext<CareerSolutionsDB>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CnString")));
+builder.Services.AddTransient<IUserRepo, UserRepo>();  // Register UserRepo
 builder.Services.AddTransient<ILogin, LoginRepo>();
-builder.Services.AddTransient<IUserRepo, UserRepo>();
 builder.Services.AddTransient<IJobsRepo, JobsRepo>();
 builder.Services.AddTransient<IJobSeekerRepo, JobSeekerRepo>();
 builder.Services.AddTransient<IEmployerRepo, EmployerRepo>();
 builder.Services.AddTransient<IBranchOfficeRepo, BranchOfficesRepo>();
 builder.Services.AddTransient<IApplicationRepo, ApplicationRepo>();
-
-//addednow
 builder.Services.AddTransient<IEmployerAreaRepo, EmployerAreaRepo>();
 
 // Configure Authentication with JWT and Role-Based Authorization
@@ -75,9 +72,9 @@ builder.Services.AddAuthentication(opt =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = ConfigurationManager.AppSetting["JWT:ValidIssuer"],
-        ValidAudience = ConfigurationManager.AppSetting["JWT:ValidAudience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]))
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
     };
 });
 
@@ -91,7 +88,7 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-app.UseStaticFiles();   
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -122,29 +119,8 @@ app.UseEndpoints(endpoints =>
       pattern: "{controller=LoginView}/{action=Index}/{id?}"
     );
 
-    //endpoints.MapControllerRoute(
-    //    name: "login",
-    //    pattern: "login",
-    //    defaults: new { controller = "LoginView", action = "Index" });
-
-    //endpoints.MapControllerRoute(
-    //    name: "admin",
-    //    pattern: "admin",
-    //    defaults: new { controller = "AdminView", action = "Index" });
-
     endpoints.MapControllers();
-    // Apply role-based authorization to endpoints
-    //endpoints.MapControllers().RequireAuthorization();
 });
-
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapControllerRoute(
-//        name: "default",
-//        pattern: "{area=Admin}/{controller=AdminView}/{action=Index}/{id?}");
-//    endpoints.MapRazorPages();
-//});
-
 
 app.UseCors(x => x
     .AllowAnyOrigin()

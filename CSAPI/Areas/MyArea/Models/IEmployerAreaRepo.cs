@@ -8,9 +8,9 @@ namespace CSAPI.Areas.MyArea.Models
     {
         public int GetEmpID(int userID);
         public Task<IQueryable<Job>> GetMyJobs(int empid);
-        public Task<IQueryable<Application>> GetMyApplications(int empid);
-        public Task<Application> GetApplication(int appid);
-        public Task<IQueryable<Application>> GetApplicationsOfJob(int jobid);
+        public Task<IQueryable<JobApplication>> GetMyApplications(int empid);
+        public Task<JobApplication> GetApplication(int appid);
+        public Task<IQueryable<JobApplication>> GetApplicationsOfJob(int jobid);
     }
 
     public class EmployerAreaRepo : IEmployerAreaRepo
@@ -40,7 +40,7 @@ namespace CSAPI.Areas.MyArea.Models
             return job;
         }
 
-        public async Task<IQueryable<Application>> GetMyApplications(int empid)
+        public async Task<IQueryable<JobApplication>> GetMyApplications(int empid)
         {
             var job = from jobs in _context.Jobs
                       where jobs.EmployerID == empid
@@ -52,7 +52,7 @@ namespace CSAPI.Areas.MyArea.Models
             return applications;
         }
 
-        public async Task<Application> GetApplication(int appid)
+        public async Task<JobApplication> GetApplication(int appid)
         {
             var application = from app in _context.Applications
                               where appid == app.ApplicationID
@@ -61,7 +61,7 @@ namespace CSAPI.Areas.MyArea.Models
             return appl;
         }
 
-        public async Task<IQueryable<Application>> GetApplicationsOfJob(int jobid)
+        public async Task<IQueryable<JobApplication>> GetApplicationsOfJob(int jobid)
         {
             var applications = from app in _context.Applications
                                where app.JobID == jobid
