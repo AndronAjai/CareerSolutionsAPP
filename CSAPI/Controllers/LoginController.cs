@@ -99,14 +99,12 @@ namespace CSAPI.Controllers
 
             uid = 0;
 
-            if (user != null && user.Password == pwd && user.Role == role)
+            if (user != null && BCrypt.Net.BCrypt.Verify(pwd, user.Password) && user.Role == role)
             {
                 uid = user.UserID;
                 return true;
             }
-
             return false;
         }
     }
-    
 }
