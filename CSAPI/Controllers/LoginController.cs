@@ -5,13 +5,14 @@ using System.Security.Claims;
 using System.Text;
 using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
-using DbCreationApp.Models;
+
 
 
 namespace CSAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class LoginController : ControllerBase
     {
         private readonly ILogin _login;
@@ -25,7 +26,7 @@ namespace CSAPI.Controllers
         [AllowAnonymous]
         public IActionResult LoginUser([FromBody] Login user)
         {
-            if (user is null)
+            if (user == null)
             {
                 return BadRequest("Invalid user request!!!");
             }
@@ -33,29 +34,23 @@ namespace CSAPI.Controllers
             if (_login.ValidateUser(user.UserName, user.Password, user.Role,out int uid))
             {
 
-                //change 3 Login cookies
-                // Assuming new_obj_id is fetched or created somehow
-                
-                
-
-                // Configure the cookie options
+                //addednow
                 var cookieOptions = new CookieOptions
-                    {
+                {
+>
                     Expires = DateTimeOffset.UtcNow.AddMinutes(30), // Set cookie expiration time
                     HttpOnly = true, // Make the cookie inaccessible to JavaScript
                     Secure = true, // Only send cookie over HTTPS
                     SameSite = SameSiteMode.Strict // Enforce SameSite policy
-                    };
+
+                };
 
                 // Add the UserId cookie
-                Response.Cookies.Append("UserId",uid.ToString(), cookieOptions);
+                Response.Cookies.Append("UserId", uid.ToString(), cookieOptions);
+                //addednow--
 
-
-                // Create the security key and credentials
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-                // Add user-specific claims, including the role
 
                 var claims = new List<Claim>
                 {
@@ -63,27 +58,22 @@ namespace CSAPI.Controllers
                     new Claim(ClaimTypes.Role, user.Role)
                 };
 
-                // Create the token
                 var tokenOptions = new JwtSecurityToken(
                     issuer: ConfigurationManager.AppSetting["JWT:ValidIssuer"],
                     audience: ConfigurationManager.AppSetting["JWT:ValidAudience"],
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(60),  // You can adjust the expiration as needed
+                    expires: DateTime.Now.AddMinutes(60),
                     signingCredentials: signinCredentials
                 );
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
-                return Ok(new JWTTokenResponse { Token = tokenString });
+                // Return token and role in response
+                return Ok(new { Token = tokenString, Role = user.Role });
             }
 
             return Unauthorized();
         }
-    }
-
-    public class JWTTokenResponse
-    {
-        public string? Token { get; set; }
     }
 
     public class Login
@@ -95,7 +85,7 @@ namespace CSAPI.Controllers
 
     public interface ILogin
     {
-        bool ValidateUser(string uname, string pwd, string role, out int userid);
+        bool ValidateUser(string uname, string pwd, string role,out int uid);
     }
 
     public class LoginRepo : ILogin
@@ -110,15 +100,15 @@ namespace CSAPI.Controllers
         public bool ValidateUser(string uname, string pwd, string role,out int uid)
         {
             var user = _context.Users.SingleOrDefault(u => u.Username == uname);
+
             uid = 0;
-            bool status = false;
-            if (user != null && user.Password == pwd && user.Role == role)
+
+            if (user != null && BCrypt.Net.BCrypt.Verify(pwd, user.Password) && user.Role == role)
             {
                 uid = user.UserID;
-                status = true;
+                return true;
             }
-
-            return status;
+            return false;
         }
     }
 }

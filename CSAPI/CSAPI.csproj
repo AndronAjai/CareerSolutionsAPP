@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.33" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.33" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.33" />
@@ -31,11 +32,18 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Employer\Data\" />
-    <Folder Include="Areas\Employer\Models\" />
-    <Folder Include="Areas\Employer\Views\" />
+
+    <Folder Include="Areas\Admin\Views\" />
+    <Folder Include="Areas\EmployerArea\Data\" />
+    <Folder Include="Areas\EmployerArea\Views\" />
+
     <Folder Include="Areas\JobSeekers\Data\" />
     <Folder Include="Areas\JobSeekers\Views\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\styles.css" />
   </ItemGroup>
 
 </Project>

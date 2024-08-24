@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employers</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+
+</head>
+<body>
+    <div class="container">
+        <h2>Employers</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Company Name</th>
+                    <th>Contact Person</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Industry Type</th>
+                    <th>Website</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="employerTableBody">
+                <!-- Employers will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Fetch all employers
+            fetch('/api/admin/AllEmployers', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var tableBody = document.getElementById('employerTableBody');
+                data.forEach(employer => {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${employer.employerID}</td>
+                        <td>${employer.companyName}</td>
+                        <td>${employer.contactPerson}</td>
+                        <td>${employer.phoneNumber}</td>
+                        <td>${employer.companyAddress}</td>
+                        <td>${employer.industryType}</td>
+                        <td>${employer.websiteURL}</td>
+                        <td>
+                            <a href="/Admin/AdminMVC/EmployerDetails/${employer.employerID}" class="btn">Details</a>
+                            <a href="/Admin/AdminMVC/EmployerDelete/${employer.employerID}" class="btn">Delete</a>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

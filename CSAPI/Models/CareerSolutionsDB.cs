@@ -4,14 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace DbCreationApp.Models
+namespace CSAPI.Models
 {
     public class CareerSolutionsDB : DbContext
 
     {
 
         public CareerSolutionsDB(DbContextOptions<CareerSolutionsDB> options) : base(options)
-
         {
 
         }
@@ -129,7 +128,6 @@ namespace DbCreationApp.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-
         public int UserID { get; set; }
 
         [Required]
@@ -140,7 +138,7 @@ namespace DbCreationApp.Models
 
         [Required]
 
-        [StringLength(25)]
+        [StringLength(1000)]
 
         public string Password { get; set; }
 
@@ -155,8 +153,8 @@ namespace DbCreationApp.Models
         public DateTime RegistrationDate { get; set; }
 
         [ForeignKey("BranchOffices")]
-
         public int? BranchOfficeID { get; set; }
+        //public string Salt { get; internal set; }
 
         // Navigation properties
 
@@ -171,12 +169,12 @@ namespace DbCreationApp.Models
     {
 
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int JobSeekerID { get; set; }
 
         [Required]
 
         [StringLength(50)]
-
         public string FirstName { get; set; }
 
         [Required]
@@ -216,6 +214,7 @@ namespace DbCreationApp.Models
         public string? PreferredIndustry { get; set; }
 
         public string? PreferredSpecialization { get; set; }
+
         [ForeignKey("User")]
         public int UserID { get; set; }
 
@@ -234,6 +233,7 @@ namespace DbCreationApp.Models
     {
 
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EmployerID { get; set; }
 
         [Required]

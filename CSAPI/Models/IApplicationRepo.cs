@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DbCreationApp.Models;
+using CSAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSAPI.Models
@@ -10,6 +10,7 @@ namespace CSAPI.Models
     {
         Task<List<JobApplication>> GetAllAsync();
         Task<JobApplication> FindByIdAsync(int id);
+
         Task<bool> AddApplicationAsync(JobApplication app);
         Task<bool> UpdateApplicationAsync(int id, JobApplication app);
         Task<bool> DeleteApplicationAsync(int id);
@@ -17,6 +18,7 @@ namespace CSAPI.Models
         Task<IEnumerable<JobApplication>> FindByJobSeekerIdAsync(int jobSeekerId);
 
         Task<bool> UpdateJobSeekerIdAsync(int id, IEnumerable<JobApplication> Apj);
+
     }
 
     public class ApplicationRepo : IApplicationRepo
@@ -28,8 +30,10 @@ namespace CSAPI.Models
             _context = context;
         }
 
+
         // c2 in Calling IsJobIdExistsAsync function
         public async Task<bool> AddApplicationAsync(JobApplication app)
+
         {
             
             // Check if the JobApplication ID exists before adding the JobApplication
@@ -42,7 +46,9 @@ namespace CSAPI.Models
             
         }
 
+
         public async Task<bool> DeleteApplicationAsync(int usrid)
+
         {
             var id  = await _context.JobSeekers
                 .Where(a => a.UserID == usrid)
@@ -59,9 +65,6 @@ namespace CSAPI.Models
             await _context.SaveChangesAsync();
             return true;
 
-
-
-
         }
 
         public async Task<JobApplication> FindByIdAsync(int id)
@@ -71,6 +74,7 @@ namespace CSAPI.Models
             return await _context.Applications.FindAsync(id);
 
         }
+
 
         // change 4 
         public async Task<IEnumerable<JobApplication>> FindByJobSeekerIdAsync(int usrid)
@@ -88,10 +92,12 @@ namespace CSAPI.Models
 
 
 
+
         public async Task<List<JobApplication>> GetAllAsync()
         {
             return await _context.Applications.ToListAsync();
         }
+
 
         public async Task<bool> UpdateApplicationAsync(int id, JobApplication app)
         {

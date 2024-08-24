@@ -1,0 +1,217 @@
+﻿@*@{
+    Layout = null;  // Use this if you don't want to include the default layout
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    
+    <form id="loginForm">
+        <div>
+            <label for="userName">Username:</label>
+            <input type="text" id="userName" name="userName" value="Andron" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="123" required>
+        </div>
+        <div>   
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+                <option value="Admin">Admin</option>
+                <option value="Employer">Employer</option>
+                <option value="JobSeeker">Job Seeker</option>
+            </select>
+        </div>
+        <button type="button" id="loginButton">Login</button>
+        <div>
+            <h1 id="tk"></h1>
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('loginButton').addEventListener('click', function () {
+
+            var userName = document.getElementById('userName').value;
+            var password = document.getElementById('password').value;
+            var role = document.getElementById('role').value;
+            
+
+            fetch('/api/login/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ UserName: userName, Password: password, Role: role })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token && data.role) {
+                   
+                    //document.getElementById("tk").innerHTML = data.token;
+                    localStorage.setItem('token', data.token);
+                    switch (data.role) {
+                        case 'Admin':
+                            window.location.href = '/Admin/AdminView/Index'; // Adjust URL if needed
+                            break;
+                        // Handle other roles
+                    }
+                } else {
+                    console.log(data);
+                    console.log("Hii");
+                    alert('Invalid login attempt');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
+*@
+
+@{
+    Layout = null;  // Use this if you don't want to include the default layout
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .form-group button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .form-group h1 {
+            text-align: center;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="userName">Username:</label>
+                <input type="text" id="userName" name="userName" value="Andron" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" value="123" required>
+            </div>
+            <div class="form-group">   
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="Admin">Admin</option>
+                    <option value="Employer">Employer</option>
+                    <option value="JobSeeker">Job Seeker</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="button" id="loginButton">Login</button>
+            </div>
+            <div class="form-group">
+                <h1 id="tk"></h1>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginButton').addEventListener('click', function () {
+            var userName = document.getElementById('userName').value;
+            var password = document.getElementById('password').value;
+            var role = document.getElementById('role').value;
+            
+            fetch('/api/login/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ UserName: userName, Password: password, Role: role })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token && data.role) {
+                    localStorage.setItem('token', data.token);
+                    switch (data.role) {
+                        case 'Admin':
+                            window.location.href = '/Admin/AdminMVC/Dashboard'; // Adjust URL if needed
+                            break;
+                        // Handle other roles
+                    }
+                } else {
+                    alert('Invalid login attempt');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

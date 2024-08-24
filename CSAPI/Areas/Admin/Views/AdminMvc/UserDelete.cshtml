@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete User</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Delete User</h2>
+        <p>Are you sure you want to delete this user? <strong id="userName"></strong></p>
+        <button id="confirmDelete" class="btn">Yes, Delete</button>
+        <a href="/Admin/AdminMVC/Users" class="btn">Cancel</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var userId = "@ViewBag.UserId";
+            var token = localStorage.getItem('token');
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Fetch user details
+            fetch(`/api/admin/UserDetails/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('userName').textContent = data.userName;
+            })
+            .catch(error => console.error('Error:', error));
+
+            // Handle delete action
+            document.getElementById('confirmDelete').addEventListener('click', function() {
+                fetch(`/api/admin/DeleteUser/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/Admin/AdminMVC/Users';
+                    } else {
+                        console.error('Failed to delete user');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    </script>
+</body>
+</html>
