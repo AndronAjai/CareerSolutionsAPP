@@ -32,17 +32,28 @@ namespace CSAPI.Controllers
             {
                 return BadRequest("Invalid BranchOfficeID.");
             }
+            
+            var userId = us.UserID;
+
+            // Store the UserId in a cookie
+            Response.Cookies.Append("UId", userId.ToString(), new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,   
+                SameSite = SameSiteMode.Strict 
+            });
+
             return StatusCode((int)HttpStatusCode.Created);
         }
 
         // GET: api/User
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<User>>> ShowAll()
-        {
-            var users = await _repo.GetAllAsync();
-            return Ok(users);
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public async Task<ActionResult<IEnumerable<User>>> ShowAll()
+        //{
+        //    var users = await _repo.GetAllAsync();
+        //    return Ok(users);
+        //}
 
 
         //// GET: api/User/5
