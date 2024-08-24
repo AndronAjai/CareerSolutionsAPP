@@ -22,36 +22,6 @@ namespace CSAPI.Controllers
             _context = context;
         }
 
-        //[HttpPost("RegisterJobSeeker")]
-        //[AllowAnonymous]
-        //public async Task<ActionResult> Post([FromBody] JobSeeker js)
-        //{
-        //    // Retrieve the UserId from the cookie
-        //    if (Request.Cookies.TryGetValue("UId", out var userIdString))
-        //    {
-        //        // Parse the string to an integer
-        //        if (int.TryParse(userIdString, out int userId))
-        //        {
-        //            // Use the UserId as needed, for example, associating it with the JobSeeker
-        //            js.UserID = userId;
-
-        //            var success = await _JSrepo.AddJobSeekerAsync(js);
-        //            if (!success)
-        //            {
-        //                return BadRequest("Invalid data or user does not exist.");
-        //            }
-
-        //            return StatusCode((int)HttpStatusCode.Created);
-        //        }
-        //        else
-        //        {
-        //            return BadRequest("Invalid UserId in cookie.");
-        //        }
-        //    }
-
-        //    return BadRequest("User is not authenticated.");
-        //}
-
 
 
         public class JobSeekerViewModel
@@ -63,7 +33,7 @@ namespace CSAPI.Controllers
             public string? ProfileSummary { get; set; }
             public string KeySkills { get; set; }
             public string ExpertField { get; set; }
-            public IFormFile Resume { get; set; } // This handles the file upload
+            public IFormFile Resume { get; set; }
             public string? AcademicDetails { get; set; }
             public string? ProfessionalDetails { get; set; }
             public string? PreferredIndustry { get; set; }
