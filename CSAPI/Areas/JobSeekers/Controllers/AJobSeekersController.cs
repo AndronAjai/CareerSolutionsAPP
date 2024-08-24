@@ -36,7 +36,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
 
         // Job Seeker Can View all the Branch Office Relations 
         [HttpGet("viewBOR")]
-        public async Task<ActionResult<IEnumerable<JobSeeker>>> ShowAll()
+        public async Task<ActionResult<IEnumerable<BranchOffice>>> ShowAll()
             {
             List<BranchOffice>? jsviewbor = await _AbrRepo.GetAllAsync();
             return Ok(jsviewbor);
@@ -44,7 +44,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
 
         // Job Seeker Can see the jobs available 
         [HttpGet("ViewJobs")]
-        public async Task<ActionResult<IEnumerable<BranchOffice>>> DisplayJobs()
+        public async Task<ActionResult<IEnumerable<Job>>> DisplayJobs()
             {
             List<Job> jsviewjobs = await _AjbRepo.GetAllAsync();
             return Ok(jsviewjobs);
@@ -54,7 +54,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         // Job Seeker Can View His own Application
 
         [HttpGet("ViewjsApplication")]
-        public async Task<ActionResult<IEnumerable<Application>>> jsviewAppln()
+        public async Task<ActionResult<IEnumerable<JobApplication>>> jsviewAppln()
             {
 
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
@@ -71,7 +71,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         // Job Seeker Can Update His own Application
         [HttpPut("UpdatejsApplication")]
 
-        public async Task<ActionResult<IEnumerable<Application>>> jsupdateAppln([FromBody] IEnumerable<Application>  Apj)
+        public async Task<ActionResult<IEnumerable<JobApplication>>> jsupdateAppln([FromBody] IEnumerable<JobApplication>  Apj)
             {
             // Retrieve the 'UserId' cookie from the request
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
@@ -87,7 +87,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         // Job Seeker Can Delete His own Application(need to implement(few confusions)
 
         [HttpDelete("DeletejsApplication")]
-        public async Task<ActionResult<IEnumerable<Application>>> jsdeleteAppln(int id)
+        public async Task<ActionResult<IEnumerable<JobApplication>>> jsdeleteAppln(int id)
             {
             // Retrieve the 'UserId' cookie from the request
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
@@ -109,7 +109,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         // Job Seeker Can View His own User profile
 
         [HttpGet("ViewjsUser")]
-        public async Task<ActionResult<IEnumerable<Application>>> jsviewUser()
+        public async Task<ActionResult<IEnumerable<User>>> jsviewUser()
             {
 
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
@@ -184,8 +184,6 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 }
             return NoContent();
             }
-
-
 
 
         }

@@ -14,7 +14,47 @@ namespace CSAPI.Models
         Task<bool> UpdateJobAsync(int id, Job job);
         Task<bool> DeleteJobAsync(int id);
         Task<bool> IsEmployerExistsAsync(int employerId); // New method to check if Employer exists
-    }
+
+        Task<List<Ranking>> GetJobs(int usrid);
+        }
+    public class JobSeekerDTO
+        {
+        public string PreferredIndustry { get; set; }
+        public string PreferredSpecialization { get; set; }
+        public string KeySkills { get; set; }
+
+        public  bool AreFieldsEmpty(JobSeekerDTO preferences)
+            {
+            bool  status= string.IsNullOrWhiteSpace(preferences.PreferredIndustry) &&
+                   string.IsNullOrWhiteSpace(preferences.PreferredSpecialization) &&
+                   string.IsNullOrWhiteSpace(preferences.KeySkills);
+            return  status;
+            }
+
+
+        public int CheckPreferences(JobSeekerDTO preferences)
+            {
+            if (AreFieldsEmpty(preferences))
+                {
+                // Handle the case where all fields are empty
+                Console.WriteLine("All fields are empty.");
+                // recommend all jobs
+                return 1;
+                }
+            return 0;
+          
+            }
+
+
+        }
+
+
+
+    public class Ranking:Job
+        {
+        public int rank { get; set; }
+
+        }
 
     public class JobsRepo : IJobsRepo
     {
@@ -24,6 +64,40 @@ namespace CSAPI.Models
         {
             _context = context;
         }
+        
+        public bool MatchingSkills(Job jobrow, JobSeekerDTO jspreferences)
+            {
+            string[] cs = jspreferences.KeySkills.Trim().ToLower().Split(',');
+
+
+            string[] ns = jobrow.RequiredSkills.Trim().ToLower().Split(',');
+
+            bool hasMatchingSkill = ns.Any(skill => cs.Contains(skill));
+            return hasMatchingSkill;
+            }
+
+        public bool MatchingSpecialisation(Job jobrow, JobSeekerDTO jspreferences)
+            {
+            string[] cs = jspreferences.PreferredSpecialization.Trim().ToLower().Split(',');
+
+
+            string[] ns = jobrow.Specialization.Trim().ToLower().Split(',');
+
+            bool hasMatchingSpecialisation = ns.Any(skill => cs.Contains(skill));
+            return hasMatchingSpecialisation;
+            }
+
+        public bool MatchingPrefferedIndustry(Job jobrow, JobSeekerDTO jspreferences)
+            {
+            string[] cs = jspreferences.PreferredIndustry.Trim().ToLower().Split(',');
+
+
+            string[] ns = jobrow.IndustryType.Trim().ToLower().Split(',');
+
+            bool hasMatchingPrefferedIndustry = ns.Any(skill => cs.Contains(skill));
+            return hasMatchingPrefferedIndustry;
+            }
+
 
         public async Task<List<Job>> GetAllAsync()
         {
@@ -111,5 +185,98 @@ namespace CSAPI.Models
         {
             return await _context.Employers.AnyAsync(e => e.EmployerID == employerId);
         }
-    }
+
+
+
+        public async Task<List<Ranking>> GetJobs(int usrid)
+            {
+
+            var jspreferences = await _context.JobSeekers
+                .Where(a => a.UserID == usrid)
+            .Select(a => new JobSeekerDTO
+            {
+                PreferredIndustry = a.PreferredIndustry,
+                PreferredSpecialization = a.PreferredSpecialization,
+                 KeySkills = a.KeySkills
+            })
+        .FirstOrDefaultAsync();
+
+            int value_recommend = jspreferences.CheckPreferences(jspreferences);
+            List<Job> Alljobs = await GetAllAsync();
+          
+                    List<Ranking> newjobsformat = new List<Ranking>();
+                    int rankgiven;
+                    foreach (var jobrow in Alljobs)
+                        {
+                        rankgiven = 0;
+
+                        // first priority Key skills exist with matching 
+
+                        if (  (!string.IsNullOrWhiteSpace(jspreferences.KeySkills)) && MatchingSkills(jobrow, jspreferences))
+                            {
+                            rankgiven += 3;
+                            // then second priority is specialisation
+                            if (!string.IsNullOrWhiteSpace(jspreferences.PreferredSpecialization) && MatchingSpecialisation(jobrow, jspreferences))
+                                {
+                                rankgiven += 2;
+                                }
+
+                            if (!string.IsNullOrWhiteSpace(jspreferences.PreferredIndustry) && MatchingPrefferedIndustry(jobrow,jspreferences))
+                                {
+                                rankgiven += 1;
+                                }
+                            }
+
+                        // case when first priority is absent 
+                        if (!string.IsNullOrWhiteSpace(jspreferences.PreferredSpecialization) && MatchingSpecialisation(jobrow, jspreferences))
+                            {
+                            rankgiven += 2;
+                            if (!string.IsNullOrWhiteSpace(jspreferences.PreferredIndustry) && MatchingPrefferedIndustry(jobrow, jspreferences))
+                                {
+                                rankgiven += 1;
+                                }
+                            }
+                        // case when first second priority is absent
+                        if (!string.IsNullOrWhiteSpace(jspreferences.PreferredIndustry) && MatchingPrefferedIndustry(jobrow, jspreferences))
+                            {
+                            rankgiven += 1;
+                            }
+                          if (rankgiven > 0)
+                        {
+                        Ranking job1 = new Ranking
+                            {
+                            JobID = jobrow.JobID,
+                            EmployerID = jobrow.EmployerID,
+                            JobTitle = jobrow.JobTitle,
+                            JobDescription = jobrow.JobDescription,
+                            IndustryType = jobrow.IndustryType,
+                            Specialization = jobrow.Specialization,
+                            RequiredSkills = jobrow.RequiredSkills,
+                            ExperienceLevel = jobrow.ExperienceLevel,
+                            Location = jobrow.Location,
+                            SalaryRange = jobrow.SalaryRange,
+                            PostedDate = jobrow.PostedDate,
+                            ApplicationDeadline = jobrow.ApplicationDeadline,
+                            JobType = jobrow.JobType,
+                            rank = rankgiven
+                            };
+
+                        newjobsformat.Add(job1);
+                        }
+
+                        }
+                    newjobsformat = newjobsformat.OrderByDescending(job => job.rank).ToList();
+                    return newjobsformat;
+
+                
+
+
+            }
+
+
+
+
+
+
+        }
 }

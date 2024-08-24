@@ -8,15 +8,15 @@ namespace CSAPI.Models
 {
     public interface IApplicationRepo
     {
-        Task<List<Application>> GetAllAsync();
-        Task<Application> FindByIdAsync(int id);
-        Task<bool> AddApplicationAsync(Application app);
-        Task<bool> UpdateApplicationAsync(int id, Application app);
+        Task<List<JobApplication>> GetAllAsync();
+        Task<JobApplication> FindByIdAsync(int id);
+        Task<bool> AddApplicationAsync(JobApplication app);
+        Task<bool> UpdateApplicationAsync(int id, JobApplication app);
         Task<bool> DeleteApplicationAsync(int id);
 
-        Task<IEnumerable<Application>> FindByJobSeekerIdAsync(int jobSeekerId);
+        Task<IEnumerable<JobApplication>> FindByJobSeekerIdAsync(int jobSeekerId);
 
-        Task<bool> UpdateJobSeekerIdAsync(int id, IEnumerable<Application> Apj);
+        Task<bool> UpdateJobSeekerIdAsync(int id, IEnumerable<JobApplication> Apj);
     }
 
     public class ApplicationRepo : IApplicationRepo
@@ -29,10 +29,10 @@ namespace CSAPI.Models
         }
 
         // c2 in Calling IsJobIdExistsAsync function
-        public async Task<bool> AddApplicationAsync(Application app)
+        public async Task<bool> AddApplicationAsync(JobApplication app)
         {
             
-            // Check if the Application ID exists before adding the Application
+            // Check if the JobApplication ID exists before adding the JobApplication
             if (!await IsJobIdExistsAsync(app.JobID,app.JobSeekerID))
                 return false;
 
@@ -64,7 +64,7 @@ namespace CSAPI.Models
 
         }
 
-        public async Task<Application> FindByIdAsync(int id)
+        public async Task<JobApplication> FindByIdAsync(int id)
         {
 
             
@@ -73,7 +73,7 @@ namespace CSAPI.Models
         }
 
         // change 4 
-        public async Task<IEnumerable<Application>> FindByJobSeekerIdAsync(int usrid)
+        public async Task<IEnumerable<JobApplication>> FindByJobSeekerIdAsync(int usrid)
             {
 
             var jobSeekerId = await _context.JobSeekers
@@ -88,12 +88,12 @@ namespace CSAPI.Models
 
 
 
-        public async Task<List<Application>> GetAllAsync()
+        public async Task<List<JobApplication>> GetAllAsync()
         {
             return await _context.Applications.ToListAsync();
         }
 
-        public async Task<bool> UpdateApplicationAsync(int id, Application app)
+        public async Task<bool> UpdateApplicationAsync(int id, JobApplication app)
         {
             var updatedApp = await _context.Applications.FindAsync(id);
             if (updatedApp == null)
@@ -125,7 +125,7 @@ namespace CSAPI.Models
 
 
 
-        public async Task<bool> UpdateJobSeekerIdAsync(int usrid, IEnumerable<Application> apps)
+        public async Task<bool> UpdateJobSeekerIdAsync(int usrid, IEnumerable<JobApplication> apps)
             {
             // Check if any rows exist with the given jobSeekerId
 
@@ -144,7 +144,7 @@ namespace CSAPI.Models
                 }
 
             // conversion of FrontEnd values to List
-            List<Application> newData=apps.ToList();
+            List<JobApplication> newData=apps.ToList();
  
             foreach (var applicationRow in existingApplications)
                 {
