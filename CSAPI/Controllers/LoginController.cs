@@ -7,6 +7,7 @@ using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 
 
+
 namespace CSAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -32,13 +33,16 @@ namespace CSAPI.Controllers
 
             if (_login.ValidateUser(user.UserName, user.Password, user.Role,out int uid))
             {
+
                 //addednow
                 var cookieOptions = new CookieOptions
                 {
+
                     Expires = DateTimeOffset.UtcNow.AddMinutes(30), // Set cookie expiration time
                     HttpOnly = true, // Make the cookie inaccessible to JavaScript
                     Secure = true, // Only send cookie over HTTPS
                     SameSite = SameSiteMode.Strict // Enforce SameSite policy
+
                 };
 
                 // Add the UserId cookie
@@ -99,14 +103,12 @@ namespace CSAPI.Controllers
 
             uid = 0;
 
-            if (user != null && user.Password == pwd && user.Role == role)
+            if (user != null && BCrypt.Net.BCrypt.Verify(pwd, user.Password) && user.Role == role)
             {
                 uid = user.UserID;
                 return true;
             }
-
             return false;
         }
     }
-    
 }

@@ -1,6 +1,7 @@
 ﻿using CSAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace CSAPI.Areas.EmployerArea.Models
 {
@@ -11,6 +12,9 @@ namespace CSAPI.Areas.EmployerArea.Models
         public Task<IQueryable<JobApplication>> GetMyApplications(int empid);
         public Task<JobApplication> GetApplication(int appid);
         public Task<IQueryable<JobApplication>> GetApplicationsOfJob(int jobid);
+        public Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid);
+        public Task<List<JobSeeker>> GetRecommendationByIndustry(int jobid);
+        public Task<List<JobSeeker>> GetRecommendationBySpecialization(int jobid);
     }
 
     public class EmployerAreaRepo : IEmployerAreaRepo
@@ -70,5 +74,90 @@ namespace CSAPI.Areas.EmployerArea.Models
             return applications;
         }
 
+        public async Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid)
+        {
+            List<Tuple<JobSeeker,int>> recommendedJobSeeker = new List<Tuple<JobSeeker, int>>();
+            Tuple<JobSeeker, int> recommendedrow;
+            List<JobSeeker> jobSeekerList;
+
+            var jobSkills = from job in _context.Jobs
+                            where job.JobID == jobid
+                            select job.RequiredSkills;
+
+            List<string> skills =  jobSkills.ToList();
+
+            var jslist = _context.JobSeekers.ToList();
+            //var List = from js in _context.JobSeekers
+            //           select js;
+
+            var SkillArray = new string[jslist.Count];
+            foreach (JobSeeker jobseeker in jslist)
+            {
+                bool condition = false;
+                int noOfSkills = 0;
+               
+                //var Skill = jobseeker.KeySkills;
+                SkillArray.Append(jobseeker.KeySkills);
+
+                //List<string> JobSeekerSkills = await Task.FromResult(Skill.ToList());
+                List<string> JobSeekerSkills = SkillArray.ToList();
+
+                foreach (var i in JobSeekerSkills)
+                {
+                    noOfSkills = 0;
+                    foreach (var j in skills)
+                    {
+                        if (i == j)
+                            noOfSkills++;
+                        condition = true;
+                    }
+                    if (condition)
+                    {
+                        recommendedrow = new Tuple<JobSeeker, int>(jobseeker, noOfSkills);
+                        recommendedJobSeeker.Add(recommendedrow);
+                    }
+                }
+            }
+            recommendedJobSeeker.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+            return await Task.FromResult(recommendedJobSeeker);
+        }
+
+        public async Task<List<JobSeeker>> GetRecommendationByIndustry(int jobid)
+        {
+            List<JobSeeker> recommendedJobSeeker = new List<JobSeeker>();
+
+            var Industry = from job in _context.Jobs
+                            where job.JobID == jobid
+                            select job.IndustryType;
+            string jobInd = Industry.ToString();
+
+            foreach (JobSeeker jobseeker in _context.JobSeekers)
+            {
+                if (jobInd == jobseeker.PreferredIndustry)
+                    recommendedJobSeeker.Add(jobseeker);                
+            }
+            return await Task.FromResult(recommendedJobSeeker);
+        }
+
+        public async Task<List<JobSeeker>> GetRecommendationBySpecialization(int jobid)
+        {
+            List<JobSeeker> recommendedJobSeeker = new List<JobSeeker>();
+
+            var Specialization = from job in _context.Jobs
+                                 where job.JobID == jobid
+                                 select job.Specialization;
+            string jobSpecial = Specialization.ToString();
+
+            foreach (JobSeeker jobseeker in _context.JobSeekers)
+            { 
+                if (jobSpecial == jobseeker.PreferredSpecialization)
+                    recommendedJobSeeker.Add(jobseeker);
+            }
+            return await Task.FromResult(recommendedJobSeeker);
+        }
     }
+
+   
 }
+  
+

@@ -96,14 +96,14 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         {
             var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             int Empid = _eRepo.GetEmpID(userIdCookie);
-            return await _eRepo.GetApplicationsOfJob(id);
-
-            //Job job = await _jobsRepo.FindByIdAsync(jobid);
-            //if (job.EmployerID == Empid)
-            //{
-            //    return await _eRepo.GetApplicationsOfJob(jobid);
-            //}
-
+            var job = await _jobsRepo.FindByIdAsync(id);
+            if (job != null && job.EmployerID == Empid)
+            {
+                return await _eRepo.GetApplicationsOfJob(id);
+            }
+            else
+                return null;
+            
         }
 
         //JobTable-----------------------------------------------------------------------------------------------------------------------
@@ -217,152 +217,70 @@ namespace CSAPI.Areas.EmployerArea.Controllers
 
             return await user;
         }
-        //[Route("api/[controller]")]
-        //[ApiController]
-        //[AllowAnonymous]
-        //public class EmployerController : ControllerBase
-        //{
-        //    IEmployerRepo _repo;
-        //    IApplicationRepo _applicationRepo;
-        //    IJobsRepo _jobsRepo;
-        //    IJobSeekerRepo _jobSeekerRepo;
+       
+        //Reccomendation------------------------------------------------------------------------------------------------------------
 
-        //    public EmployerController(IEmployerRepo repo, IApplicationRepo applicationRepo, IJobsRepo jobsRepo, IJobSeekerRepo jobSeekerRepo)
-        //    {
-        //        _repo = repo;
-        //        _applicationRepo = applicationRepo;
-        //        _jobsRepo = jobsRepo;
-        //        _jobSeekerRepo = jobSeekerRepo;
-        //    }
+        [HttpGet("RecommendationForEachJob")]
+        public async Task<List<JobSeeker>> GetRecommendations(int jobid)
+        {
+            List<JobSeeker> recommendedList = new List<JobSeeker>();
+            Tuple<JobSeeker, int> recommendedrow;
+            List<Tuple<JobSeeker, int>> recommendedListCondition = new List<Tuple<JobSeeker, int>>();
+            List<JobSeeker> IndustryRec = new List<JobSeeker>();
+            List<JobSeeker> SpecialRec = new List<JobSeeker>();
+            List<JobSeeker> SkillRec = new List<JobSeeker>();
+            List<Tuple<JobSeeker, int>> PrefSkillRec = new List<Tuple<JobSeeker, int>>();
+            int pref = 0;
 
-        //    // GET: api/Employers
-        //    [HttpGet]
-        //    public async Task<ActionResult<IEnumerable<Employer>>> ShowAll()
-        //    {
-        //        var employers = await _repo.GetAllAsync();
-        //        return Ok(employers);
-        //    }
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            int Empid = _eRepo.GetEmpID(userIdCookie);
 
-        //    // GET: api/Employers/5
-        //    [HttpGet("{id}")]
-        //    public async Task<ActionResult<Employer>> FindEmployer(int id)
-        //    {
-        //        var employer = await _repo.FindByIdAsync(id);
-        //        if (employer == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        return Ok(employer);
-        //    }
+            var job = await _jobsRepo.FindByIdAsync(jobid);
+            if (job != null && job.EmployerID == Empid)
+            {
+                IndustryRec = await _eRepo.GetRecommendationByIndustry(jobid);
+                SpecialRec = await _eRepo.GetRecommendationBySpecialization(jobid);
+                PrefSkillRec = await _eRepo.GetRecommendationBySkills(jobid);
+                SkillRec = PrefSkillRec.Select(x => x.Item1).ToList();
 
-        //    // POST: api/Employers
-        //    [HttpPost]
-        //    public async Task<ActionResult> Post([FromBody] Employer emp)
-        //    {
-        //        var success = await _repo.AddEmployerAsync(emp);
-        //        if (!success)
-        //        {
-        //            return BadRequest("Invalid data or user does not exist.");
-        //        }
-        //        return StatusCode((int)HttpStatusCode.Created);
-        //    }
+                foreach (var i in SkillRec)
+                {
+                    pref = 0;
+                    if (IndustryRec.Contains(i) && SpecialRec.Contains(i))
+                        pref = 1;
+                    else if (IndustryRec.Contains(i) || SpecialRec.Contains(i))
+                        pref = 2;
+                    else pref = 3;
+                    recommendedrow = new Tuple<JobSeeker, int>(i, pref);
+                    recommendedListCondition.Add(recommendedrow);
+                }
+                foreach (var i in SpecialRec)
+                {
+                    if (IndustryRec.Contains(i))
+                        pref = 2;
+                    else pref = 3;
+                    if(!SkillRec.Contains(i))
+                    {
+                        recommendedrow = new Tuple<JobSeeker, int>(i, pref);
+                        recommendedListCondition.Add(recommendedrow);
+                    }
+                }
+                foreach (var i in IndustryRec)
+                {
+                    if(!SkillRec.Contains(i) && !SpecialRec.Contains(i))
+                    {
+                        pref = 3;
+                        recommendedrow = new Tuple<JobSeeker, int>(i, pref);
+                        recommendedListCondition.Add(recommendedrow);
+                    }
+                }
 
-        //    // PUT: api/Employers/5
-        //    [HttpPut("{id}")]
-        //    public async Task<ActionResult> Put(int id, [FromBody] Employer emp)
-        //    {
-        //        var success = await _repo.UpdateEmployerAsync(id, emp);
-        //        if (!success)
-        //        {
-        //            return NotFound("Employer not found or user does not exist.");
-        //        }
-        //        return NoContent();
-        //    }
+                recommendedList = recommendedListCondition.Select(x => x.Item1).ToList();
+                return await Task.FromResult(recommendedList);
+            }
+            else
+                return null;
+        }
 
-        //    // DELETE: api/Employers/5
-        //    [HttpDelete("{id}")]
-        //    public async Task<ActionResult> Delete(int id)
-        //    {
-        //        var success = await _repo.DeleteEmployerAsync(id);
-        //        if (!success)
-        //        {
-        //            return NotFound();
-        //        }
-        //        return NoContent();
-        //    }
-
-        //    // GET: api/Employer/Applications
-        //    [HttpGet("AllApplications")]
-        //    public async Task<ActionResult<IEnumerable<Application>>> ShowAllApplications()
-        //    {
-        //        var applications = await _applicationRepo.GetAllAsync();
-        //        return Ok(applications);
-        //    }
-
-        //    // GET: api/Employer/Applications/5
-        //    [HttpGet("ApplicationDetails/{id}")]
-        //    public async Task<ActionResult<Application>> GetApplication(int id)
-        //    {
-        //        var application = await _applicationRepo.FindByIdAsync(id);
-        //        if (application == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        return Ok(application);
-        //    }
-
-        //    // GET: api/Employer/Jobs
-        //    [HttpGet("AllJobs")]
-        //    public async Task<ActionResult<IEnumerable<Job>>> ShowAllJobs()
-        //    {
-        //        var jobs = await _jobsRepo.GetAllAsync();
-        //        return Ok(jobs);
-        //    }
-
-        //    // POST: api/Employer/Jobs
-        //    [HttpPost("AddJob")]
-        //    public async Task<ActionResult> PostJob([FromBody] Job job)
-        //    {
-        //        var success = await _jobsRepo.AddJobAsync(job);
-        //        if (!success)
-        //        {
-        //            return BadRequest("Invalid job data.");
-        //        }
-        //        return StatusCode((int)HttpStatusCode.Created);
-        //    }
-
-        //    // PUT: api/Employer/Jobs/5
-        //    [HttpPut("UpdateJob/{id}")]
-        //    public async Task<ActionResult> UpdateJob(int id, [FromBody] Job job)
-        //    {
-        //        var success = await _jobsRepo.UpdateJobAsync(id, job);
-        //        if (!success)
-        //        {
-        //            return NotFound("Job not found or data invalid.");
-        //        }
-        //        return NoContent();
-        //    }
-
-        //    // DELETE: api/Employer/Jobs/5
-        //    [HttpDelete("DeleteJob/{id}")]
-        //    public async Task<ActionResult> DeleteJob(int id)
-        //    {
-        //        var success = await _jobsRepo.DeleteJobAsync(id);
-        //        if (!success)
-        //        {
-        //            return NotFound();
-        //        }
-        //        return NoContent();
-        //    }
-
-        //    // GET: api/Employer/JobSeeker
-        //    [HttpGet("AllJobSeeker")]
-        //    public async Task<ActionResult<IEnumerable<Job>>> ShowAllJobSeeker()
-        //    {
-        //        var jobseeker = await _jobSeekerRepo.GetAllAsync();
-        //        return Ok(jobseeker);
-
-        //    }
-        //}
     }
 }

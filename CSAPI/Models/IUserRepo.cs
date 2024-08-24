@@ -14,6 +14,7 @@ namespace CSAPI.Models
         Task<bool> AddUserAsync(User user);
         Task<bool> UpdateUserAsync(int id, User user);
         Task<bool> DeleteUserAsync(int id);
+        Task<bool> UserExistsAsync(string username);
     }
 
     public class UserRepo : IUserRepo
@@ -79,6 +80,11 @@ namespace CSAPI.Models
         private async Task<bool> IsBranchOfficeExistsAsync(int? branchOfficeID)
         {
             return branchOfficeID.HasValue && await _context.BranchOffices.AnyAsync(b => b.BranchOfficeID == branchOfficeID.Value);
+        }
+
+        public Task<bool> UserExistsAsync(string username)
+        {
+            throw new NotImplementedException();
         }
     }
 }
