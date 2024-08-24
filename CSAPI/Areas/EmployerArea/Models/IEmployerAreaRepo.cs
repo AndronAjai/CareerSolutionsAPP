@@ -80,36 +80,39 @@ namespace CSAPI.Areas.EmployerArea.Models
             Tuple<JobSeeker, int> recommendedrow;
             List<JobSeeker> jobSeekerList;
 
-            var jobSkills = from job in _context.Jobs
-                            where job.JobID == jobid
-                            select job.RequiredSkills;
+            var jobrequired = from job in _context.Jobs
+                              where job.JobID == jobid
+                              select job;
+            Job jobfound = jobrequired.FirstOrDefault();
+            //List<string> skills =  jobSkills.ToList();
+            string[] JobSkill = jobfound.RequiredSkills.Split(",");
 
-            List<string> skills =  jobSkills.ToList();
-
-            var jslist = _context.JobSeekers.ToList();
+            jobSeekerList = _context.JobSeekers.ToList();
             //var List = from js in _context.JobSeekers
             //           select js;
 
-            var SkillArray = new string[jslist.Count];
-            foreach (JobSeeker jobseeker in jslist)
+            
+            foreach (JobSeeker jobseeker in jobSeekerList)
             {
                 bool condition = false;
                 int noOfSkills = 0;
                
                 //var Skill = jobseeker.KeySkills;
-                SkillArray.Append(jobseeker.KeySkills);
+                string[] Skill = jobseeker.KeySkills.Split(",");
 
                 //List<string> JobSeekerSkills = await Task.FromResult(Skill.ToList());
-                List<string> JobSeekerSkills = SkillArray.ToList();
+                List<string> JobSeekerSkills = Skill.ToList();
 
                 foreach (var i in JobSeekerSkills)
                 {
                     noOfSkills = 0;
-                    foreach (var j in skills)
+                    foreach (var j in JobSkill)
                     {
                         if (i == j)
+                        {
                             noOfSkills++;
-                        condition = true;
+                            condition = true;
+                        }
                     }
                     if (condition)
                     {
