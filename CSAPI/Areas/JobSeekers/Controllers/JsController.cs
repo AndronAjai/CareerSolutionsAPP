@@ -34,17 +34,17 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             return Ok(jobSeeker);
             }
 
-        // POST: api/JobSeeker
-        [HttpPost("Addjsprofile")]
-        public async Task<ActionResult> Post([FromBody] JobSeeker js)
-            {
-            var success = await _AjsRepo.AddJobSeekerAsync(js);
-            if (!success)
-                {
-                return BadRequest("Invalid data or user does not exist.");
-                }
-            return StatusCode((int)HttpStatusCode.Created);
-            }
+        //// POST: api/JobSeeker
+        //[HttpPost("Addjsprofile")]
+        //public async Task<ActionResult> Post([FromBody] JobSeeker js)
+        //    {
+        //    var success = await _AjsRepo.AddJobSeekerAsync(js);
+        //    if (!success)
+        //        {
+        //        return BadRequest("Invalid data or user does not exist.");
+        //        }
+        //    return StatusCode((int)HttpStatusCode.Created);
+        //    }
 
         // PUT: api/JobSeeker/5
         [HttpPut("editjsuserprofile")]
