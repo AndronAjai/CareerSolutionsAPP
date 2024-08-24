@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Offices</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Branch Offices</h2>
+        <a href="/Admin/AdminMVC/AddBranch" class="btn add-btn">Add New Branch</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Phone Number</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="branchTableBody">
+                <!-- Branches will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Fetch all branches
+            fetch('/api/admin/AllBranches', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var tableBody = document.getElementById('branchTableBody');
+                data.forEach(branch => {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${branch.branchOfficeID}</td>
+                        <td>${branch.branchName}</td>
+                        <td>${branch.branchAddress}</td>
+                        <td>${branch.phoneNumber}</td>
+                        <td>
+                            <a href="/Admin/AdminMVC/BranchDetails/${branch.branchOfficeID}" class="btn">Details</a>
+                            <a href="/Admin/AdminMVC/UpdateBranch/${branch.branchOfficeID}" class="btn">Update</a>
+                            <a href="/Admin/AdminMVC/DeleteBranch/${branch.branchOfficeID}" class="btn">Delete</a>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

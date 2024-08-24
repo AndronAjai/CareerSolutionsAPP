@@ -91,6 +91,8 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+app.UseStaticFiles();   
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -117,7 +119,7 @@ app.UseEndpoints(endpoints =>
 
     endpoints.MapControllerRoute(
       name: "default",
-      pattern: "{controller=Account}/{action=Index}/{id?}"
+      pattern: "{controller=LoginView}/{action=Index}/{id?}"
     );
 
     //endpoints.MapControllerRoute(

@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Office Details</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Branch Office Details</h2>
+        <div class="detail-item">
+            <span>ID:</span> <span id="branchId"></span>
+        </div>
+        <div class="detail-item">
+            <span>Name:</span> <span id="branchName"></span>
+        </div>
+        <div class="detail-item">
+            <span>Address:</span> <span id="branchAddress"></span>
+        </div>
+        <div class="detail-item">
+            <span>Phone Number:</span> <span id="branchPhoneNumber"></span>
+        </div>
+        <a href="/Admin/AdminMVC/UpdateBranch/@ViewBag.BranchId" class="btn">Update</a>
+        <a href="/Admin/AdminMVC/DeleteBranch/@ViewBag.BranchId" class="btn">Delete</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var branchId = "@ViewBag.BranchId";
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Fetch branch details
+            fetch(`/api/admin/BranchDetails/${branchId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('branchId').textContent = data.branchOfficeID;
+                document.getElementById('branchName').textContent = data.branchName;
+                document.getElementById('branchAddress').textContent = data.branchAddress;
+                document.getElementById('branchPhoneNumber').textContent = data.phoneNumber;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

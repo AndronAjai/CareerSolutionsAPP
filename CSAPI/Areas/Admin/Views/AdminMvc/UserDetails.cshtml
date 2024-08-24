@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>User Details</h2>
+        <div id="userDetails"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var token = localStorage.getItem('token');
+            var userId = '@ViewBag.UserId';
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Fetch user details
+            fetch(`/api/admin/UserDetails/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(user => {
+                var details = `
+                    <p><strong>ID:</strong> ${user.userID}</p>
+                    <p><strong>Username:</strong> ${user.username}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Role:</strong> ${user.role}</p>
+                    <p><strong>Registration Date:</strong> ${new Date(user.registrationDate).toLocaleDateString()}</p>
+                    <p><strong>Branch Office ID:</strong> ${user.branchOfficeID}</p>
+                    <a href="/Admin/AdminMVC/Users" class="btn">Back to Users</a>
+                `;
+                document.getElementById('userDetails').innerHTML = details;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
