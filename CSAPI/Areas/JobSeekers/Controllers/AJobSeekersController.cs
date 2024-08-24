@@ -1,7 +1,6 @@
 ﻿
 using CSAPI.Areas.JobSeekers.Models;
 using CSAPI.Models;
-using DbCreationApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

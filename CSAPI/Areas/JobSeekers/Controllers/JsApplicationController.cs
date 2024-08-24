@@ -1,5 +1,4 @@
 ﻿using CSAPI.Models;
-using DbCreationApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static System.Net.Mime.MediaTypeNames;

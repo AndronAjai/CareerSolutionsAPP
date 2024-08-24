@@ -37,7 +37,7 @@ namespace CSAPI.Controllers
                 //addednow
                 var cookieOptions = new CookieOptions
                 {
->
+
                     Expires = DateTimeOffset.UtcNow.AddMinutes(30), // Set cookie expiration time
                     HttpOnly = true, // Make the cookie inaccessible to JavaScript
                     Secure = true, // Only send cookie over HTTPS
