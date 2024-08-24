@@ -30,6 +30,7 @@ namespace CSAPI.Controllers
                 return BadRequest("Invalid user registration request!");
             }
             
+
             // Hashing before storing
             User.Password = BCrypt.Net.BCrypt.HashPassword(User.Password);
             await _repo.AddUserAsync(User);
@@ -39,6 +40,29 @@ namespace CSAPI.Controllers
             {
                 return BadRequest("Invalid user registration request!");
             }
+
+            var userId = us.UserID;
+
+            // Store the UserId in a cookie
+            Response.Cookies.Append("UId", userId.ToString(), new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,   
+                SameSite = SameSiteMode.Strict 
+            });
+
+            return StatusCode((int)HttpStatusCode.Created);
+        }
+
+        // GET: api/User
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public async Task<ActionResult<IEnumerable<User>>> ShowAll()
+        //{
+        //    var users = await _repo.GetAllAsync();
+        //    return Ok(users);
+        //}
+
 
             // Check if the user already exists in the database
             //if (await _repo.UserExistsAsync(newUser.Username))
