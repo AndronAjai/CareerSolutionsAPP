@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobs</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Jobs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Job Title</th>
+                    <th>Industry Type</th>
+                    <th>Specialization</th>
+                    <th>Location</th>
+                    <th>Posted Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="jobTableBody">
+                <!-- Jobs will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Fetch all jobs
+            fetch('/api/admin/AllJobs', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var tableBody = document.getElementById('jobTableBody');
+                data.forEach(job => {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${job.jobID}</td>
+                        <td>${job.jobTitle}</td>
+                        <td>${job.industryType}</td>
+                        <td>${job.specialization}</td>
+                        <td>${job.location}</td>
+                        <td>${job.postedDate}</td>
+                        <td>
+                            <a href="/Admin/AdminMVC/JobDetails/${job.jobID}" class="btn">Details</a>
+                            <a href="/Admin/AdminMVC/JobDelete/${job.jobID}" class="btn">Delete</a>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

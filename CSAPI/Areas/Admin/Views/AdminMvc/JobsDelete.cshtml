@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Job</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Assuming styles.css is your common stylesheet -->
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Job</h2>
+        <p>Are you sure you want to delete this job? <strong id="jobTitle"></strong></p>
+        <button id="confirmDelete" class="btn">Yes, Delete</button>
+        <a href="/Admin/AdminMVC/Jobs" class="btn">Cancel</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var jobId = "@ViewBag.JobId";
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch(`/api/admin/JobDetails/${jobId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(job => {
+                document.getElementById('jobTitle').textContent = job.jobTitle;
+            })
+            .catch(error => console.error('Error:', error));
+
+            document.getElementById('confirmDelete').addEventListener('click', function() {
+                fetch(`/api/admin/DeleteJob/${jobId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/Admin/AdminMVC/Jobs';
+                    } else {
+                        console.error('Failed to delete job');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    </script>
+</body>
+</html>

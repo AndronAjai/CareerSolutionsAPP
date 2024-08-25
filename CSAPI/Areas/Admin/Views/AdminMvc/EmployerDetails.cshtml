@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employer Details</title>
-    <link rel="stylesheet" href="/css/styles.css"> <!-- Assuming styles.css is your common stylesheet -->
+    <title>Job Seeker Details</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <h2>Employer Details</h2>
-        <div id="employerDetails">
-            <!-- Employer details will be populated here -->
+        <h2>Job Seeker Details</h2>
+        <div id="jobSeekerDetails">
+            <!-- Job Seeker details will be populated here -->
         </div>
-        <a href="/Admin/AdminMVC/Employers" class="btn">Back to List</a>
+        <a href="/Admin/AdminMVC/JobSeekers" class="btn">Back to List</a>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var employerId = "@ViewBag.EmployerId";
+            var jobSeekerId = "@ViewBag.JobSeekerId";
             var token = localStorage.getItem('token');
 
             if (!token) {
@@ -26,7 +26,7 @@
                 return;
             }
 
-            fetch(`/api/admin/EmployerDetails/${employerId}`, {
+            fetch(`/api/admin/GetJobSeeker/${jobSeekerId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -34,18 +34,24 @@
                 }
             })
             .then(response => response.json())
-            .then(employer => {
+            .then(jobSeeker => {
                 var details = `
-                    <p><strong>ID:</strong> ${employer.employerID}</p>
-                    <p><strong>Company Name:</strong> ${employer.companyName}</p>
-                    <p><strong>Contact Person:</strong> ${employer.contactPerson}</p>
-                    <p><strong>Phone Number:</strong> ${employer.phoneNumber}</p>
-                    <p><strong>Address:</strong> ${employer.companyAddress}</p>
-                    <p><strong>Industry Type:</strong> ${employer.industryType}</p>
-                    <p><strong>Website:</strong> ${employer.websiteURL}</p>
-                    <p><strong>User ID:</strong> ${employer.userID}</p>
+                    <p><strong>ID:</strong> ${jobSeeker.jobSeekerID}</p>
+                    <p><strong>First Name:</strong> ${jobSeeker.firstName}</p>
+                    <p><strong>Last Name:</strong> ${jobSeeker.lastName}</p>
+                    <p><strong>Phone Number:</strong> ${jobSeeker.phoneNumber}</p>
+                    <p><strong>Address:</strong> ${jobSeeker.address}</p>
+                    <p><strong>Profile Summary:</strong> ${jobSeeker.profileSummary}</p>
+                    <p><strong>Key Skills:</strong> ${jobSeeker.keySkills}</p>
+                    <p><strong>Expert Field:</strong> ${jobSeeker.expertField}</p>
+                    <p><strong>Resume:</strong> <a href="${jobSeeker.resumePath}" target="_blank">Download Resume</a></p>
+                    <p><strong>Academic Details:</strong> ${jobSeeker.academicDetails}</p>
+                    <p><strong>Professional Details:</strong> ${jobSeeker.professionalDetails}</p>
+                    <p><strong>Preferred Industry:</strong> ${jobSeeker.preferredIndustry}</p>
+                    <p><strong>Preferred Specialization:</strong> ${jobSeeker.preferredSpecialization}</p>
+                    <p><strong>User ID:</strong> ${jobSeeker.userID}</p>
                 `;
-                document.getElementById('employerDetails').innerHTML = details;
+                document.getElementById('jobSeekerDetails').innerHTML = details;
             })
             .catch(error => console.error('Error:', error));
         });

@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seeker Details</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Job Seeker Details</h2>
+        <div id="jobSeekerDetails">
+            <!-- Job Seeker details will be populated here -->
+        </div>
+        @Html.ActionLink("Back to Job Seekers", "JobSeekers");
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var token = localStorage.getItem('token');
+            var jobSeekerID = window.location.pathname.split('/').pop();
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch(`/api/admin/GetJobSeeker/${jobSeekerID}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var detailsDiv = document.getElementById('jobSeekerDetails');
+                detailsDiv.innerHTML = `
+                    <p><strong>ID:</strong> ${data.jobSeekerID}</p>
+                    <p><strong>First Name:</strong> ${data.firstName}</p>
+                    <p><strong>Last Name:</strong> ${data.lastName}</p>
+                    <p><strong>Phone Number:</strong> ${data.phoneNumber || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${data.address || 'N/A'}</p>
+                    <p><strong>Profile Summary:</strong> ${data.profileSummary || 'N/A'}</p>
+                    <p><strong>Key Skills:</strong> ${data.keySkills}</p>
+                    <p><strong>Expert Field:</strong> ${data.expertField}</p>
+                    <p><strong>Resume Path:</strong> <a href="${data.resumePath}" target="_blank">View Resume</a></p>
+                    <p><strong>Academic Details:</strong> ${data.academicDetails || 'N/A'}</p>
+                    <p><strong>Professional Details:</strong> ${data.professionalDetails || 'N/A'}</p>
+                    <p><strong>Preferred Industry:</strong> ${data.preferredIndustry || 'N/A'}</p>
+                    <p><strong>Preferred Specialization:</strong> ${data.preferredSpecialization || 'N/A'}</p>`;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

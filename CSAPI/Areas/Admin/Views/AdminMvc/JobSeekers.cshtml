@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seekers</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Job Seekers</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Profile Summary</th>
+                    <th>Key Skills</th>
+                    <th>Expert Field</th>
+                    <th>Resume</th>
+                    <th>Preferred Industry</th>
+                    <th>Preferred Specialization</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="jobSeekerTableBody">
+                <!-- Job Seekers will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch('/api/admin/AllJobSeekers', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var tableBody = document.getElementById('jobSeekerTableBody');
+                data.forEach(jobSeeker => {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${jobSeeker.jobSeekerID}</td>
+                        <td>${jobSeeker.firstName}</td>
+                        <td>${jobSeeker.lastName}</td>
+                        <td>${jobSeeker.phoneNumber}</td>
+                        <td>${jobSeeker.address}</td>
+                        <td>${jobSeeker.profileSummary}</td>
+                        <td>${jobSeeker.keySkills}</td>
+                        <td>${jobSeeker.expertField}</td>
+                        <td><a href="${jobSeeker.resumePath}" target="_blank">View Resume</a></td>
+                        <td>${jobSeeker.preferredIndustry}</td>
+                        <td>${jobSeeker.preferredSpecialization}</td>
+                        <td>
+                            <a href="/Admin/AdminMVC/JobSeekerDetails/${jobSeeker.jobSeekerID}" class="btn">Details</a>
+                            <a href="/Admin/AdminMVC/JobSeekerDelete/${jobSeeker.jobSeekerID}" class="btn">Delete</a>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

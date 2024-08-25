@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Job Seeker</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Assuming styles.css is your common stylesheet -->
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Job Seeker</h2>
+        <p>Are you sure you want to delete this job seeker? <strong id="jobSeekerName"></strong></p>
+        <button id="confirmDelete" class="btn">Yes, Delete</button>
+        <a href="/Admin/AdminMVC/JobSeekers" class="btn">Cancel</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var jobSeekerId = "@ViewBag.JobSeekerId";
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch(`/api/admin/JobSeekerDetails/${jobSeekerId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(jobSeeker => {
+                document.getElementById('jobSeekerName').textContent = `${jobSeeker.firstName} ${jobSeeker.lastName}`;
+            })
+            .catch(error => console.error('Error:', error));
+
+            document.getElementById('confirmDelete').addEventListener('click', function() {
+                fetch(`/api/admin/DeleteJobSeeker/${jobSeekerId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/Admin/AdminMVC/JobSeekers';
+                    } else {
+                        console.error('Failed to delete job seeker');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    </script>
+</body>
+</html>
