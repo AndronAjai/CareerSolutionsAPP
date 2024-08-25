@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Application</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Assuming styles.css is your common stylesheet -->
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Application</h2>
+        <p>Are you sure you want to delete this application? <strong id="applicationId"></strong></p>
+        <button id="confirmDelete" class="btn">Yes, Delete</button>
+        <a href="/Admin/AdminMVC/Applications" class="btn">Cancel</a>
+    </div>
+            @Html.ActionLink("Back", "Applications");
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var applicationId = "@ViewBag.ApplicationId";
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch(`/api/admin/ApplicationDetails/${applicationId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(application => {
+                document.getElementById('applicationId').textContent = application.applicationID;
+            })
+            .catch(error => console.error('Error:', error));
+
+            document.getElementById('confirmDelete').addEventListener('click', function() {
+                fetch(`/api/admin/DeleteApplication/${applicationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/Admin/AdminMVC/Applications';
+                    } else {
+                        console.error('Failed to delete application');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    </script>
+</body>
+</html>

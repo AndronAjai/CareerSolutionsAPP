@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applications</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Applications</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Job ID</th>
+                    <th>JobSeeker ID</th>
+                    <th>Application Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="applicationTableBody">
+                <!-- Applications will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Fetch all applications
+            fetch('/api/admin/AllApplications', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                var tableBody = document.getElementById('applicationTableBody');
+                data.forEach(application => {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${application.applicationID}</td>
+                        <td>${application.jobID}</td>
+                        <td>${application.jobSeekerID}</td>
+                        <td>${application.applicationDate}</td>
+                        <td>${application.status}</td>
+                        <td>
+                            <a href="/Admin/AdminMVC/ApplicationDetails/${application.applicationID}" class="btn">Details</a>
+                            <a href="/Admin/AdminMVC/ApplicationDelete/${application.applicationID}" class="btn">Delete</a>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

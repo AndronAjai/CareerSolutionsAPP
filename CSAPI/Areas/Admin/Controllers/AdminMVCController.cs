@@ -87,6 +87,12 @@ namespace CSAPI.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult JobSeekerDelete(int id)
+        {
+            ViewBag.JobSeekerId = id;
+            return View();
+        }
+
         // Job Views
         public IActionResult Jobs()
         {
@@ -99,6 +105,12 @@ namespace CSAPI.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult JobsDelete(int id)
+        {
+            ViewBag.JobsId = id;
+            return View();
+        }
+
         // Application Views
         public IActionResult Applications()
         {
@@ -106,6 +118,11 @@ namespace CSAPI.Areas.Admin.Controllers
         }
 
         public IActionResult ApplicationDetails(int id)
+        {
+            ViewBag.ApplicationId = id;
+            return View();
+        }
+        public IActionResult ApplicationsDelete(int id)
         {
             ViewBag.ApplicationId = id;
             return View();

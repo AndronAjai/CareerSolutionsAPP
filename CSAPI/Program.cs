@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "V1",
         Title = "WebAPI",
-        Description = "Product WebAPI"
+        Description = "Career Solutions WebAPI"
     });
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -92,10 +92,10 @@ app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
+{ 
     app.UseSwagger();
     app.UseSwaggerUI(options => {
-        options.SwaggerEndpoint("/swagger/V1/swagger.json", "Product WebAPI");
+        options.SwaggerEndpoint("/swagger/V1/swagger.json", "Career Solutions WebAPI");
     });
 }
 

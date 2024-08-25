@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Assuming styles.css is your common stylesheet -->
+</head>
+<body>
+    <div class="container">
+        <h2>Application Details</h2>
+        <div id="applicationDetails">
+            <!-- Application details will be populated here -->
+        </div>
+        <a href="/Admin/AdminMVC/Applications" class="btn">Back to List</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var applicationId = "@ViewBag.ApplicationId";
+            var token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('No token found. Please log in again.');
+                window.location.href = '/login';
+                return;
+            }
+
+            fetch(`/api/admin/ApplicationDetails/${applicationId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(application => {
+                var details = `
+                    <p><strong>ID:</strong> ${application.applicationID}</p>
+                    <p><strong>Job ID:</strong> ${application.jobID}</p>
+                    <p><strong>JobSeeker ID:</strong> ${application.jobSeekerID}</p>
+                    <p><strong>Application Date:</strong> ${application.applicationDate}</p>
+                    <p><strong>Status:</strong> ${application.status}</p>
+                `;
+                document.getElementById('applicationDetails').innerHTML = details;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
