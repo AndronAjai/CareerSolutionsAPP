@@ -11,7 +11,7 @@ namespace CSAPI.Models
         Task<List<JobApplication>> GetAllAsync();
         Task<JobApplication> FindByIdAsync(int id);
 
-        Task<bool> AddApplicationAsync(JobApplication app);
+        Task<bool> AddApplicationAsync(int usrid,JobApplication app);
         Task<bool> UpdateApplicationAsync(int id, JobApplication app);
         Task<bool> DeleteApplicationAsync(int id);
 
@@ -32,17 +32,55 @@ namespace CSAPI.Models
 
 
         // c2 in Calling IsJobIdExistsAsync function
-        public async Task<bool> AddApplicationAsync(JobApplication app)
+        public async Task<bool> AddApplicationAsync(int usrid,JobApplication app)
 
         {
-            
-            // Check if the JobApplication ID exists before adding the JobApplication
-            if (!await IsJobIdExistsAsync(app.JobID,app.JobSeekerID))
-                return false;
 
-            _context.Applications.Add(app);
-            await _context.SaveChangesAsync();
-            return true;
+
+            // 112
+            var jsid = await _context.JobSeekers
+            .Where(a => a.UserID == usrid)
+            .Select(a => a.JobSeekerID)
+            .FirstOrDefaultAsync();
+
+            // checking if already Applied or not to the Job [1,2,3]
+            var InsertCheck = await _context.Applications
+                .Where(g => g.JobSeekerID == jsid)
+                .Select(x => x.JobID)
+                .ToListAsync();
+
+
+            // fetching overall job
+            var listjobid = await _context.Jobs
+                .Select(f => f.JobID)
+                .ToListAsync();
+
+            // Check if the Job ID exists and jobseekerid in their table before adding the JobApplication
+            if (!await IsJobIdExistsAsync(app.JobID, app.JobSeekerID))
+                {
+                return false;
+                }
+
+            if (jsid != app.JobSeekerID)
+                {
+                return false;
+                }
+
+            // value should be part of jobid but not already present
+            if (listjobid.Contains(app.JobID) && !(InsertCheck.Contains(app.JobID)))
+                {
+                // then add 
+                _context.Applications.Add(app);
+                await _context.SaveChangesAsync();
+                return true;
+                }
+            else
+                {
+                return false;
+                }
+
+
+
             
         }
 

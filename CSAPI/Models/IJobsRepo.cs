@@ -15,6 +15,8 @@ namespace CSAPI.Models
         Task<bool> DeleteJobAsync(int id);
         Task<bool> IsEmployerExistsAsync(int employerId); // New method to check if Employer exists
 
+        Task<List<Job>> filterbyind(string industry);
+        Task<List<Job>> filterbyspec(string specialization);
         Task<List<Ranking>> GetJobs(int usrid);
         }
     public class JobSeekerDTO
@@ -185,6 +187,28 @@ namespace CSAPI.Models
         {
             return await _context.Employers.AnyAsync(e => e.EmployerID == employerId);
         }
+
+
+        public async Task<List<Job>> filterbyind(string industry)
+            {
+
+            var queryind = await _context.Jobs
+                .Where(d => d.IndustryType == industry)
+                .ToListAsync();
+
+            return queryind;
+            }
+
+
+        public async Task<List<Job>> filterbyspec(string specialization)
+            {
+
+            var queryspec = await _context.Jobs
+                .Where(d => d.Specialization == specialization)
+                .ToListAsync();
+
+            return queryspec;
+            }
 
 
 

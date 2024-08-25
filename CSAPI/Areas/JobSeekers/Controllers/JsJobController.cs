@@ -26,12 +26,26 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             return Ok(jsviewjobs);
             }
 
-        [HttpGet("goat")]
+        [HttpGet("RecommendJobs")]
         public async Task<ActionResult<IEnumerable<Job>>> DisplayRecommendedJobs()
             {
             var useridCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var x = await _AjbRepo.GetJobs(useridCookie);
             return Ok(x);
+            }
+
+        [HttpPost("Filterjobs/industry/{industry}")]
+        public async Task<ActionResult<IEnumerable<Job>>> FilterByIndustry(string industry)
+            {
+            var filtery = await _AjbRepo.filterbyind(industry);
+            return filtery;
+            }
+
+        [HttpPost("Filterjobs/specialization/{specialization}")]
+        public async Task<ActionResult<IEnumerable<Job>>> FilterByspecial(string specialization)
+            {
+            var filterz = await _AjbRepo.filterbyspec(specialization);
+            return filterz;
             }
         }
     }

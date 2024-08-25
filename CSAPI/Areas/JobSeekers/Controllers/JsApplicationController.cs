@@ -1,6 +1,7 @@
 ﻿using CSAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using static System.Net.Mime.MediaTypeNames;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,6 +18,26 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public JsApplicationController(IApplicationRepo AapnRepo)
             {
                 _AapnRepo = AapnRepo;
+            }
+        [HttpPost("AddJsapplication{jid}")]
+        public async Task<ActionResult> PostJob(int jid,[FromBody] JobApplication appln)
+            {
+            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+
+            
+            if (appln.JobID != jid)
+                {
+                throw new ArgumentException("Wrong Job Id Failed to Apply Job");
+                }
+         
+         
+
+            var success = await _AapnRepo.AddApplicationAsync(userIdCookie,appln);
+            if (!success)
+                {
+                return NotFound("Job not found or data invalid. or Already Applied to the job");
+                }
+            return StatusCode((int)HttpStatusCode.Created);
             }
 
         // Job Seeker Can View His own JobApplication
