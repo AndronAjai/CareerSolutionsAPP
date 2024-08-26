@@ -36,20 +36,25 @@ namespace CSAPI.Controllers
             await _repo.AddUserAsync(User);
             return CreatedAtAction(nameof(User), new { id = User.UserID }, User);
 
-            if (User == null)
-            {
-                return BadRequest("Invalid user registration request!");
-            }
+            
 
-            var userId = User.UserID;
-
-            // Store the UserId in a cookie
-            Response.Cookies.Append("UId", userId.ToString(), new CookieOptions
+            // Store the UserID in a cookie
+            Response.Cookies.Append("UserID", User.UserID.ToString(), new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,   
-                SameSite = SameSiteMode.Strict 
+                Secure = true,
+                SameSite = SameSiteMode.Strict
             });
+
+            //var userId = User.UserID;
+
+            //// Store the UserId in a cookie
+            //Response.Cookies.Append("Id", userId.ToString(), new CookieOptions
+            //{
+            //    HttpOnly = true,
+            //    Secure = true,   
+            //    SameSite = SameSiteMode.Strict 
+            //});
 
             return StatusCode((int)HttpStatusCode.Created);
         }

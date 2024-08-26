@@ -43,39 +43,76 @@ namespace CSAPI.Controllers
 
 
         [HttpPost("Addjsprofile")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateJobSeeker([FromForm] JobSeekerViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var userIdCookie = Convert.ToInt32(Request.Cookies["UId"]);
-                model.UserID = userIdCookie;
-                //var resumePath = await SaveResumeFile(model.Resume, 0);
-                var jobSeeker = new JobSeeker
+                if (Request.Cookies.TryGetValue("UserID", out var userIdString) && int.TryParse(userIdString, out int userId))
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    PhoneNumber = model.PhoneNumber,
-                    Address = model.Address,
-                    ProfileSummary = model.ProfileSummary,
-                    KeySkills = model.KeySkills,
-                    ExpertField = model.ExpertField,
-                    AcademicDetails = model.AcademicDetails,
-                    ProfessionalDetails = model.ProfessionalDetails,
-                    PreferredIndustry = model.PreferredIndustry,
-                    PreferredSpecialization = model.PreferredSpecialization,
-                    UserID = model.UserID
-                };
+                    var jobSeeker = new JobSeeker
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        PhoneNumber = model.PhoneNumber,
+                        Address = model.Address,
+                        ProfileSummary = model.ProfileSummary,
+                        KeySkills = model.KeySkills,
+                        ExpertField = model.ExpertField,
+                        AcademicDetails = model.AcademicDetails,
+                        ProfessionalDetails = model.ProfessionalDetails,
+                        PreferredIndustry = model.PreferredIndustry,
+                        PreferredSpecialization = model.PreferredSpecialization,
+                        UserID = userId
+                    };
+                    //var IdCookie = Convert.ToInt32(Request.Cookies["Id"]);
+                    ////model.UserID = IdCookie;
+                    ////var resumePath = await SaveResumeFile(model.Resume, 0);
+                    //var jobSeeker = new JobSeeker
+                    //{
+                    //    FirstName = model.FirstName,
+                    //    LastName = model.LastName,
+                    //    PhoneNumber = model.PhoneNumber,
+                    //    Address = model.Address,
+                    //    ProfileSummary = model.ProfileSummary,
+                    //    KeySkills = model.KeySkills,
+                    //    ExpertField = model.ExpertField,
+                    //    AcademicDetails = model.AcademicDetails,
+                    //    ProfessionalDetails = model.ProfessionalDetails,
+                    //    PreferredIndustry = model.PreferredIndustry,
+                    //    PreferredSpecialization = model.PreferredSpecialization,
+                    //    //UserID = model.UserID
+                    //};
 
-                _context.JobSeekers.Add(jobSeeker);
-                await _context.SaveChangesAsync();
+                    //    _context.JobSeekers.Add(jobSeeker);
+                    //    await _context.SaveChangesAsync();
 
-                var resumePath = await SaveResumeFile(model.Resume, jobSeeker.JobSeekerID);
+                    //    var resumePath = await SaveResumeFile(model.Resume, jobSeeker.JobSeekerID);
 
-                jobSeeker.ResumePath = resumePath;
-                _context.JobSeekers.Update(jobSeeker);
-                await _context.SaveChangesAsync();
+                    //    jobSeeker.ResumePath = resumePath;
+                    //    //jobSeeker.UserID = IdCookie;
+                    //    _context.JobSeekers.Update(jobSeeker);
+                    //    await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetJobSeeker), new { id = jobSeeker.JobSeekerID }, jobSeeker);
+                    //    return CreatedAtAction(nameof(GetJobSeeker), new { id = jobSeeker.JobSeekerID }, jobSeeker);
+                    //}
+
+                    //return BadRequest(ModelState);
+
+                    _context.JobSeekers.Add(jobSeeker);
+                    await _context.SaveChangesAsync();
+
+                    var resumePath = await SaveResumeFile(model.Resume, jobSeeker.JobSeekerID);
+                    jobSeeker.ResumePath = resumePath;
+                    _context.JobSeekers.Update(jobSeeker);
+                    await _context.SaveChangesAsync();
+
+                    return CreatedAtAction(nameof(GetJobSeeker), new { id = jobSeeker.JobSeekerID }, jobSeeker);
+                }
+                else
+                {
+                    return BadRequest("User is not authenticated.");
+                }
             }
 
             return BadRequest(ModelState);
@@ -151,22 +188,32 @@ namespace CSAPI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Post([FromBody] Employer emp)
         {
-            // Retrieve the UserId from the cookie
-            if (Request.Cookies.TryGetValue("UId", out var userIdString))
-            {
-                // Parse the string to an integer
-                if (int.TryParse(userIdString, out int userId))
-                {
-                    // Use the UserId as needed, for example, associating it with the Employer
-                    emp.UserID = userId;
+            //// Retrieve the UserId from the cookie
+            //if (Request.Cookies.TryGetValue("UId", out var userIdString))
+            //{
+            //    // Parse the string to an integer
+            //    if (int.TryParse(userIdString, out int userId))
+            //    {
+            //        // Use the UserId as needed, for example, associating it with the Employer
+            //        emp.UserID = userId;
 
-                    await _IEmployerRepo.AddEmployerAsync(emp);
-                    return StatusCode((int)HttpStatusCode.Created);
-                }
-                else
-                {
-                    return BadRequest("Invalid UserId in cookie.");
-                }
+            //        await _IEmployerRepo.AddEmployerAsync(emp);
+            //        return StatusCode((int)HttpStatusCode.Created);
+            //    }
+            //    else
+            //    {
+            //        return BadRequest("Invalid UserId in cookie.");
+            //    }
+            //}
+
+            //return BadRequest("User is not authenticated.");
+
+            if (Request.Cookies.TryGetValue("UserID", out var userIdString) && int.TryParse(userIdString, out int userId))
+            {
+                emp.UserID = userId;
+
+                await _IEmployerRepo.AddEmployerAsync(emp);
+                return StatusCode((int)HttpStatusCode.Created);
             }
 
             return BadRequest("User is not authenticated.");
