@@ -10,5 +10,25 @@ namespace CSAPI.Controllers
         {
             return View();
         }
+
+        public IActionResult EmployerSignUp()
+        {
+            return View();
+        }
+
+        public IActionResult JobSeekerSignUp()
+        {
+            return View();
+        }
+
+        public IActionResult NewEmployer()
+        {
+            return View();
+        }
+
+        public IActionResult NewJobSeeker()
+        {
+            return View();
+        }
     }
 }

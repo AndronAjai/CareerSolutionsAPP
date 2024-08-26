@@ -1,0 +1,71 @@
+﻿<!-- Views/Account/EmployerSignUp.cshtml -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Sign Up</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Employer Sign Up</h2>
+        
+        <form id="employerSignUpForm">
+            <div class="form-group">
+                <label for="userName">Username:</label>
+                <input type="text" id="userName" name="userName" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">   
+                <label for="branchOfficeId">Branch Office ID:</label>
+                <input type="number" id="branchOfficeId" name="branchOfficeId">
+            </div>
+            <div class="form-group">
+                <button type="button" id="employerSignUpButton">Continue Employer Details</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('employerSignUpButton').addEventListener('click', function () {
+            var userName = document.getElementById('userName').value;
+            var password = document.getElementById('password').value;
+            var email = document.getElementById('email').value;
+            var branchOfficeId = document.getElementById('branchOfficeId').value || null;
+
+            fetch('/api/UserRegistration/Register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    Username: userName, 
+                    Password: password, 
+                    Email: email, 
+                    Role: 'Employer', 
+                    BranchOfficeID: branchOfficeId,
+                    RegistrationDate: new Date().toISOString() 
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/LoginView/NewEmployer'; // Redirect to login after successful registration
+                } else {
+                    alert('Sign-up failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
