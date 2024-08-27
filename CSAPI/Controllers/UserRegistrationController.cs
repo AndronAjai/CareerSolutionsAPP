@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CSAPI.Models;
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CSAPI.Controllers
@@ -23,27 +20,27 @@ namespace CSAPI.Controllers
         // POST: api/User/Register
         [HttpPost("Register")]
         [AllowAnonymous]
-        public async Task<ActionResult> Register([FromBody] User User)
+        public async Task<ActionResult> Register([FromBody] User user)
         {
-            if (User == null)
+            if (user == null)
             {
                 return BadRequest("Invalid user registration request!");
             }
-            
 
-            // Hashing before storing
-            User.Password = BCrypt.Net.BCrypt.HashPassword(User.Password);
-            await _repo.AddUserAsync(User);
-            Response.Cookies.Append("UsID", User.UserID.ToString(), new CookieOptions
+            user.RegistrationDate = DateTime.Now;
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+            await _repo.AddUserAsync(user);
+
+            Response.Cookies.Append("UsID", user.UserID.ToString(), new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict
             });
-            return CreatedAtAction(nameof(User), new { id = User.UserID }, User);
 
+            return CreatedAtAction(nameof(Register), new { id = user.UserID }, user);
         }
-
-        
     }
 }
