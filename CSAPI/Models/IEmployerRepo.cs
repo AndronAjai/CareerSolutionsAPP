@@ -14,7 +14,8 @@ namespace CSAPI.Models
         Task<bool> AddEmployerAsync(Employer emp);
         Task<bool> UpdateEmployerAsync(int id, Employer emp);
         Task<bool> DeleteEmployerAsync(int id);
-        Task<bool> IsUserExistsAsync(int userId); 
+        Task<bool> IsUserExistsAsync(int userId);
+        Task<Employer> FindByJobId(int jobid);
     }
 
     public class EmployerRepo : IEmployerRepo
@@ -35,6 +36,20 @@ namespace CSAPI.Models
         {
             return await _context.Employers.FindAsync(id);
         }
+
+        public async Task<Employer> FindByJobId(int jobid)
+            {
+            var Employeeid = await _context.Jobs
+           .Where(a => a.JobID == jobid)
+           .Select(a => a.EmployerID)
+           .FirstOrDefaultAsync();
+
+            var EmployeeDet = await _context.Employers
+                .Where(b => b.EmployerID == Employeeid)
+                .FirstOrDefaultAsync();
+
+            return EmployeeDet;
+            }
 
         public async Task<bool> AddEmployerAsync(Employer emp)
         {

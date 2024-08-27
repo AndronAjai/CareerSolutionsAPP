@@ -26,6 +26,12 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             return Ok(jsviewjobs);
             }
 
+        [HttpGet("ClickedJobs/{jobid}")]
+        public async Task<IActionResult> ClickedJob(int jobid)
+            {
+            return RedirectToAction("EmpInfo", "JsEmployer", new { paramname = jobid });
+            }
+        
         [HttpGet("RecommendJobs")]
         public async Task<ActionResult<IEnumerable<Job>>> DisplayRecommendedJobs()
             {

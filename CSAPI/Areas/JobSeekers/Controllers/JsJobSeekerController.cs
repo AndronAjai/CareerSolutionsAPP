@@ -12,11 +12,11 @@ namespace CSAPI.Areas.JobSeekers.Controllers
     [Route("api/jobseekers/[controller]")]
     [ApiController]
     [Authorize(Roles = "JobSeeker")]
-    public class JsController : ControllerBase
+    public class JsJobSeekerController : ControllerBase
         {
         IJobSeekerRepo _AjsRepo;
 
-        public JsController(IJobSeekerRepo AjsRepo)
+        public JsJobSeekerController(IJobSeekerRepo AjsRepo)
             {
             _AjsRepo = AjsRepo;
             }
