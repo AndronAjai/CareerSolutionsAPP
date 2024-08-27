@@ -23,6 +23,22 @@ namespace CSAPI.Controllers
         }
 
 
+        [HttpPost("AddEmployerProfile")]
+        public async Task<ActionResult> CreateEmployer([FromBody] Employer emp)
+        {
+
+            if (Request.Cookies.TryGetValue("UsID", out var userIdString) && int.TryParse(userIdString, out int userId))
+            {
+                emp.UserID = userId;
+
+                await _IEmployerRepo.AddEmployerAsync(emp);
+                return CreatedAtAction("CreateEmployer", new { id = emp.EmployerID }, emp);
+                //return StatusCode((int)HttpStatusCode.Created);
+            }
+
+            return BadRequest("User is not authenticated.");
+        }
+
 
         public class JobSeekerViewModel
         {
@@ -73,7 +89,7 @@ namespace CSAPI.Controllers
                     _context.JobSeekers.Update(jobSeeker);
                     await _context.SaveChangesAsync();
 
-                    return CreatedAtAction(nameof(GetJobSeeker), new { id = jobSeeker.JobSeekerID }, jobSeeker);
+                    return CreatedAtAction("CreateJobSeeker", new { id = jobSeeker.JobSeekerID }, jobSeeker);
                 }
                 else
                 {
@@ -83,51 +99,6 @@ namespace CSAPI.Controllers
 
             return BadRequest(ModelState);
         }
-
-
-        [HttpGet("{id}")]
-        public IActionResult GetJobSeeker(int id)
-        {
-            var jobSeeker = _context.JobSeekers.Find(id);
-
-            if (jobSeeker == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(jobSeeker);
-        }
-
-        //[HttpGet("view-resume/{id}")]
-        //public IActionResult ViewResume(int id)
-        //{
-        //    var jobSeeker = _context.JobSeekers.Find(id);
-
-        //    if (jobSeeker == null || string.IsNullOrEmpty(jobSeeker.ResumePath))
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var filePath = Path.Combine(Directory.GetCurrentDirectory(), jobSeeker.ResumePath);
-
-        //    if (!System.IO.File.Exists(filePath))
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var fileBytes = System.IO.File.ReadAllBytes(filePath);
-        //    var fileExtension = Path.GetExtension(filePath);
-
-        //    var mimeType = fileExtension switch
-        //    {
-        //        ".pdf" => "application/pdf",
-        //        ".doc" => "application/msword",
-        //        ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        //        _ => "application/octet-stream",
-        //    };
-
-        //    return File(fileBytes, mimeType, $"Resume_{id}{fileExtension}");
-        //}
 
         private async Task<string> SaveResumeFile(IFormFile resume, int jobSeekerId)
         {
@@ -146,23 +117,6 @@ namespace CSAPI.Controllers
             }
 
             return Path.Combine("Resumes", fileName);
-        }
-
-
-
-        [HttpPost("AddEmployerProfile")]
-        public async Task<ActionResult> Post([FromBody] Employer emp)
-        {
-
-            if (Request.Cookies.TryGetValue("UsID", out var userIdString) && int.TryParse(userIdString, out int userId))
-            {
-                emp.UserID = userId;
-
-                await _IEmployerRepo.AddEmployerAsync(emp);
-                return StatusCode((int)HttpStatusCode.Created);
-            }
-
-            return BadRequest("User is not authenticated.");
         }
 
 
