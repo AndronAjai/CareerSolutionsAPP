@@ -98,36 +98,36 @@ namespace CSAPI.Controllers
             return Ok(jobSeeker);
         }
 
-        [HttpGet("view-resume/{id}")]
-        public IActionResult ViewResume(int id)
-        {
-            var jobSeeker = _context.JobSeekers.Find(id);
+        //[HttpGet("view-resume/{id}")]
+        //public IActionResult ViewResume(int id)
+        //{
+        //    var jobSeeker = _context.JobSeekers.Find(id);
 
-            if (jobSeeker == null || string.IsNullOrEmpty(jobSeeker.ResumePath))
-            {
-                return NotFound();
-            }
+        //    if (jobSeeker == null || string.IsNullOrEmpty(jobSeeker.ResumePath))
+        //    {
+        //        return NotFound();
+        //    }
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), jobSeeker.ResumePath);
+        //    var filePath = Path.Combine(Directory.GetCurrentDirectory(), jobSeeker.ResumePath);
 
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound();
-            }
+        //    if (!System.IO.File.Exists(filePath))
+        //    {
+        //        return NotFound();
+        //    }
 
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            var fileExtension = Path.GetExtension(filePath);
+        //    var fileBytes = System.IO.File.ReadAllBytes(filePath);
+        //    var fileExtension = Path.GetExtension(filePath);
 
-            var mimeType = fileExtension switch
-            {
-                ".pdf" => "application/pdf",
-                ".doc" => "application/msword",
-                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                _ => "application/octet-stream",
-            };
+        //    var mimeType = fileExtension switch
+        //    {
+        //        ".pdf" => "application/pdf",
+        //        ".doc" => "application/msword",
+        //        ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        //        _ => "application/octet-stream",
+        //    };
 
-            return File(fileBytes, mimeType, $"Resume_{id}{fileExtension}");
-        }
+        //    return File(fileBytes, mimeType, $"Resume_{id}{fileExtension}");
+        //}
 
         private async Task<string> SaveResumeFile(IFormFile resume, int jobSeekerId)
         {

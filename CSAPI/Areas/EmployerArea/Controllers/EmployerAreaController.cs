@@ -42,7 +42,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("MyAccount")]
         public async Task<ActionResult<Employer>> ShowMyAccount()
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             Employer e = await _repo.FindByIdAsync(Empid);
 
@@ -53,10 +55,43 @@ namespace CSAPI.Areas.EmployerArea.Controllers
             return Ok(e);
         }
 
+        [HttpGet("view-js-resume/{id}")]
+        public IActionResult ViewResume(int id)
+        {
+            var jobSeeker = _JobSeekerRepo.FindById(id);
+
+            if (jobSeeker == null || string.IsNullOrEmpty(jobSeeker.ResumePath))
+            {
+                return NotFound();
+            }
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), jobSeeker.ResumePath);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            var fileExtension = Path.GetExtension(filePath);
+
+            var mimeType = fileExtension switch
+            {
+                ".pdf" => "application/pdf",
+                ".doc" => "application/msword",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                _ => "application/octet-stream",
+            };
+
+            return File(fileBytes, mimeType, $"Resume_{id}{fileExtension}");
+        }
+
         [HttpPut("UpdateInfo")]
         public async Task<bool> UpdateInfo([FromBody] Employer updatedEmployer)
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             Employer e = await _repo.FindByIdAsync(Empid);
             return await _repo.UpdateEmployerAsync(Empid, e);
@@ -65,7 +100,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpDelete("DeleteAccount")]
         public async Task<bool> DeleteAccount()
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             Employer e = await _repo.FindByIdAsync(Empid);
             return await _repo.DeleteEmployerAsync(Empid);
@@ -76,7 +113,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("AllApplications")]
         public async Task<IQueryable<JobApplication>> ShowAllApplications()
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             return await _eRepo.GetMyApplications(Empid);
         }
@@ -84,7 +123,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("ApplicationDetails/{id}")]
         public async Task<JobApplication> GetApplication(int id)
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             var app = _eRepo.GetApplication(id);
 
@@ -94,7 +135,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("AllApplications/{id}")]
         public async Task<IQueryable<JobApplication>> ShowApplicationsForJob(int id)
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             var job = await _jobsRepo.FindByIdAsync(id);
             if (job != null && job.EmployerID == Empid)
@@ -111,7 +154,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("AllJobs")]
         public async Task<IQueryable<Job>> ShowAllJobs()
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             return await _eRepo.GetMyJobs(Empid);
         }
@@ -127,7 +172,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpPost("AddJob")]
         public async Task<ActionResult> PostJob([FromBody] Job job)
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             job.EmployerID = Empid;
             var success = await _jobsRepo.AddJobAsync(job);
@@ -141,7 +188,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpPut("UpdateJob/{id}")]
         public async Task<ActionResult> UpdateJob(int id, [FromBody] Job job)
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             job.EmployerID = Empid;
             var success = await _jobsRepo.UpdateJobAsync(id, job);
@@ -155,7 +204,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpDelete("DeleteJob/{jobId}")]
         public async Task<ActionResult> DeleteJob(int jobId)
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
             //int authenticatedEmployerId = int.Parse(User.FindFirst("EmployerID").Value);
             var job = await _jobsRepo.FindByIdAsync(jobId);
@@ -211,7 +262,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("UserDetails/{id}")]
         public async Task<User> GetUser()
         {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             //int Empid = _eRepo.GetEmpID(userIdCookie);
             var user = _userRepo.FindByIdAsync(userIdCookie);
 
@@ -232,7 +285,9 @@ namespace CSAPI.Areas.EmployerArea.Controllers
             List<Tuple<JobSeeker, int>> PrefSkillRec = new List<Tuple<JobSeeker, int>>();
             int pref = 0;
 
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
 
             var job = await _jobsRepo.FindByIdAsync(jobid);

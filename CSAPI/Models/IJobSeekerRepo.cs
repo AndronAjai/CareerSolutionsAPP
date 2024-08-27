@@ -14,8 +14,8 @@ namespace CSAPI.Models
         Task<bool> UpdateJobSeekerAsync(int id, JobSeeker js);
         Task<bool> DeleteJobSeekerAsync(int id);
         Task<bool> IsUserExistsAsync(int userId); // Check if UserID exists in Users table
-        
-        }
+        JobSeeker FindById(int id);
+    }
 
     public class JobSeekerRepo : IJobSeekerRepo
     {
@@ -107,6 +107,9 @@ namespace CSAPI.Models
             return await _context.Users.AnyAsync(u => u.UserID == userId);
         }
 
-
+        public JobSeeker FindById(int id)
+        {
+            return _context.JobSeekers.Find(id);
         }
+    }
 }
