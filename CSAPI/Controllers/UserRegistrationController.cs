@@ -34,78 +34,16 @@ namespace CSAPI.Controllers
             // Hashing before storing
             User.Password = BCrypt.Net.BCrypt.HashPassword(User.Password);
             await _repo.AddUserAsync(User);
-            return CreatedAtAction(nameof(User), new { id = User.UserID }, User);
-
-            
-
-            // Store the UserID in a cookie
-            Response.Cookies.Append("UserID", User.UserID.ToString(), new CookieOptions
+            Response.Cookies.Append("UsID", User.UserID.ToString(), new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict
             });
+            return CreatedAtAction(nameof(User), new { id = User.UserID }, User);
 
-            //var userId = User.UserID;
-
-            //// Store the UserId in a cookie
-            //Response.Cookies.Append("Id", userId.ToString(), new CookieOptions
-            //{
-            //    HttpOnly = true,
-            //    Secure = true,   
-            //    SameSite = SameSiteMode.Strict 
-            //});
-
-            return StatusCode((int)HttpStatusCode.Created);
         }
 
-        // GET: api/User
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<ActionResult<IEnumerable<User>>> ShowAll()
-        //{
-        //    var users = await _repo.GetAllAsync();
-        //    return Ok(users);
-        //}
-
-
-            // Check if the user already exists in the database
-            //if (await _repo.UserExistsAsync(newUser.Username))
-            //{
-            //    return Conflict("User already exists!");
-            //}
-
-
-            // Create a new user object
-            //var user = new User
-            //{
-            //    Username = newUser.Username,
-            //    Password = newUser.Password, // Store hashed password
-            //    Email = newUser.Email,
-            //    BranchOfficeID = newUser.BranchOfficeID,
-            //    Role = newUser.Role
-            //};
-
-            // Save the new user to the database
-        //    var success = await _repo.AddUserAsync(User);
-        //    if (!success)
-        //    {
-        //        return BadRequest("Invalid BranchOfficeID.");
-        //    }
-            
-            
-
-
-        //    return StatusCode((int)HttpStatusCode.Created, "User registered successfully!");
-        //}
-
-        // GET: api/User
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<ActionResult<IEnumerable<User>>> ShowAll()
-        //{
-        //    var users = await _repo.GetAllAsync();
-        //    return Ok(users);
-        //}
+        
     }
 }

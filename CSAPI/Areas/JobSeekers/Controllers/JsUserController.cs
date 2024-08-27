@@ -24,8 +24,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<ActionResult<IEnumerable<User>>> jsviewUser()
             {
 
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
-
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
 
             var viewjsappln = await _AusRepo.FindByIdAsync(userIdCookie);
             if (viewjsappln == null)

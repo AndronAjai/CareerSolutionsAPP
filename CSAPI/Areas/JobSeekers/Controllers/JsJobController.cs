@@ -29,8 +29,10 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         [HttpGet("RecommendJobs")]
         public async Task<ActionResult<IEnumerable<Job>>> DisplayRecommendedJobs()
             {
-            var useridCookie = Convert.ToInt32(Request.Cookies["UserId"]);
-            var x = await _AjbRepo.GetJobs(useridCookie);
+            //var useridCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool y = int.TryParse(userIdClaim, out var userIdCookie);
+            var x = await _AjbRepo.GetJobs(userIdCookie);
             return Ok(x);
             }
 

@@ -56,8 +56,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<ActionResult<IEnumerable<JobApplication>>> jsviewAppln()
             {
 
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
-            
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             
             var viewjsappln = await _AapnRepo.FindByJobSeekerIdAsync(userIdCookie);
             if (viewjsappln == null)
@@ -73,7 +74,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<ActionResult<IEnumerable<JobApplication>>> jsupdateAppln([FromBody] IEnumerable<JobApplication>  Apj)
             {
             // Retrieve the 'UserId' cookie from the request
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             if (userIdCookie == null)
                 {
                 return NotFound();
@@ -89,7 +92,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<ActionResult<IEnumerable<JobApplication>>> jsdeleteAppln(int id)
             {
             // Retrieve the 'UserId' cookie from the request
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            // var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             if (userIdCookie == null)
                 {
                 return NotFound();
@@ -111,7 +116,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<ActionResult<IEnumerable<User>>> jsviewUser()
             {
 
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
 
 
             var viewjsappln = await _AusRepo.FindByIdAsync(userIdCookie);
@@ -137,7 +144,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         [HttpGet("viewjsprofile")]
         public async Task<ActionResult<JobSeeker>> FindJobSeeker()
             {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             var jobSeeker = await _AjsRepo.FindByIdAsync(userIdCookie);
             if (jobSeeker == null)
                 {
@@ -162,7 +171,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         [HttpPut("editjsuserprofile")]
         public async Task<ActionResult> Put( [FromBody] JobSeeker js)
             {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             var success = await _AjsRepo.UpdateJobSeekerAsync(userIdCookie, js);
             if (!success)
                 {
@@ -175,7 +186,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         [HttpDelete("Deletejsuserprofile")]
         public async Task<ActionResult> Delete()
             {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             var success = await _AjsRepo.DeleteJobSeekerAsync(userIdCookie);
             if (!success)
                 {
