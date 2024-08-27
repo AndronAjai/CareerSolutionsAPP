@@ -35,18 +35,18 @@ namespace CSAPI.Controllers
             {
 
                 //addednow
-                var cookieOptions = new CookieOptions
-                {
+                //var cookieOptions = new CookieOptions
+                //{
 
-                    Expires = DateTimeOffset.UtcNow.AddMinutes(30), // Set cookie expiration time
-                    HttpOnly = true, // Make the cookie inaccessible to JavaScript
-                    Secure = true, // Only send cookie over HTTPS
-                    SameSite = SameSiteMode.Strict // Enforce SameSite policy
+                //    Expires = DateTimeOffset.UtcNow.AddMinutes(30), // Set cookie expiration time
+                //    HttpOnly = true, // Make the cookie inaccessible to JavaScript
+                //    Secure = true, // Only send cookie over HTTPS
+                //    SameSite = SameSiteMode.Strict // Enforce SameSite policy
 
-                };
+                //};
 
-                // Add the UserId cookie
-                Response.Cookies.Append("UserId", uid.ToString(), cookieOptions);
+                //// Add the UserId cookie
+                //Response.Cookies.Append("UserId", uid.ToString(), cookieOptions);
                 //addednow--
 
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]));
@@ -55,6 +55,7 @@ namespace CSAPI.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim("UserID", uid.ToString()),
                     new Claim(ClaimTypes.Role, user.Role)
                 };
 
@@ -69,7 +70,7 @@ namespace CSAPI.Controllers
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
                 // Return token and role in response
-                return Ok(new { Token = tokenString, Role = user.Role });
+                return Ok(new { Token = tokenString, Role = user.Role, UserId= uid });
             }
 
             return Unauthorized();

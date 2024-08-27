@@ -22,9 +22,11 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         [HttpPost("AddJsapplication{jid}")]
         public async Task<ActionResult> PostJob(int jid,[FromBody] JobApplication appln)
             {
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
 
-            
+
             if (appln.JobID != jid)
                 {
                 throw new ArgumentException("Wrong Job Id Failed to Apply Job");
@@ -46,8 +48,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<ActionResult<IEnumerable<JobApplication>>> jsviewAppln()
             {
 
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
-
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
 
             var viewjsappln = await _AapnRepo.FindByJobSeekerIdAsync(userIdCookie);
             if (viewjsappln == null)
@@ -63,7 +66,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<ActionResult<IEnumerable<JobApplication>>> jsupdateAppln([FromBody] IEnumerable<JobApplication> Apj)
             {
             // Retrieve the 'UserId' cookie from the request
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             if (userIdCookie == null)
                 {
                 return NotFound();
@@ -79,7 +84,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<ActionResult<IEnumerable<JobApplication>>> jsdeleteAppln(int id)
             {
             // Retrieve the 'UserId' cookie from the request
-            var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            bool x = int.TryParse(userIdClaim, out var userIdCookie);
             if (userIdCookie == null)
                 {
                 return NotFound();
