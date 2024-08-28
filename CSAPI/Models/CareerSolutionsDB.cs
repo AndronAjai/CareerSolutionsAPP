@@ -27,6 +27,11 @@ namespace CSAPI.Models
         // Syntax based  on ClassName(Entity) table name
         public DbSet<BranchOffice> BranchOffices { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<SkillRelation> SkillRelations { get; set; }
+
+        
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -138,8 +143,8 @@ namespace CSAPI.Models
 
         [Required]
 
-        [StringLength(1000)]
-
+        
+        [StringLength(int.MaxValue)]
         public string Password { get; set; }
 
         [Required]
@@ -205,7 +210,7 @@ namespace CSAPI.Models
 
         [Required]
 
-        public string ResumePath { get; set; }
+        public string? ResumePath { get; set; }
 
         public string? AcademicDetails { get; set; }
 
@@ -356,6 +361,7 @@ namespace CSAPI.Models
         [ForeignKey("JobSeekers")]
         public int JobSeekerID { get; set; }
 
+        [ForeignKey("Jobs")]
         public DateTime ApplicationDate { get; set; }
 
         public string Status { get; set; }
@@ -369,4 +375,38 @@ namespace CSAPI.Models
 
     }
 
-}
+    [Table("Notifications")]
+     public class Notification
+
+        {
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int NotificationID { get; set; }
+
+        [ForeignKey("Employers")]
+        public int EmployerID { get; set; }
+
+        public string Message { get; set; }
+
+        [ForeignKey("Applications")]
+        public int ApplicationID { get; set; }
+
+
+
+
+        }
+
+
+    [Table("SkillRelations")]
+    public class SkillRelation
+        {
+        [Key]
+        public string KeySkill { get; set; }
+
+        [StringLength(int.MaxValue)]
+        public string SubSkill { get; set; }
+
+        }
+
+    }

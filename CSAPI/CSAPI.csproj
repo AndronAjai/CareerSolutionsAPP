@@ -40,8 +40,6 @@
 
     <Folder Include="Resumes\" />
 
-    <Folder Include="Migrations\" />
-
   </ItemGroup>
 
   <ItemGroup>
