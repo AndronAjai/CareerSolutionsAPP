@@ -29,7 +29,7 @@ namespace CSAPI.Migrations
                 columns: table => new
                 {
                     EmployerID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "600, 1"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     CompanyName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ContactPerson = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
@@ -48,7 +48,7 @@ namespace CSAPI.Migrations
                 columns: table => new
                 {
                     JobSeekerID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "100, 1"),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
@@ -66,6 +66,20 @@ namespace CSAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JobSeekers", x => x.JobSeekerID);
+                });
+
+
+
+            migrationBuilder.CreateTable(
+                name: "SkillRelations",
+                columns: table => new
+                {
+                    KeySkill = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SubSkill = table.Column<string>(type: "nvarchar(max)", maxLength: 2147483647, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SkillRelations", x => x.KeySkill);
                 });
 
             migrationBuilder.CreateTable(
@@ -102,9 +116,9 @@ namespace CSAPI.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserID = table.Column<int>(type: "int", nullable: false).Annotation("SqlServer:Identity", "1, 1"),
+                    UserID = table.Column<int>(type: "int", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", maxLength: 2147483647, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -161,6 +175,27 @@ namespace CSAPI.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+    name: "Notifications",
+    columns: table => new
+        {
+        NotificationID = table.Column<int>(type: "int", nullable: false)
+            .Annotation("SqlServer:Identity", "1, 1"),
+        EmployerID = table.Column<int>(type: "int", nullable: false),
+        Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+        ApplicationID = table.Column<int>(type: "int", nullable: false)
+        },
+    constraints: table =>
+    {
+        table.PrimaryKey("PK_Notifications", x => x.NotificationID);
+        table.ForeignKey(
+        name: "FK_Notifications_Applications_ApplicationID",
+        column: x => x.ApplicationID,
+        principalTable: "Applications",
+        principalColumn: "ApplicationID",
+        onDelete: ReferentialAction.Restrict);
+    });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_JobID",
                 table: "Applications",
@@ -186,6 +221,12 @@ namespace CSAPI.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Applications");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "SkillRelations");
 
             migrationBuilder.DropTable(
                 name: "Users");
