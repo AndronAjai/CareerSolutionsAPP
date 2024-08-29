@@ -21,15 +21,15 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 _AapnRepo = AapnRepo;
                 _AnotiRepo = AnotiRepo;
             }
-        [HttpPost("AddJsapplication{jid}")]
-        public async Task<ActionResult> PostJob(int jid,[FromBody] JobApplication appln)
+        [HttpPost("AddJsapplication{jobid}")]
+        public async Task<ActionResult> PostJob(int jobid,[FromBody] JobApplication appln)
             {
             //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
 
 
-            if (appln.JobID != jid)
+            if (appln.JobID != jobid)
                 {
                 throw new ArgumentException("Wrong Job Id Failed to Apply Job");
                 }
@@ -114,7 +114,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 return NotFound();
                 }
 
-            var success = await _AapnRepo.DeleteApplicationAsync(userIdCookie);
+            var success = await _AapnRepo.DeleteApplicationAsync(applnid);
             if (!success)
                 {
                 return BadRequest("Could not delete the Application.");
@@ -125,7 +125,8 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 // job application deleted
 
 
-                var messageposted = await _AnotiRepo.AddDeleteNotificationAsync(applnid);
+                Notification noti2 = new Notification();
+                var messageposted = await _AnotiRepo.AddDeleteNotificationAsync(applnid, noti2);
                 if (!messageposted)
                     {
                     return NotFound("Message failed to insert");

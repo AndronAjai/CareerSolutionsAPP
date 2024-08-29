@@ -57,6 +57,7 @@ builder.Services.AddTransient<IEmployerRepo, EmployerRepo>();
 builder.Services.AddTransient<IBranchOfficeRepo, BranchOfficesRepo>();
 builder.Services.AddTransient<IApplicationRepo, ApplicationRepo>();
 builder.Services.AddTransient<IEmployerAreaRepo, EmployerAreaRepo>();
+builder.Services.AddTransient<INotificationRepo, NotificationRepo>();
 
 // Configure Authentication with JWT and Role-Based Authorization
 builder.Services.AddAuthentication(opt =>
