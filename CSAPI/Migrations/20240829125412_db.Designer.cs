@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSAPI.Migrations
 {
     [DbContext(typeof(CareerSolutionsDB))]
-    [Migration("20240828171401_InitialData")]
-    partial class InitialData
+    [Migration("20240829125412_db")]
+    partial class db
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -264,20 +264,22 @@ namespace CSAPI.Migrations
 
                     b.HasKey("NotificationID");
 
+                    b.HasIndex("ApplicationID");
+
+                    b.HasIndex("EmployerID");
+
                     b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("CSAPI.Models.SkillRelation", b =>
                 {
                     b.Property<string>("KeySkill")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubSkill")
                         .IsRequired()
                         .HasMaxLength(2147483647)
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("KeySkill");
 
                     b.ToTable("SkillRelations");
                 });
@@ -339,6 +341,21 @@ namespace CSAPI.Migrations
                     b.HasOne("CSAPI.Models.JobSeeker", null)
                         .WithMany()
                         .HasForeignKey("JobSeekerID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CSAPI.Models.Notification", b =>
+                {
+                    b.HasOne("CSAPI.Models.JobApplication", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicationID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CSAPI.Models.Employer", null)
+                        .WithMany()
+                        .HasForeignKey("EmployerID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
