@@ -35,7 +35,8 @@
             })
             .then(response => response.json())
             .then(job => {
-                var details = `
+                var details = `document.getElementById('jobSeekerDetails');
+                detailsDiv.innerHTML = `
                     <p><strong>ID:</strong> ${job.jobID}</p>
                     <p><strong>Job Title:</strong> ${job.jobTitle}</p>
                     <p><strong>Industry Type:</strong> ${job.industryType}</p>

@@ -1,10 +1,12 @@
 ﻿
 using CSAPI.Areas.JobSeekers.Models;
 using CSAPI.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Text;
 
 namespace CSAPI.Areas.JobSeekers.Controllers
 {
@@ -31,9 +33,34 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             _AjsRepo = AjsRepo;
             }
 
+        //[HttpGet("jsResume")]
+        //[Authorize(Roles = "User", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //public async Task<ActionResult<JobSeeker>> GetMyResume(int id)
+        //{
+        //    var js = await _AjsRepo.GetByIdAsync(id);
+        //    var currentUserId = User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
+        //    if (userBooking.UserId_FK.ToString() != currentUserId)
+        //    {
+        //        return Forbid("You are not authorized to download this ticket.");
+        //    }
 
+        //    var booking = await _bookingRepo.GetByIdAsync(id);
+        //    if (booking == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-        // Job Seeker Can View all the Branch Office Relations 
+        //    var content = new StringBuilder();
+        //    content.AppendLine($"Booking ID: {booking.BookingId}");
+        //    content.AppendLine($"Flight Number:{booking.FlightIdFK}");
+        //    content.AppendLine($"Booking Date:{booking.BookingDate}");
+        //    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Exports", $"Booking_{booking.BookingId}.txt");
+        //    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+        //    await System.IO.File.WriteAllTextAsync(filePath, content.ToString());
+        //    var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        //    return File(bytes, "text/plain", Path.GetFileName(filePath));
+        //}
+
         [HttpGet("viewBOR")]
         public async Task<ActionResult<IEnumerable<BranchOffice>>> ShowAll()
             {
