@@ -15,9 +15,11 @@ namespace CSAPI.Areas.JobSeekers.Controllers
     public class JsApplicationController : ControllerBase
         {
         IApplicationRepo _AapnRepo;
-        public JsApplicationController(IApplicationRepo AapnRepo)
+        INotificationRepo _AnotiRepo;
+        public JsApplicationController(IApplicationRepo AapnRepo, INotificationRepo AnotiRepo)
             {
                 _AapnRepo = AapnRepo;
+                _AnotiRepo = AnotiRepo;
             }
         [HttpPost("AddJsapplication{jid}")]
         public async Task<ActionResult> PostJob(int jid,[FromBody] JobApplication appln)
@@ -39,7 +41,27 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 {
                 return NotFound("Job not found or data invalid. or Already Applied to the job");
                 }
-            return StatusCode((int)HttpStatusCode.Created);
+            else
+                {
+                // JobSeeker can Applied to ApplicationID
+                Notification InsertObj = new Notification();
+                InsertObj.Message = "Have Successfully Applied to the job";
+                InsertObj.ApplicationID = appln.ApplicationID;
+                InsertObj.EmployerID = await _AapnRepo.FindEmpID(appln.JobID);
+
+                var messageposted = await _AnotiRepo.AddNotificationAsync(InsertObj);
+                if (!messageposted)
+                    {
+                    return NotFound("Message failed to insert");
+                    }
+                else
+                    {
+                    return StatusCode((int)HttpStatusCode.Created);
+                    }
+
+                
+                }
+            
             }
 
         // Job Seeker Can View His own JobApplication
@@ -81,7 +103,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         // Job Seeker Can Delete His own JobApplication(need to implement(few confusions)
 
         [HttpDelete("DeletejsApplication")]
-        public async Task<ActionResult<IEnumerable<JobApplication>>> jsdeleteAppln(int id)
+        public async Task<ActionResult<IEnumerable<JobApplication>>> jsdeleteAppln(int applnid)
             {
             // Retrieve the 'UserId' cookie from the request
             //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
@@ -96,6 +118,23 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             if (!success)
                 {
                 return BadRequest("Could not delete the Application.");
+                }
+
+            else
+                {
+                // job application deleted
+
+
+                var messageposted = await _AnotiRepo.AddDeleteNotificationAsync(applnid);
+                if (!messageposted)
+                    {
+                    return NotFound("Message failed to insert");
+                    }
+                else
+                    {
+                    return StatusCode((int)HttpStatusCode.Created);
+                    }
+
                 }
 
             return NoContent();

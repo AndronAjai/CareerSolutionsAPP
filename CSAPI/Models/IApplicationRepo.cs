@@ -19,6 +19,8 @@ namespace CSAPI.Models
 
         Task<bool> UpdateJobSeekerIdAsync(int id, IEnumerable<JobApplication> Apj);
 
+        Task<int> FindEmpID(int jobid);
+
     }
 
     public class ApplicationRepo : IApplicationRepo
@@ -221,6 +223,15 @@ namespace CSAPI.Models
             {
             return id.HasValue && await _context.Jobs.AnyAsync(b => b.JobID == id.Value)
                 && jsid.HasValue && await _context.JobSeekers.AnyAsync(c => c.JobSeekerID == jsid.Value);
+            }
+
+        public async Task<int> FindEmpID(int jobid)
+            {
+            var empid = await _context.Jobs
+        .Where(a => a.JobID == jobid)
+        .Select(a => a.EmployerID)
+        .FirstOrDefaultAsync();
+            return empid;
             }
 
 
