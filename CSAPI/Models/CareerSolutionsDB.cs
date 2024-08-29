@@ -54,6 +54,12 @@ namespace CSAPI.Models
             modelBuilder.Entity<BranchOffice>()
                 .HasKey(b => b.BranchOfficeID);
 
+            modelBuilder.Entity<Notification>()
+                .HasKey(n => n.NotificationID);
+
+            modelBuilder.Entity<SkillRelation>()
+                .HasNoKey();
+
             // Define foreign key relationships and behaviors
             modelBuilder.Entity<User>()
                 .HasOne<BranchOffice>()
@@ -89,6 +95,18 @@ namespace CSAPI.Models
                 .HasOne<JobSeeker>()
                 .WithMany()
                 .HasForeignKey(a => a.JobSeekerID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne<JobApplication>()
+                .WithMany()
+                .HasForeignKey(a => a.ApplicationID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne<Employer>()
+                .WithMany()
+                .HasForeignKey(a => a.EmployerID)
                 .OnDelete(DeleteBehavior.Restrict);
         }
 

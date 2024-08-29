@@ -75,56 +75,133 @@ namespace CSAPI.Areas.EmployerArea.Models
             return applications;
         }
 
+        private List<string> ConvertSkillsToKeySkills(List<string> skills)
+        {
+            List<string> keySkills = new List<string>();
+
+            foreach (var skill in skills)
+            {
+                var keySkill = _context.SkillRelations
+                    .Where(ksr => ksr.SubSkill.Contains(skill, StringComparison.OrdinalIgnoreCase))
+                    .Select(ksr => ksr.KeySkill)
+                    .FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(keySkill) && !keySkills.Contains(keySkill))
+                {
+                    keySkills.Add(keySkill);
+                }
+            }
+
+            return keySkills;
+        }
+
         public async Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid)
         {
-            List<Tuple<JobSeeker,int>> recommendedJobSeeker = new List<Tuple<JobSeeker, int>>();
+            List<Tuple<JobSeeker, int>> recommendedJobSeeker = new List<Tuple<JobSeeker, int>>();
             Tuple<JobSeeker, int> recommendedrow;
             List<JobSeeker> jobSeekerList;
 
             var jobrequired = from job in _context.Jobs
                               where job.JobID == jobid
                               select job;
+
             Job jobfound = jobrequired.FirstOrDefault();
-            //List<string> skills =  jobSkills.ToList();
-            string[] JobSkill = jobfound.RequiredSkills.Split(",");
 
+            if (jobfound == null)
+            {
+                return recommendedJobSeeker;  // Return empty if job not found
+            }
+
+            // Convert job required skills to key skills
+            string[] jobSkillsArray = jobfound.RequiredSkills.Split(",");
+            List<string> jobSkillsList = jobSkillsArray.ToList();
+            List<string> jobKeySkills = ConvertSkillsToKeySkills(jobSkillsList);
+
+            // Get all job seekers
             jobSeekerList = _context.JobSeekers.ToList();
-            //var List = from js in _context.JobSeekers
-            //           select js;
 
-            
             foreach (JobSeeker jobseeker in jobSeekerList)
             {
-                bool condition = false;
                 int noOfSkills = 0;
-               
-                //var Skill = jobseeker.KeySkills;
-                string[] Skill = jobseeker.KeySkills.Split(",");
 
-                //List<string> JobSeekerSkills = await Task.FromResult(Skill.ToList());
-                List<string> JobSeekerSkills = Skill.ToList();
+                // Convert jobseeker skills to key skills
+                string[] jobSeekerSkillsArray = jobseeker.KeySkills.Split(",");
+                List<string> jobSeekerSkillsList = jobSeekerSkillsArray.ToList();
+                List<string> jobSeekerKeySkills = ConvertSkillsToKeySkills(jobSeekerSkillsList);
 
-                foreach (var i in JobSeekerSkills)
+                // Compare job's key skills with job seeker's key skills
+                foreach (var seekerSkill in jobSeekerKeySkills)
                 {
-                    noOfSkills = 0;
-                    foreach (var j in JobSkill)
+                    if (jobKeySkills.Contains(seekerSkill, StringComparer.OrdinalIgnoreCase))
                     {
-                        if (i == j)
-                        {
-                            noOfSkills++;
-                            condition = true;
-                        }
-                    }
-                    if (condition)
-                    {
-                        recommendedrow = new Tuple<JobSeeker, int>(jobseeker, noOfSkills);
-                        recommendedJobSeeker.Add(recommendedrow);
+                        noOfSkills++;
                     }
                 }
+
+                if (noOfSkills > 0)
+                {
+                    recommendedrow = new Tuple<JobSeeker, int>(jobseeker, noOfSkills);
+                    recommendedJobSeeker.Add(recommendedrow);
+                }
             }
-            recommendedJobSeeker.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+
+            // Sort the recommended job seekers by the number of matched skills
+            recommendedJobSeeker.Sort((x, y) => y.Item2.CompareTo(x.Item2)); // Sort in descending order
+
             return await Task.FromResult(recommendedJobSeeker);
         }
+
+
+        //public async Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid)
+        //{
+        //    List<Tuple<JobSeeker,int>> recommendedJobSeeker = new List<Tuple<JobSeeker, int>>();
+        //    Tuple<JobSeeker, int> recommendedrow;
+        //    List<JobSeeker> jobSeekerList;
+
+        //    var jobrequired = from job in _context.Jobs
+        //                      where job.JobID == jobid
+        //                      select job;
+        //    Job jobfound = jobrequired.FirstOrDefault();
+        //    //List<string> skills =  jobSkills.ToList();
+        //    string[] JobSkill = jobfound.RequiredSkills.Split(",");
+
+        //    jobSeekerList = _context.JobSeekers.ToList();
+        //    //var List = from js in _context.JobSeekers
+        //    //           select js;
+
+
+        //    foreach (JobSeeker jobseeker in jobSeekerList)
+        //    {
+        //        bool condition = false;
+        //        int noOfSkills = 0;
+
+        //        //var Skill = jobseeker.KeySkills;
+        //        string[] Skill = jobseeker.KeySkills.Split(",");
+
+        //        //List<string> JobSeekerSkills = await Task.FromResult(Skill.ToList());
+        //        List<string> JobSeekerSkills = Skill.ToList();
+
+        //        foreach (var i in JobSeekerSkills)
+        //        {
+        //            noOfSkills = 0;
+        //            foreach (var j in JobSkill)
+        //            {
+        //                if (i == j)
+        //                {
+        //                    noOfSkills++;
+        //                    condition = true;
+        //                }
+        //            }
+        //            if (condition)
+        //            {
+        //                recommendedrow = new Tuple<JobSeeker, int>(jobseeker, noOfSkills);
+        //                recommendedJobSeeker.Add(recommendedrow);
+        //            }
+        //        }
+        //    }
+        //    recommendedJobSeeker.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+        //    return await Task.FromResult(recommendedJobSeeker);
+        //}
 
         public async Task<List<JobSeeker>> GetRecommendationByIndustry(int jobid)
         {
