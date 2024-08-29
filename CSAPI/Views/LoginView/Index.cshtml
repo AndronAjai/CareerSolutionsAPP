@@ -1,84 +1,5 @@
-﻿@*@{
-    Layout = null;  // Use this if you don't want to include the default layout
-}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <h2>Login</h2>
-    
-    <form id="loginForm">
-        <div>
-            <label for="userName">Username:</label>
-            <input type="text" id="userName" name="userName" value="Andron" required>
-        </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" value="123" required>
-        </div>
-        <div>   
-            <label for="role">Role:</label>
-            <select id="role" name="role" required>
-                <option value="Admin">Admin</option>
-                <option value="Employer">Employer</option>
-                <option value="JobSeeker">Job Seeker</option>
-            </select>
-        </div>
-        <button type="button" id="loginButton">Login</button>
-        <div>
-            <h1 id="tk"></h1>
-        </div>
-    </form>
-
-    <script>
-        document.getElementById('loginButton').addEventListener('click', function () {
-
-            var userName = document.getElementById('userName').value;
-            var password = document.getElementById('password').value;
-            var role = document.getElementById('role').value;
-            
-
-            fetch('/api/login/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ UserName: userName, Password: password, Role: role })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.token && data.role) {
-                   
-                    //document.getElementById("tk").innerHTML = data.token;
-                    localStorage.setItem('token', data.token);
-                    switch (data.role) {
-                        case 'Admin':
-                            window.location.href = '/Admin/AdminView/Index'; // Adjust URL if needed
-                            break;
-                        // Handle other roles
-                    }
-                } else {
-                    console.log(data);
-                    console.log("Hii");
-                    alert('Invalid login attempt');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
-</body>
-</html>
-*@
-
-@{
-    Layout = null;  // Use this if you don't want to include the default layout
+﻿@{
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -88,97 +9,189 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
+        @@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Roboto", sans-serif;
+        }
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
-        .login-container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+        body::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0.5;
             width: 100%;
-            box-sizing: border-box;
+            height: 100%;
+            background: url("https://static.weblinkindia.net/images/job-portal-banner.jpg");
+            background-position: center;
         }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
+        nav {
+            position: fixed;
+            padding: 25px 60px;
+            z-index: 1;
         }
-        .form-group {
-            margin-bottom: 15px;
+        nav a img {
+            width: 167px;
         }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
+        .form-wrapper {
+            position: absolute;
+            left: 50%;
+            top: 50%;
             border-radius: 4px;
-            box-sizing: border-box;
+            padding: 70px;
+            width: 450px;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.75);
         }
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-        .form-group button {
-            background-color: #007bff;
+        .form-wrapper h2 {
             color: #fff;
-            border: none;
-            padding: 10px;
+            font-size: 2rem;
+        }
+        .form-wrapper form {
+            margin: 25px 0 65px;
+        }
+        form .form-control {
+            height: 50px;
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .form-control input,
+        .form-control select {
+            height: 100%;
             width: 100%;
+            background: #333;
+            border: none;
+            outline: none;
             border-radius: 4px;
+            color: #fff;
+            font-size: 1rem;
+            padding: 0 20px;
+        }
+        .form-control input:is(:focus, :valid),
+        .form-control select:is(:focus, :valid) {
+            background: #444;
+            padding: 16px 20px 0;
+        }
+        .form-control label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            pointer-events: none;
+            color: #8c8c8c;
+            transition: all 0.1s ease;
+        }
+        .form-control input:is(:focus, :valid) ~ label,
+        .form-control select:is(:focus, :valid) ~ label {
+            font-size: 0.75rem;
+            transform: translateY(-130%);
+        }
+        form button {
+            width: 100%;
+            padding: 16px 0;
+            font-size: 1rem;
+            background: #c009e5;
+            color: #fff;
+            font-weight: 500;
+            border-radius: 4px;
+            border: none;
+            outline: none;
+            margin: 25px 0 10px;
             cursor: pointer;
-            font-size: 16px;
+            transition: 0.1s ease;
         }
-        .form-group button:hover {
-            background-color: #0056b3;
+        form button:hover {
+            background: #c40812;
         }
-        .form-group h1 {
-            text-align: center;
-            color: #e74c3c;
+        .form-wrapper a {
+            text-decoration: none;
+        }
+        .form-wrapper a:hover {
+            text-decoration: underline;
+        }
+        .form-wrapper :where(label, p, small, a) {
+            color: #b3b3b3;
+        }
+        form .form-help {
+            display: flex;
+            justify-content: space-between;
+        }
+        form .remember-me {
+            display: flex;
+        }
+        form .remember-me input {
+            margin-right: 5px;
+            accent-color: #b3b3b3;
+        }
+        form .form-help :where(label, a) {
+            font-size: 0.9rem;
+        }
+        .form-wrapper p a {
+            color: #fff;
+        }
+        .form-wrapper small {
+            display: block;
+            margin-top: 15px;
+            color: #b3b3b3;
+        }
+        .form-wrapper small a {
+            color: #0071eb;
+        }
+        @@media (max-width: 740px) {
+            body::before {
+                display: none;
+            }
+            nav,
+            .form-wrapper {
+                padding: 20px;
+            }
+            nav a img {
+                width: 140px;
+            }
+            .form-wrapper {
+                width: 100%;
+                top: 43%;
+            }
+            .form-wrapper form {
+                margin: 25px 0 40px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        
+    <div class="form-wrapper">
+        <h2>Sign In</h2>
         <form id="loginForm">
-            <div class="form-group">
-                <label for="userName">Username:</label>
+            <div class="form-control">
                 <input type="text" id="userName" name="userName" value="Newma" required>
+                <label for="userName">Email or phone number</label>
             </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
+            <div class="form-control">
                 <input type="password" id="password" name="password" value="93420" required>
+                <label for="password">Password</label>
             </div>
-            <div class="form-group">   
-                <label for="role">Role:</label>
+            <div class="form-control">
                 <select id="role" name="role" required>
                     <option value="Admin">Admin</option>
                     <option value="Employer">Employer</option>
                     <option value="JobSeeker">Job Seeker</option>
                 </select>
+                <label for="role">Role</label>
             </div>
-            <div class="form-group">
-                <button type="button" id="loginButton">Login</button>
-            </div>
-            <div class="form-group">
-                <h1 id="tk"></h1>
-            </div>
+            <button type="button" id="loginButton">Sign In</button>
+            <button onclick="location.href='@Url.Action("LoginView", "Registration")'" class="btn">Register</button>
         </form>
+        <small>This page is protected by Google reCAPTCHA to ensure you're not a bot. <a href="#">Learn more.</a></small>
     </div>
 
     <script>
@@ -200,7 +213,7 @@
                     localStorage.setItem('token', data.token);
                     switch (data.role) {
                         case 'Admin':
-                            window.location.href = '/Admin/AdminMVC/Dashboard'; // Adjust URL if needed
+                            window.location.href = '/Admin/AdminMVC/Dashboard';
                             break;
                         // Handle other roles
                     }

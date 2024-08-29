@@ -118,7 +118,5 @@ namespace CSAPI.Controllers
 
             return Path.Combine("Resumes", fileName);
         }
-
-
     }
 } 
