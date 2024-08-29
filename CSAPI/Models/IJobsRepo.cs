@@ -66,17 +66,55 @@ namespace CSAPI.Models
         {
             _context = context;
         }
-        
-        public bool MatchingSkills(Job jobrow, JobSeekerDTO jspreferences)
+
+        private List<string> ConvertSkillsToKeySkills(List<string> skills)
+        {
+            List<string> keySkills = new List<string>();
+
+            foreach (var skill in skills)
             {
-            string[] cs = jspreferences.KeySkills.Trim().ToLower().Split(',');
+                var keySkill = _context.SkillRelations
+                    .Where(ksr => ksr.SubSkill.Contains(skill, StringComparison.OrdinalIgnoreCase))
+                    .Select(ksr => ksr.KeySkill)
+                    .FirstOrDefault();
 
-
-            string[] ns = jobrow.RequiredSkills.Trim().ToLower().Split(',');
-
-            bool hasMatchingSkill = ns.Any(skill => cs.Contains(skill));
-            return hasMatchingSkill;
+                if (!string.IsNullOrEmpty(keySkill) && !keySkills.Contains(keySkill))
+                {
+                    keySkills.Add(keySkill);
+                }
             }
+
+            return keySkills;
+        }
+
+        public bool MatchingSkills(Job jobrow, JobSeekerDTO jspreferences)
+        {
+            // Split and normalize the job seeker's skills
+            string[] jobSeekerSkillsArray = jspreferences.KeySkills.Trim().ToLower().Split(',');
+            List<string> jobSeekerSkillsList = jobSeekerSkillsArray.ToList();
+            List<string> jobSeekerKeySkills = ConvertSkillsToKeySkills(jobSeekerSkillsList);
+
+            // Split and normalize the job's required skills
+            string[] jobSkillsArray = jobrow.RequiredSkills.Trim().ToLower().Split(',');
+            List<string> jobSkillsList = jobSkillsArray.ToList();
+            List<string> jobKeySkills = ConvertSkillsToKeySkills(jobSkillsList);
+
+            // Check if there is any matching skill between the job seeker's key skills and the job's key skills
+            bool hasMatchingSkill = jobKeySkills.Any(skill => jobSeekerKeySkills.Contains(skill));
+            return hasMatchingSkill;
+        }
+
+
+        //public bool MatchingSkills(Job jobrow, JobSeekerDTO jspreferences)
+        //    {
+        //    string[] cs = jspreferences.KeySkills.Trim().ToLower().Split(',');
+
+
+        //    string[] ns = jobrow.RequiredSkills.Trim().ToLower().Split(',');
+
+        //    bool hasMatchingSkill = ns.Any(skill => cs.Contains(skill));
+        //    return hasMatchingSkill;
+        //    }
 
         public bool MatchingSpecialisation(Job jobrow, JobSeekerDTO jspreferences)
             {
