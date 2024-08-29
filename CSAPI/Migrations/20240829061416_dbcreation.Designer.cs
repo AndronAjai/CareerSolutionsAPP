@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSAPI.Migrations
 {
     [DbContext(typeof(CareerSolutionsDB))]
-    [Migration("20240828171401_InitialData")]
-    partial class InitialData
+    [Migration("20240829061416_dbcreation")]
+    partial class dbcreation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -233,7 +233,6 @@ namespace CSAPI.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("ResumePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserID")

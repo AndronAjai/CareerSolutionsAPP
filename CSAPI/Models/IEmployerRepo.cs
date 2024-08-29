@@ -100,5 +100,7 @@ namespace CSAPI.Models
         {
             return await _context.Users.AnyAsync(u => u.UserID == userId);
         }
+
+      
     }
 }

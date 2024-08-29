@@ -231,7 +231,6 @@ namespace CSAPI.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("ResumePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserID")

@@ -15,6 +15,7 @@ namespace CSAPI.Areas.EmployerArea.Models
         public Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid);
         public Task<List<JobSeeker>> GetRecommendationByIndustry(int jobid);
         public Task<List<JobSeeker>> GetRecommendationBySpecialization(int jobid);
+        public Task<List<Tuple<Notification,int>>> GetNotificationAsync(int empid);
     }
 
     public class EmployerAreaRepo : IEmployerAreaRepo
@@ -158,6 +159,29 @@ namespace CSAPI.Areas.EmployerArea.Models
             }
             return await Task.FromResult(recommendedJobSeeker);
         }
+
+        public async Task<List<Tuple<Notification,int>>> GetNotificationAsync(int empid)
+        {
+            var notification = from n in _context.Notifications
+                               where empid == n.EmployerID
+                               select n;
+            var NotiAppl = (notification.Join(_context.Applications, n => n.ApplicationID, a => a.ApplicationID, (n, a) => new
+            {
+                noti=n,
+                job = a.JobID
+            })).ToList() ;
+            List<Tuple<Notification, int>> list = new List<Tuple<Notification, int>>();
+
+            foreach (var item in NotiAppl)
+            {
+                Tuple<Notification,int> tuple = new Tuple<Notification, int>(item.noti,item.job);
+                list.Add(tuple);
+            }
+
+            return await Task.FromResult(list);
+           
+        }
+
     }
 
    

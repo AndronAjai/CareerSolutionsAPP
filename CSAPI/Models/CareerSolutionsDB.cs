@@ -208,8 +208,6 @@ namespace CSAPI.Models
 
         public string ExpertField { get; set; }
 
-        [Required]
-
         public string? ResumePath { get; set; }
 
         public string? AcademicDetails { get; set; }
@@ -378,7 +376,7 @@ namespace CSAPI.Models
     [Table("Notifications")]
      public class Notification
 
-        {
+     {
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -387,26 +385,22 @@ namespace CSAPI.Models
         [ForeignKey("Employers")]
         public int EmployerID { get; set; }
 
-        public string Message { get; set; }
-
         [ForeignKey("Applications")]
         public int ApplicationID { get; set; }
 
+        public string Message { get; set; }
 
-
-
-        }
+     }
 
 
     [Table("SkillRelations")]
     public class SkillRelation
-        {
+    {
         [Key]
         public string KeySkill { get; set; }
 
         [StringLength(int.MaxValue)]
         public string SubSkill { get; set; }
 
-        }
-
     }
+}

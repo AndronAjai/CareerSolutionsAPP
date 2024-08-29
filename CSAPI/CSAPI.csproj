@@ -37,6 +37,7 @@
 
     <Folder Include="Areas\JobSeekers\Data\" />
     <Folder Include="Areas\JobSeekers\Views\" />
+    <Folder Include="Migrations\" />
 
     <Folder Include="Resumes\" />
 
