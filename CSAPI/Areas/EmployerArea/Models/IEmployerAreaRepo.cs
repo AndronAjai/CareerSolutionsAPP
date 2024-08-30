@@ -15,7 +15,7 @@ namespace CSAPI.Areas.EmployerArea.Models
         public Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid);
         public Task<List<JobSeeker>> GetRecommendationByIndustry(int jobid);
         public Task<List<JobSeeker>> GetRecommendationBySpecialization(int jobid);
-        public Task<List<Tuple<Notification,int>>> GetNotificationAsync(int empid);
+        public Task<List<Tuple<Notification,string,int,string>>> GetNotificationAsync(int empid);
     }
 
     public class EmployerAreaRepo : IEmployerAreaRepo
@@ -240,21 +240,30 @@ namespace CSAPI.Areas.EmployerArea.Models
             return await Task.FromResult(recommendedJobSeeker);
         }
 
-        public async Task<List<Tuple<Notification,int>>> GetNotificationAsync(int empid)
+        public async Task<List<Tuple<Notification,string,int,string>>> GetNotificationAsync(int empid)
         {
             var notification = from n in _context.Notifications
                                where empid == n.EmployerID
                                select n;
-            var NotiAppl = (notification.Join(_context.Applications, n => n.ApplicationID, a => a.ApplicationID, (n, a) => new
-            {
-                noti=n,
-                job = a.JobID
-            })).ToList() ;
-            List<Tuple<Notification, int>> list = new List<Tuple<Notification, int>>();
+            var NotiAppl = notification.Join(_context.Applications, n => n.ApplicationID, a => a.ApplicationID, (n, a) => new {n,a}).Join
+                (
+                _context.Jobs,
+                na => na.a.JobID,
+                j => j.JobID,
+                (na, j) => new { na, j }).Join
+                (_context.JobSeekers, naj => naj.na.a.JobSeekerID , s => s.JobSeekerID, (naj,s) => new 
+                {
+                noti=naj.na.n,
+                jsname = s.FirstName + " " + s.LastName,
+                job = naj.na.a.JobID,
+                jobtitle = naj.j.JobTitle                
+                }).ToList();
+
+            List<Tuple<Notification, string,int,string>> list = new List<Tuple<Notification,string,int, string>>();
 
             foreach (var item in NotiAppl)
             {
-                Tuple<Notification,int> tuple = new Tuple<Notification, int>(item.noti,item.job);
+                Tuple<Notification, string, int, string>  tuple = new Tuple<Notification,string, int,string>(item.noti,item.jsname, item.job, item.jobtitle);
                 list.Add(tuple);
             }
 
