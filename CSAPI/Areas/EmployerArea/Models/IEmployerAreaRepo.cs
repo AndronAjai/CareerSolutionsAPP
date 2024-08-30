@@ -75,6 +75,7 @@ namespace CSAPI.Areas.EmployerArea.Models
             return applications;
         }
 
+
         private List<string> ConvertSkillsToKeySkills(List<string> skills)
         {
             List<string> keySkills = new List<string>();
@@ -82,7 +83,8 @@ namespace CSAPI.Areas.EmployerArea.Models
             foreach (var skill in skills)
             {
                 var keySkill = _context.SkillRelations
-                    .Where(ksr => ksr.SubSkill.Contains(skill, StringComparison.OrdinalIgnoreCase))
+                    .AsEnumerable()  // Move to in-memory evaluation
+                    .Where(ksr => ksr.SubSkill.Split(',').Contains(skill, StringComparer.OrdinalIgnoreCase))
                     .Select(ksr => ksr.KeySkill)
                     .FirstOrDefault();
 
@@ -94,6 +96,7 @@ namespace CSAPI.Areas.EmployerArea.Models
 
             return keySkills;
         }
+
 
         public async Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid)
         {

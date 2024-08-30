@@ -21,15 +21,15 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 _AapnRepo = AapnRepo;
                 _AnotiRepo = AnotiRepo;
             }
-        [HttpPost("AddJsapplication{jid}")]
-        public async Task<ActionResult> PostJob(int jid,[FromBody] JobApplication appln)
+        [HttpPost("AddJsapplication{jobid}")]
+        public async Task<ActionResult> PostJob(int jobid,[FromBody] JobApplication appln)
             {
             //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
 
 
-            if (appln.JobID != jid)
+            if (appln.JobID != jobid)
                 {
                 throw new ArgumentException("Wrong Job Id Failed to Apply Job");
                 }

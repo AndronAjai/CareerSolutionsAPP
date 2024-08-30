@@ -74,7 +74,8 @@ namespace CSAPI.Models
             foreach (var skill in skills)
             {
                 var keySkill = _context.SkillRelations
-                    .Where(ksr => ksr.SubSkill.Contains(skill, StringComparison.OrdinalIgnoreCase))
+                    .AsEnumerable()  // Move to in-memory evaluation
+                    .Where(ksr => ksr.SubSkill.Split(',').Contains(skill, StringComparer.OrdinalIgnoreCase))
                     .Select(ksr => ksr.KeySkill)
                     .FirstOrDefault();
 
