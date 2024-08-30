@@ -104,19 +104,19 @@ namespace CSAPI.Areas.EmployerArea.Models
             Tuple<JobSeeker, int> recommendedrow;
             List<JobSeeker> jobSeekerList;
 
-            var jobrequired = from job in _context.Jobs
+            var jobrequired = (from job in _context.Jobs
                               where job.JobID == jobid
-                              select job;
+                              select job).FirstOrDefault();
 
-            Job jobfound = jobrequired.FirstOrDefault();
+            //Job jobfound = jobrequired.FirstOrDefault();
 
-            if (jobfound == null)
+            if (jobrequired == null)
             {
                 return recommendedJobSeeker;  // Return empty if job not found
             }
 
             // Convert job required skills to key skills
-            string[] jobSkillsArray = jobfound.RequiredSkills.Split(",");
+            string[] jobSkillsArray = jobrequired.RequiredSkills.Split(",");
             List<string> jobSkillsList = jobSkillsArray.ToList();
             List<string> jobKeySkills = ConvertSkillsToKeySkills(jobSkillsList);
 

@@ -38,7 +38,7 @@ namespace CSAPI.Areas.EmployerArea.Controllers
             return await _eRepo.GetMyApplications(Empid);
         }
 
-        [HttpGet("ApplicationDetails/{id}")]
+        [HttpGet("ApplicationDetailsById/{ApplId}")]
         public async Task<JobApplication> GetApplication(int id)
         {
             //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
@@ -50,7 +50,7 @@ namespace CSAPI.Areas.EmployerArea.Controllers
             return await app;
         }
 
-        [HttpGet("AllApplications/{id}")]
+        [HttpGet("AllApplicationsForJob/{jobId}")]
         public async Task<IQueryable<JobApplication>> ShowApplicationsForJob(int id)
         {
             //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);

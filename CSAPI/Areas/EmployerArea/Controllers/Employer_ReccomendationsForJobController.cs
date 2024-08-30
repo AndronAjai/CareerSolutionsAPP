@@ -22,7 +22,7 @@ namespace CSAPI.Areas.EmployerArea.Controllers
             _eRepo = empRepo;
         }
 
-        [HttpGet("RecommendationForEachJob/{id}")]
+        [HttpGet("RecommendationForEachJob/{Jobid}")]
         public async Task<List<JobSeeker>> GetRecommendations(int jobid)
         {
             List<JobSeeker> recommendedList = new List<JobSeeker>();
