@@ -87,12 +87,12 @@ namespace CSAPI.Models
         }
 
 
-        public async Task<bool> DeleteApplicationAsync(int usrid)
+        public async Task<bool> DeleteApplicationAsync(int applnid)
 
         {
 
 
-            var app = await _context.Applications.FindAsync(usrid);
+            var app = await _context.Applications.FindAsync(applnid);
             if (app == null)
             {
 

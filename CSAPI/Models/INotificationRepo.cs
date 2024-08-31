@@ -29,7 +29,11 @@ namespace CSAPI.Models
             }
         public async Task<bool> AddDeleteNotificationAsync(int applnid,Notification noti2)
             {
-            Notification noti = new Notification();
+            if (noti2 == null)
+                {
+                noti2 = new Notification(); // Create a new Notification object if it's null
+                }
+
             var applnrow = await _context.Applications
                 .Where(a => a.ApplicationID == applnid)
                 .FirstOrDefaultAsync();
@@ -47,7 +51,7 @@ namespace CSAPI.Models
 
 
             
-            noti2.ApplicationID = applnrow.ApplicationID;
+            noti2.ApplicationID = applnid;
             noti2.Message = "Have Successfully deleted the job";
             noti2.EmployerID = empid;
 
