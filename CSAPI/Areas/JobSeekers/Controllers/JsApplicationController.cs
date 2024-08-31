@@ -22,20 +22,17 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 _AnotiRepo = AnotiRepo;
             }
         [HttpPost("AddJsapplication{jobid}")]
-        public async Task<ActionResult> PostJob(int jobid,[FromBody] JobApplication appln)
+        public async Task<ActionResult> PostJob(int jobid)
             {
             //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
 
-            if (appln.JobID != jobid)
-                {
-                throw new ArgumentException("Wrong Job Id Failed to Apply Job");
-                }
-         
-         
 
-            var success = await _AapnRepo.AddApplicationAsync(userIdCookie,appln);
+            JobApplication appln = new JobApplication();
+            
+
+            var success = await _AapnRepo.AddApplicationAsync(userIdCookie, jobid);
             if (!success)
                 {
                 return NotFound("Job not found or data invalid. or Already Applied to the job");
@@ -45,10 +42,14 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 // JobSeeker can Applied to ApplicationID
                 Notification InsertObj = new Notification();
                 InsertObj.Message = "Have Successfully Applied to the job";
-                InsertObj.ApplicationID = appln.ApplicationID;
-                InsertObj.EmployerID = await _AapnRepo.FindEmpID(appln.JobID);
-
-                var messageposted = await _AnotiRepo.AddNotificationAsync(InsertObj);
+                InsertObj.ApplicationID = await _AapnRepo.FetchApplnID(userIdCookie,jobid);
+                InsertObj.EmployerID = await _AapnRepo.FindEmpID(jobid);
+                var messageposted = false;
+                if (InsertObj.ApplicationID != -1)
+                    {
+                     messageposted = await _AnotiRepo.AddNotificationAsync(InsertObj);
+                    }
+               
                 if (!messageposted)
                     {
                     return NotFound("Message failed to insert");
