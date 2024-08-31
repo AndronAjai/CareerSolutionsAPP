@@ -87,16 +87,13 @@ namespace CSAPI.Models
         }
 
 
-        public async Task<bool> DeleteApplicationAsync(int usrid)
+        public async Task<bool> DeleteApplicationAsync(int applnid)
 
         {
-            var id  = await _context.JobSeekers
-                .Where(a => a.UserID == usrid)
-               .Select(a => a.JobSeekerID)
-                .FirstOrDefaultAsync();
 
-            var app = await _context.Applications.FindAsync(id);
-            if (app != null)
+
+            var app = await _context.Applications.FindAsync(applnid);
+            if (app == null)
             {
 
                 return false;
