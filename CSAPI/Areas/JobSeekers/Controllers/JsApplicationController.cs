@@ -28,7 +28,6 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
 
-
             if (appln.JobID != jobid)
                 {
                 throw new ArgumentException("Wrong Job Id Failed to Apply Job");

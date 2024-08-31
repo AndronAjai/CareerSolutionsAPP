@@ -188,13 +188,13 @@ namespace CSAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notifications", x => x.NotificationID);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Applications_ApplicationID",
-                        column: x => x.ApplicationID,
-                        principalTable: "Applications",
-                        principalColumn: "ApplicationID",
-                        onDelete: ReferentialAction.Restrict);
+                    //table.PrimaryKey("PK_Notifications", x => x.NotificationID);
+                    //table.ForeignKey(
+                    //    name: "FK_Notifications_Applications_ApplicationID",
+                    //    column: x => x.ApplicationID,
+                    //    principalTable: "Applications",
+                    //    principalColumn: "ApplicationID",
+                    //    onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Notifications_Employers_EmployerID",
                         column: x => x.EmployerID,
@@ -218,10 +218,10 @@ namespace CSAPI.Migrations
                 table: "Jobs",
                 column: "EmployerID");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Notifications_ApplicationID",
-                table: "Notifications",
-                column: "ApplicationID");
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_Notifications_ApplicationID",
+            //    table: "Notifications",
+            //    column: "ApplicationID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_EmployerID",
