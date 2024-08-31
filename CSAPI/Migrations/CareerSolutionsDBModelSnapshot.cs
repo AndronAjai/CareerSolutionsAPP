@@ -261,8 +261,6 @@ namespace CSAPI.Migrations
 
                     b.HasKey("NotificationID");
 
-                    b.HasIndex("ApplicationID");
-
                     b.HasIndex("EmployerID");
 
                     b.ToTable("Notifications");
@@ -344,12 +342,6 @@ namespace CSAPI.Migrations
 
             modelBuilder.Entity("CSAPI.Models.Notification", b =>
                 {
-                    b.HasOne("CSAPI.Models.JobApplication", null)
-                        .WithMany()
-                        .HasForeignKey("ApplicationID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("CSAPI.Models.Employer", null)
                         .WithMany()
                         .HasForeignKey("EmployerID")
