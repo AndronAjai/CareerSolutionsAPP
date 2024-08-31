@@ -101,10 +101,11 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             }
 
         // Job Seeker Can Delete His own JobApplication(need to implement(few confusions)
-
         [HttpDelete("DeletejsApplication")]
         public async Task<ActionResult<IEnumerable<JobApplication>>> jsdeleteAppln(int applnid)
             {
+            Notification noti2 = new Notification();
+            var messageposted = await _AnotiRepo.AddDeleteNotificationAsync(applnid, noti2);
             // Retrieve the 'UserId' cookie from the request
             //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
@@ -114,7 +115,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 return NotFound();
                 }
 
-            var success = await _AapnRepo.DeleteApplicationAsync(userIdCookie);
+            var success = await _AapnRepo.DeleteApplicationAsync(applnid);
             if (!success)
                 {
                 return BadRequest("Could not delete the Application.");
@@ -125,7 +126,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
                 // job application deleted
 
 
-                var messageposted = await _AnotiRepo.AddDeleteNotificationAsync(applnid);
+
                 if (!messageposted)
                     {
                     return NotFound("Message failed to insert");

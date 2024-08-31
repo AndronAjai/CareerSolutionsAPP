@@ -6,7 +6,7 @@ namespace CSAPI.Models
         {
         Task<bool> AddNotificationAsync(Notification user);
         Task<bool> IsApplnExistsAsync(int appid);
-        Task<bool> AddDeleteNotificationAsync(int applnid);
+        Task<bool> AddDeleteNotificationAsync(int applnid,Notification noti2);
         }
 
     public class NotificationRepo : INotificationRepo
@@ -27,27 +27,31 @@ namespace CSAPI.Models
             return true;
             
             }
-        public async Task<bool> AddDeleteNotificationAsync(int applnid)
+        public async Task<bool> AddDeleteNotificationAsync(int applnid, Notification noti2)
             {
-            Notification noti = new Notification();
+            if (noti2 == null)
+                {
+                noti2 = new Notification(); // Create a new Notification object if it's null
+                }
+
             var applnrow = await _context.Applications
                 .Where(a => a.ApplicationID == applnid)
                 .FirstOrDefaultAsync();
 
             var jobid = await _context.Applications
-                .Where(b=> b.ApplicationID == applnid)
-                .Select(b=> b.JobID)
+                .Where(b => b.ApplicationID == applnid)
+                .Select(b => b.JobID)
                 .FirstOrDefaultAsync();
 
 
             var empid = await _context.Jobs
-                .Where(a => a.JobID == jobid )
+                .Where(a => a.JobID == jobid)
                 .Select(a => a.EmployerID)
                 .FirstOrDefaultAsync();
 
 
-            Notification noti2 = new Notification();
-            noti2.ApplicationID = applnrow.ApplicationID;
+
+            noti2.ApplicationID = applnid;
             noti2.Message = "Have Successfully deleted the job";
             noti2.EmployerID = empid;
 
