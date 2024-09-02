@@ -11,7 +11,7 @@ namespace CSAPI.Models
         Task<List<JobApplication>> GetAllAsync();
         Task<JobApplication> FindByIdAsync(int id);
 
-        Task<bool> AddApplicationAsync(int usrid,JobApplication app);
+        Task<bool> AddApplicationAsync(int usrid,int jobid);
         Task<bool> UpdateApplicationAsync(int id, JobApplication app);
         Task<bool> DeleteApplicationAsync(int id);
 
@@ -20,6 +20,8 @@ namespace CSAPI.Models
         Task<bool> UpdateJobSeekerIdAsync(int id, IEnumerable<JobApplication> Apj);
 
         Task<int> FindEmpID(int jobid);
+
+        Task<int> FetchApplnID(int usrid, int jobid);
 
     }
 
@@ -34,7 +36,7 @@ namespace CSAPI.Models
 
 
         // c2 in Calling IsJobIdExistsAsync function
-        public async Task<bool> AddApplicationAsync(int usrid,JobApplication app)
+        public async Task<bool> AddApplicationAsync(int usrid,int jobid)
 
         {
 
@@ -58,20 +60,23 @@ namespace CSAPI.Models
                 .ToListAsync();
 
             // Check if the Job ID exists and jobseekerid in their table before adding the JobApplication
-            if (!await IsJobIdExistsAsync(app.JobID, app.JobSeekerID))
+            if (!await IsJobIdExistsAsync(jobid, jsid))
                 {
                 return false;
                 }
 
-            if (jsid != app.JobSeekerID)
-                {
-                return false;
-                }
-
+          
             // value should be part of jobid but not already present
-            if (listjobid.Contains(app.JobID) && !(InsertCheck.Contains(app.JobID)))
+            if (listjobid.Contains(jobid) && !(InsertCheck.Contains(jobid)))
                 {
                 // then add 
+
+                JobApplication app = new JobApplication();
+                app.JobID = jobid;
+                app.JobSeekerID = jsid;
+                app.ApplicationDate = DateTime.Now;
+                app.Status = "Applied";
+
                 _context.Applications.Add(app);
                 await _context.SaveChangesAsync();
                 return true;
@@ -86,23 +91,41 @@ namespace CSAPI.Models
             
         }
 
+        public async Task<int> FetchApplnID(int usrid, int jobid)
+            {
+            var jsid = await _context.JobSeekers
+           .Where(a => a.UserID == usrid)
+           .Select(a => a.JobSeekerID)
+           .FirstOrDefaultAsync();
+
+            var applnid = await _context.Applications
+                .Where(a => a.JobID == jobid && a.JobSeekerID == jsid)
+                .Select(c => c.ApplicationID)
+                .FirstOrDefaultAsync();
+
+            if (applnid != null)
+                {
+                return applnid;
+                }
+            return -1;
+            }
 
         public async Task<bool> DeleteApplicationAsync(int applnid)
 
-        {
+            {
 
 
             var app = await _context.Applications.FindAsync(applnid);
             if (app == null)
-            {
+                {
 
                 return false;
-            }
+                }
             _context.Applications.Remove(app);
             await _context.SaveChangesAsync();
             return true;
 
-        }
+            }
 
         public async Task<JobApplication> FindByIdAsync(int id)
         {

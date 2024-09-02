@@ -97,11 +97,11 @@ namespace CSAPI.Models
                 .HasForeignKey(a => a.JobSeekerID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Notification>()
-                .HasOne<JobApplication>()
-                .WithMany()
-                .HasForeignKey(a => a.ApplicationID)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<Notification>()
+            //    .HasOne<JobApplication>()
+            //    .WithMany()
+            //    .HasForeignKey(a => a.ApplicationID)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Notification>()
                 .HasOne<Employer>()
@@ -403,7 +403,7 @@ namespace CSAPI.Models
         [ForeignKey("Employers")]
         public int EmployerID { get; set; }
 
-        [ForeignKey("Applications")]
+        //[ForeignKey("Applications")]
         public int ApplicationID { get; set; }
 
         public string Message { get; set; }

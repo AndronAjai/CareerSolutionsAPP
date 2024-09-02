@@ -193,6 +193,33 @@ namespace CSAPI.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    NotificationID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployerID = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicationID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    //table.PrimaryKey("PK_Notifications", x => x.NotificationID);
+                    //table.ForeignKey(
+                    //    name: "FK_Notifications_Applications_ApplicationID",
+                    //    column: x => x.ApplicationID,
+                    //    principalTable: "Applications",
+                    //    principalColumn: "ApplicationID",
+                    //    onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Employers_EmployerID",
+                        column: x => x.EmployerID,
+                        principalTable: "Employers",
+                        principalColumn: "EmployerID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_JobID",
                 table: "Applications",
@@ -207,6 +234,11 @@ namespace CSAPI.Migrations
                 name: "IX_Jobs_EmployerID",
                 table: "Jobs",
                 column: "EmployerID");
+
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_Notifications_ApplicationID",
+            //    table: "Notifications",
+            //    column: "ApplicationID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_EmployerID",
