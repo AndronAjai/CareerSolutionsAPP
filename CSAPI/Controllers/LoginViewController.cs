@@ -10,9 +10,9 @@ namespace CSAPI.Controllers
         {
             return View();
         }
-        public IActionResult Register()
+        public IActionResult Registration()
         {
-            return View();
+            return View("Registration");
         }
         public IActionResult AddEmployerProfile()
         {

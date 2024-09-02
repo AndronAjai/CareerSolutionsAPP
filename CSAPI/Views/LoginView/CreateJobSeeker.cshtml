@@ -1,19 +1,277 @@
-﻿<!DOCTYPE html>
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Seeker Registration</title>
-    <link rel="stylesheet" href="~/css/styles.css"> <!-- Link to your stylesheet -->
+    <title>Create Job Seeker Profile</title>
+    <style>
+        @@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap");
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Roboto", sans-serif;
+        }
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0.5;
+            width: 100%;
+            height: 100%;
+            background: url("https://static.weblinkindia.net/images/job-portal-banner.jpg")no-repeat center center/cover;
+            background-position: center;
+        }
+        nav {
+            position: fixed;
+            padding: 25px 60px;
+            z-index: 1;
+        }
+        nav a img {
+            width: 167px;
+        }
+        .form-wrapper {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border-radius: 4px;
+            padding: 70px;
+            width: 450px;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.75);
+        }
+        .form-wrapper h2 {
+            color: #fff;
+            font-size: 2rem;
+        }
+        .form-wrapper form {
+            margin: 25px 0 65px;
+        }
+        form .form-control {
+            height: 50px;
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .form-control input,
+        .form-control select {
+            height: 100%;
+            width: 100%;
+            background: #333;
+            border: none;
+            outline: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 1rem;
+            padding: 0 20px;
+        }
+        .form-control input:is(:focus, :valid),
+        .form-control select:is(:focus, :valid) {
+            background: #444;
+            padding: 16px 20px 0;
+        }
+        .form-control label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            pointer-events: none;
+            color: #8c8c8c;
+            transition: all 0.1s ease;
+        }
+        .form-control input:is(:focus, :valid) ~ label,
+        .form-control select:is(:focus, :valid) ~ label {
+            font-size: 0.75rem;
+            transform: translateY(-130%);
+        }
+        form button {
+            width: 100%;
+            padding: 16px 0;
+            font-size: 1rem;
+            background: #c009e5;
+            color: #fff;
+            font-weight: 500;
+            border-radius: 4px;
+            border: none;
+            outline: none;
+            margin: 25px 0 10px;
+            cursor: pointer;
+            transition: 0.1s ease;
+        }
+        form button:hover {
+            background: #c40812;
+        }
+        .form-wrapper a {
+            text-decoration: none;
+        }
+        .form-wrapper a:hover {
+            text-decoration: underline;
+        }
+        .form-wrapper :where(label, p, small, a) {
+            color: #b3b3b3;
+        }
+        form .form-help {
+            display: flex;
+            justify-content: space-between;
+        }
+        form .remember-me {
+            display: flex;
+        }
+        form .remember-me input {
+            margin-right: 5px;
+            accent-color: #b3b3b3;
+        }
+        form .form-help :where(label, a) {
+            font-size: 0.9rem;
+        }
+        .form-wrapper p a {
+            color: #fff;
+        }
+        .form-wrapper small {
+            display: block;
+            margin-top: 15px;
+            color: #b3b3b3;
+        }
+        .form-wrapper small a {
+            color: #0071eb;
+        }
+        @@media (max-width: 740px) {
+            body::before {
+                display: none;
+            }
+            nav,
+            .form-wrapper {
+                padding: 20px;
+            }
+            nav a img {
+                width: 140px;
+            }
+            .form-wrapper {
+                width: 100%;
+                top: 43%;
+            }
+            .form-wrapper form {
+                margin: 25px 0 40px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Job Seeker Registration</h2>
-        <!-- Job seeker registration form -->
+    <div class="form-wrapper">
+        <h2>Create Job Seeker Profile</h2>
         <form id="jobSeekerForm">
-            <!-- Add your form fields here -->
-            <button type="submit" class="btn">Register</button>
+            <div class="form-control">
+                <input type="text" id="firstName" name="firstName" required>
+                <label for="firstName">First Name</label>
+            </div>
+            <div class="form-control">
+                <input type="text" id="lastName" name="lastName" required>
+                <label for="lastName">Last Name</label>
+            </div>
+            <div class="form-control">
+                <input type="text" id="phoneNumber" name="phoneNumber">
+                <label for="phoneNumber">Phone Number</label>
+            </div>
+            <div class="form-control">
+                <input type="text" id="address" name="address">
+                <label for="address">Address</label>
+            </div>
+            <div class="form-control">
+                <textarea id="profileSummary" name="profileSummary"></textarea>
+                <label for="profileSummary">Profile Summary</label>
+            </div>
+            <div class="form-control">
+                <textarea id="keySkills" name="keySkills" required></textarea>
+                <label for="keySkills">Key Skills</label>
+            </div>
+            <div class="form-control">
+                <input type="text" id="expertField" name="expertField" required>
+                <label for="expertField">Expert Field</label>
+            </div>
+            <div class="form-control">
+                <input type="text" id="resumePath" name="resumePath">
+                <label for="resumePath">Resume Path</label>
+            </div>
+            <div class="form-control">
+                <textarea id="academicDetails" name="academicDetails"></textarea>
+                <label for="academicDetails">Academic Details</label>
+            </div>
+            <div class="form-control">
+                <textarea id="professionalDetails" name="professionalDetails"></textarea>
+                <label for="professionalDetails">Professional Details</label>
+            </div>
+            <div class="form-control">
+                <input type="text" id="preferredIndustry" name="preferredIndustry">
+                <label for="preferredIndustry">Preferred Industry</label>
+            </div>
+            <div class="form-control">
+                <input type="text" id="preferredSpecialization" name="preferredSpecialization">
+                <label for="preferredSpecialization">Preferred Specialization</label>
+            </div>
+            <button type="button" id="createJobSeekerButton">Create Profile</button>
         </form>
     </div>
+
+    <script>
+        document.getElementById('createJobSeekerButton').addEventListener('click', function () {
+            var firstName = document.getElementById('firstName').value;
+            var lastName = document.getElementById('lastName').value;
+            var phoneNumber = document.getElementById('phoneNumber').value;
+            var address = document.getElementById('address').value;
+            var profileSummary = document.getElementById('profileSummary').value;
+            var keySkills = document.getElementById('keySkills').value;
+            var expertField = document.getElementById('expertField').value;
+            var resumePath = document.getElementById('resumePath').value;
+            var academicDetails = document.getElementById('academicDetails').value;
+            var professionalDetails = document.getElementById('professionalDetails').value;
+            var preferredIndustry = document.getElementById('preferredIndustry').value;
+            var preferredSpecialization = document.getElementById('preferredSpecialization').value;
+
+            fetch('/api/jobseeker/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    FirstName: firstName, 
+                    LastName: lastName, 
+                    PhoneNumber: phoneNumber, 
+                    Address: address, 
+                    ProfileSummary: profileSummary, 
+                    KeySkills: keySkills, 
+                    ExpertField: expertField, 
+                    ResumePath: resumePath, 
+                    AcademicDetails: academicDetails, 
+                    ProfessionalDetails: professionalDetails, 
+                    PreferredIndustry: preferredIndustry, 
+                    PreferredSpecialization: preferredSpecialization 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Job Seeker profile created successfully!');
+                    window.location.href = '/LoginViews/Success'; // Redirect to a success page
+                } else {
+                    alert('Failed to create job seeker profile');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
 </body>
 </html>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using CSAPI.Models;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CSAPI.Controllers
 {
@@ -23,7 +24,7 @@ namespace CSAPI.Controllers
         }
 
 
-        [HttpPost("AddEmployerProfile")]
+        [HttpPost("CreateEmployer")]
         public async Task<ActionResult> CreateEmployer([FromBody] Employer emp)
         {
 
@@ -58,7 +59,7 @@ namespace CSAPI.Controllers
         }
 
 
-        [HttpPost("AddJobseekerProfile")]
+        [HttpPost("CreateJobseeker")]
         public async Task<IActionResult> CreateJobSeeker([FromForm] JobSeekerViewModel model)
         {
             if (ModelState.IsValid)
@@ -96,8 +97,7 @@ namespace CSAPI.Controllers
                     return BadRequest("User is not authenticated.");
                 }
             }
-
-            return BadRequest(ModelState);
+            return View;
         }
 
         private async Task<string> SaveResumeFile(IFormFile resume, int jobSeekerId)

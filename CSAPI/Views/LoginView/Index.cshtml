@@ -31,7 +31,7 @@
             opacity: 0.5;
             width: 100%;
             height: 100%;
-            background: url("https://static.weblinkindia.net/images/job-portal-banner.jpg");
+            background: url("https://static.weblinkindia.net/images/job-portal-banner.jpg")no-repeat center center/cover;
             background-position: center;
         }
         nav {
@@ -189,10 +189,8 @@
                 <label for="role">Role</label>
             </div>
             <button type="button" id="loginButton">Sign In</button>
-            <p>     </p>
-            <p>     </p>
             <p>New User?</p>
-            <button onclick="location.href='@Url.Action("LoginView", "Registration")'" class="btn">Register</button>
+            <button type="button" onclick="location.href='@Url.Action("Registration", "LoginView")'">Register</button>
         </form>
         <small>This page is protected by Google reCAPTCHA to ensure you're not a bot. <a href="#">Learn more.</a></small>
     </div>
@@ -216,7 +214,7 @@
                     localStorage.setItem('token', data.token);
                     switch (data.role) {
                         case 'Admin':
-                            window.location.href = '/Admin/AdminMVC/Dashboard';
+                            window.location.href = '/LoginView/Registration';
                             break;
                         // Handle other roles
                     }
