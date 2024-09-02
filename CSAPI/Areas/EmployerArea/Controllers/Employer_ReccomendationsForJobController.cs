@@ -22,8 +22,8 @@ namespace CSAPI.Areas.EmployerArea.Controllers
             _eRepo = empRepo;
         }
 
-        [HttpGet("RecommendationForEachJob/{Jobid}")]
-        public async Task<List<JobSeeker>> GetRecommendations(int jobid)
+        [HttpGet("RecommendationForEachJobByJobID/{id}")]
+        public async Task<List<JobSeeker>> GetRecommendations(int id)
         {
             List<JobSeeker> recommendedList = new List<JobSeeker>();
             Tuple<JobSeeker, int> recommendedrow;
@@ -39,12 +39,12 @@ namespace CSAPI.Areas.EmployerArea.Controllers
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
 
-            var job = await _jobsRepo.FindByIdAsync(jobid);
+            var job = await _jobsRepo.FindByIdAsync(id);
             if (job != null && job.EmployerID == Empid)
             {
-                IndustryRec = await _eRepo.GetRecommendationByIndustry(jobid);
-                SpecialRec = await _eRepo.GetRecommendationBySpecialization(jobid);
-                PrefSkillRec = await _eRepo.GetRecommendationBySkills(jobid);
+                IndustryRec = await _eRepo.GetRecommendationByIndustry(id);
+                SpecialRec = await _eRepo.GetRecommendationBySpecialization(id);
+                PrefSkillRec = await _eRepo.GetRecommendationBySkills(id);
                 SkillRec = PrefSkillRec.Select(x => x.Item1).ToList();
 
                 foreach (var i in SkillRec)
