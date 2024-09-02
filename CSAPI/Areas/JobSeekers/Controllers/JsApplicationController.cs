@@ -35,7 +35,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
             var success = await _AapnRepo.AddApplicationAsync(userIdCookie, jobid);
             if (!success)
                 {
-                return NotFound("Job not found or data invalid. or Already Applied to the job");
+                return NotFound("Job not found or data invalid. or Already Applied to the job or Job deadline is completed ");
                 }
             else
                 {

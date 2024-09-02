@@ -22,9 +22,9 @@ namespace CSAPI.Areas.JobSeekers.Controllers
 
         // GET api/<JsEmployer>/5
         [HttpGet("EmpInfo")]
-        public async Task<IActionResult> EmpInfo(int paramname)
+        public async Task<IActionResult> EmpInfo(int jobid)
             {
-            var jsempinfo = await _AemRepo.FindByJobId(paramname);
+            var jsempinfo = await _AemRepo.FindByJobId(jobid);
             return Ok(new { jsempinfo.CompanyName, jsempinfo.ContactPerson, jsempinfo.PhoneNumber, jsempinfo.CompanyAddress, jsempinfo.WebsiteURL});
             
             }

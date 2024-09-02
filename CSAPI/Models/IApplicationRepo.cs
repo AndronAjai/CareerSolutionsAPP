@@ -39,7 +39,16 @@ namespace CSAPI.Models
         public async Task<bool> AddApplicationAsync(int usrid,int jobid)
 
         {
+            var datecheck = await _context.Jobs
+            .Where(a => a.JobID== jobid)
+            .Select(a => a.ApplicationDeadline)
+            .FirstOrDefaultAsync();
+            // if its crossing Deadlines return false 
 
+            if (datecheck < DateTime.Now)
+                {
+                return false;
+                }
 
             // 112
             var jsid = await _context.JobSeekers
