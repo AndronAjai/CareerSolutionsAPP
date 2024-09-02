@@ -16,6 +16,7 @@ namespace CSAPI.Areas.EmployerArea.Models
         public Task<List<JobSeeker>> GetRecommendationByIndustry(int id);
         public Task<List<JobSeeker>> GetRecommendationBySpecialization(int id);
         public Task<List<Tuple<Notification,string,int,string>>> GetNotificationAsync(int empid);
+        public Task SelectApplicationsForJobAsync(int jobId, int selectedApplicationId);
     }
 
     public class EmployerAreaRepo : IEmployerAreaRepo
@@ -282,9 +283,47 @@ namespace CSAPI.Areas.EmployerArea.Models
            
         }
 
+        public async Task SelectApplicationsForJobAsync(int jobId, int selectedApplicationId)
+        {
+            // Get the selected application
+            var appln = await _context.Applications.FindAsync(selectedApplicationId);
+            appln.Status = "Accepted";
+
+            // Create notification for the accepted application
+            JobStatusNotification jsnotify = new JobStatusNotification
+            {
+                Msg = "Congrats, You are selected for this Job",
+                ApplicationID = appln.ApplicationID
+            };
+            await _context.JobStatusNotifications.AddAsync(jsnotify);
+
+            // Fetch all other applications for the same job
+            var otherApplications = _context.Applications
+                .Where(a => a.JobID == jobId && a.ApplicationID != selectedApplicationId)
+                .ToList();
+
+            foreach (var application in otherApplications)
+            {
+                application.Status = "Rejected";
+
+                // Create notification for rejected applications
+                JobStatusNotification rejectionNotification = new JobStatusNotification
+                {
+                    Msg = "Sorry, you were not selected for this Job",
+                    ApplicationID = application.ApplicationID
+                };
+
+                await _context.JobStatusNotifications.AddAsync(rejectionNotification);
+            }
+
+            // Save all changes to the database
+            await _context.SaveChangesAsync();
+        }
+
+
     }
 
-   
+
 }
   
 
