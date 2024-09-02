@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSAPI.Migrations
 {
     [DbContext(typeof(CareerSolutionsDB))]
-    [Migration("20240831125152_db")]
+    [Migration("20240902091323_db")]
     partial class db
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
