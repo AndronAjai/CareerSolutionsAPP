@@ -30,6 +30,8 @@ namespace CSAPI.Models
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<SkillRelation> SkillRelations { get; set; }
 
+        public DbSet<JobStatusNotification> JobStatusNotifications { get; set; }
+
         
 
 
@@ -59,6 +61,9 @@ namespace CSAPI.Models
 
             modelBuilder.Entity<SkillRelation>()
                 .HasNoKey();
+
+            modelBuilder.Entity<JobStatusNotification>()
+                .HasKey(jsn => jsn.SnID);
 
             // Define foreign key relationships and behaviors
             modelBuilder.Entity<User>()
@@ -97,17 +102,19 @@ namespace CSAPI.Models
                 .HasForeignKey(a => a.JobSeekerID)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //modelBuilder.Entity<Notification>()
-            //    .HasOne<JobApplication>()
-            //    .WithMany()
-            //    .HasForeignKey(a => a.ApplicationID)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Notification>()
                 .HasOne<Employer>()
                 .WithMany()
                 .HasForeignKey(a => a.EmployerID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<JobStatusNotification>()
+                .HasOne<JobApplication>()
+                .WithMany()
+                .HasForeignKey(a => a.ApplicationID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
         }
 
 
@@ -409,6 +416,20 @@ namespace CSAPI.Models
         public string Message { get; set; }
 
      }
+
+    [Table("JobStatusNotifications")]
+    public class JobStatusNotification
+    {
+        [Key]
+        public int SnID { get; set; }
+
+        [ForeignKey("Applications")]
+        public int ApplicationID { get; set; }
+
+        [StringLength(int.MaxValue)]
+        public string Msg { get; set; }
+
+    }
 
 
     [Table("SkillRelations")]
