@@ -19,13 +19,15 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         private readonly IApplicationRepo _applicationRepo;
         private readonly IEmployerAreaRepo _eRepo;
         private readonly IJobsRepo _jobsRepo;
+        private readonly IJobStatusNotificationRepo _jsnrepo;
 
-        public Employer_ApplicationController(IEmployerRepo repo, IApplicationRepo applicationRepo,IEmployerAreaRepo empRepo, IJobsRepo jobsRepo)
+        public Employer_ApplicationController(IEmployerRepo repo, IApplicationRepo applicationRepo,IEmployerAreaRepo empRepo, IJobsRepo jobsRepo, IJobStatusNotificationRepo jsnrepo)
         {
             _repo = repo;
             _applicationRepo = applicationRepo;
             _eRepo = empRepo;
             _jobsRepo = jobsRepo;
+            _jsnrepo = jsnrepo;
         }
 
         [HttpGet("AllApplications")]
@@ -66,5 +68,17 @@ namespace CSAPI.Areas.EmployerArea.Controllers
                 return null;
 
         }
+
+        [HttpPost("AcceptApplication")]
+        public async Task<IActionResult> AcceptApplication(int applicationId)
+        {
+            JobApplication appln = await _applicationRepo.FindByIdAsync(applicationId);
+            await _eRepo.SelectApplicationsForJobAsync(appln.JobID, applicationId);
+            return Ok("Application processed successfully.");
+        }
+
     }
+
+
 }
+
