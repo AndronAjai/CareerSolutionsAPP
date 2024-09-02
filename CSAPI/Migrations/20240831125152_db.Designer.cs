@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSAPI.Migrations
 {
     [DbContext(typeof(CareerSolutionsDB))]
-    [Migration("20240829125412_db")]
+    [Migration("20240831125152_db")]
     partial class db
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -233,7 +233,6 @@ namespace CSAPI.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("ResumePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserID")
@@ -263,8 +262,6 @@ namespace CSAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("NotificationID");
-
-                    b.HasIndex("ApplicationID");
 
                     b.HasIndex("EmployerID");
 
@@ -347,12 +344,6 @@ namespace CSAPI.Migrations
 
             modelBuilder.Entity("CSAPI.Models.Notification", b =>
                 {
-                    b.HasOne("CSAPI.Models.JobApplication", null)
-                        .WithMany()
-                        .HasForeignKey("ApplicationID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("CSAPI.Models.Employer", null)
                         .WithMany()
                         .HasForeignKey("EmployerID")
