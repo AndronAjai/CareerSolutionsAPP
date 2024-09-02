@@ -11,10 +11,10 @@ namespace CSAPI.Areas.EmployerArea.Models
         public Task<IQueryable<Job>> GetMyJobs(int empid);
         public Task<IQueryable<JobApplication>> GetMyApplications(int empid);
         public Task<JobApplication> GetApplication(int appid);
-        public Task<IQueryable<JobApplication>> GetApplicationsOfJob(int jobid);
-        public Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid);
-        public Task<List<JobSeeker>> GetRecommendationByIndustry(int jobid);
-        public Task<List<JobSeeker>> GetRecommendationBySpecialization(int jobid);
+        public Task<IQueryable<JobApplication>> GetApplicationsOfJob(int id);
+        public Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int id);
+        public Task<List<JobSeeker>> GetRecommendationByIndustry(int id);
+        public Task<List<JobSeeker>> GetRecommendationBySpecialization(int id);
         public Task<List<Tuple<Notification,string,int,string>>> GetNotificationAsync(int empid);
     }
 
@@ -66,10 +66,10 @@ namespace CSAPI.Areas.EmployerArea.Models
             return appl;
         }
 
-        public async Task<IQueryable<JobApplication>> GetApplicationsOfJob(int jobid)
+        public async Task<IQueryable<JobApplication>> GetApplicationsOfJob(int id)
         {
             var applications = from app in _context.Applications
-                               where app.JobID == jobid
+                               where app.JobID == id
                                select app;
 
             return applications;
@@ -98,14 +98,14 @@ namespace CSAPI.Areas.EmployerArea.Models
         }
 
 
-        public async Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid)
+        public async Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int id)
         {
             List<Tuple<JobSeeker, int>> recommendedJobSeeker = new List<Tuple<JobSeeker, int>>();
             Tuple<JobSeeker, int> recommendedrow;
             List<JobSeeker> jobSeekerList;
 
             var jobrequired = (from job in _context.Jobs
-                              where job.JobID == jobid
+                              where job.JobID == id
                               select job).FirstOrDefault();
 
             //Job jobfound = jobrequired.FirstOrDefault();
@@ -135,11 +135,22 @@ namespace CSAPI.Areas.EmployerArea.Models
                 // Compare job's key skills with job seeker's key skills
                 foreach (var seekerSkill in jobSeekerKeySkills)
                 {
-                    if (jobKeySkills.Contains(seekerSkill, StringComparer.OrdinalIgnoreCase))
+                    foreach (var item in jobKeySkills)
                     {
-                        noOfSkills++;
+                        if(item.ToLower() == seekerSkill.ToLower())
+                        {
+                            noOfSkills++;
+                        }
                     }
                 }
+
+                //foreach (var seekerSkill in jobSeekerKeySkills)
+                //{
+                //    if (jobKeySkills.Contains(seekerSkill, StringComparer.OrdinalIgnoreCase))
+                //    {
+                //        noOfSkills++;
+                //    }
+                //}
 
                 if (noOfSkills > 0)
                 {
@@ -206,13 +217,13 @@ namespace CSAPI.Areas.EmployerArea.Models
         //    return await Task.FromResult(recommendedJobSeeker);
         //}
 
-        public async Task<List<JobSeeker>> GetRecommendationByIndustry(int jobid)
+        public async Task<List<JobSeeker>> GetRecommendationByIndustry(int id)
         {
             List<JobSeeker> recommendedJobSeeker = new List<JobSeeker>();
 
-            var Industry = from job in _context.Jobs
-                            where job.JobID == jobid
-                            select job.IndustryType;
+            var Industry = (from job in _context.Jobs
+                            where job.JobID == id
+                            select job.IndustryType).SingleOrDefault();
             string jobInd = Industry.ToString();
 
             foreach (JobSeeker jobseeker in _context.JobSeekers)
@@ -223,13 +234,13 @@ namespace CSAPI.Areas.EmployerArea.Models
             return await Task.FromResult(recommendedJobSeeker);
         }
 
-        public async Task<List<JobSeeker>> GetRecommendationBySpecialization(int jobid)
+        public async Task<List<JobSeeker>> GetRecommendationBySpecialization(int id)
         {
             List<JobSeeker> recommendedJobSeeker = new List<JobSeeker>();
 
-            var Specialization = from job in _context.Jobs
-                                 where job.JobID == jobid
-                                 select job.Specialization;
+            var Specialization = (from job in _context.Jobs
+                                 where job.JobID == id
+                                 select job.Specialization).SingleOrDefault();
             string jobSpecial = Specialization.ToString();
 
             foreach (JobSeeker jobseeker in _context.JobSeekers)
