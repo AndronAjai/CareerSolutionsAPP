@@ -35,7 +35,7 @@ namespace CSAPI.Controllers
                 return CreatedAtAction("CreateEmployer", new { id = emp.EmployerID }, emp);
             }
 
-            return BadRequest("User is not authenticated.");
+            return BadRequest("User not registered!!!.");
         }
 
 
