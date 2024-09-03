@@ -47,7 +47,7 @@ his profile.
     
 
 ## Directory structure of the web app is as follows:
-
+```
 - Areas/
     - Controllers/
     - Models/
@@ -57,6 +57,7 @@ his profile.
 - Views/
 - Program.cs
 - appsettings.json
+```
 
 ---
 
