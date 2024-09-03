@@ -43,7 +43,6 @@ namespace CSAPI.Models
             .Where(a => a.JobID== jobid)
             .Select(a => a.ApplicationDeadline)
             .FirstOrDefaultAsync();
-            // if its crossing Deadlines return false 
 
             if (datecheck < DateTime.Now)
                 {
@@ -56,29 +55,24 @@ namespace CSAPI.Models
             .Select(a => a.JobSeekerID)
             .FirstOrDefaultAsync();
 
-            // checking if already Applied or not to the Job [1,2,3]
             var InsertCheck = await _context.Applications
                 .Where(g => g.JobSeekerID == jsid)
                 .Select(x => x.JobID)
                 .ToListAsync();
 
 
-            // fetching overall job
             var listjobid = await _context.Jobs
                 .Select(f => f.JobID)
                 .ToListAsync();
 
-            // Check if the Job ID exists and jobseekerid in their table before adding the JobApplication
             if (!await IsJobIdExistsAsync(jobid, jsid))
                 {
                 return false;
                 }
 
           
-            // value should be part of jobid but not already present
             if (listjobid.Contains(jobid) && !(InsertCheck.Contains(jobid)))
                 {
-                // then add 
 
                 JobApplication app = new JobApplication();
                 app.JobID = jobid;
@@ -145,7 +139,6 @@ namespace CSAPI.Models
         }
 
 
-        // change 4 
         public async Task<IEnumerable<JobApplication>> FindByJobSeekerIdAsync(int usrid)
             {
 
@@ -178,7 +171,6 @@ namespace CSAPI.Models
 
 
 
-            // Check if the Jobseekerid,jobid exists before updating the Jobseeker
             if (!await IsJobIdExistsAsync(app.JobID,app.JobSeekerID))
                 return false;
 
@@ -202,7 +194,6 @@ namespace CSAPI.Models
 
         public async Task<bool> UpdateJobSeekerIdAsync(int usrid, IEnumerable<JobApplication> apps)
             {
-            // Check if any rows exist with the given jobSeekerId
 
             var jobSeekerId = await _context.JobSeekers
                     .Where(a => a.UserID == usrid)
@@ -214,22 +205,18 @@ namespace CSAPI.Models
 
             if (!existingApplications.Any())
                 {
-                // No rows found with the given jobSeekerId
                 return false;
                 }
 
-            // conversion of FrontEnd values to List
             List<JobApplication> newData=apps.ToList();
  
             foreach (var applicationRow in existingApplications)
                 {
-                // comparision of each updated row(id) to frontendValues(id)
                 for (int i = 0; i < newData.Count; i++)
                     {
                     
                     if (applicationRow.ApplicationID == newData[i].ApplicationID)
                         {
-                        // Update the application details
 
                         applicationRow.JobID = newData[i].JobID;
                         applicationRow.JobSeekerID = newData[i].JobSeekerID;
@@ -240,14 +227,12 @@ namespace CSAPI.Models
                     }
                 }
 
-            // Save changes to the database
             await _context.SaveChangesAsync();
 
             return true;
             }
 
 
-        // c1 added a method for Insert check
         private async Task<bool> IsJobIdExistsAsync(int? id,int? jsid)
             {
             return id.HasValue && await _context.Jobs.AnyAsync(b => b.JobID == id.Value)

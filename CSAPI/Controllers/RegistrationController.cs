@@ -33,7 +33,6 @@ namespace CSAPI.Controllers
 
                 await _IEmployerRepo.AddEmployerAsync(emp);
                 return CreatedAtAction("CreateEmployer", new { id = emp.EmployerID }, emp);
-                //return StatusCode((int)HttpStatusCode.Created);
             }
 
             return BadRequest("User is not authenticated.");

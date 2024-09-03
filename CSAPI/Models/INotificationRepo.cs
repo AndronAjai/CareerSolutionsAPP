@@ -31,7 +31,7 @@ namespace CSAPI.Models
             {
             if (noti2 == null)
                 {
-                noti2 = new Notification(); // Create a new Notification object if it's null
+                noti2 = new Notification();
                 }
 
             var applnrow = await _context.Applications

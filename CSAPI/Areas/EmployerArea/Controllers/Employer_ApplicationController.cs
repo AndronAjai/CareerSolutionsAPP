@@ -33,7 +33,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("AllApplications")]
         public async Task<IQueryable<JobApplication>> ShowAllApplications()
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -43,7 +42,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("ApplicationDetailsByApplicationId/{id}")]
         public async Task<JobApplication> GetApplication(int id)
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -55,7 +53,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("AllApplicationsForJobByJobID/{id}")]
         public async Task<IQueryable<JobApplication>> ShowApplicationsForJob(int id)
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);

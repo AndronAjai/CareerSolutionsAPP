@@ -34,7 +34,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
             List<Tuple<JobSeeker, int>> PrefSkillRec = new List<Tuple<JobSeeker, int>>();
             int pref = 0;
 
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);

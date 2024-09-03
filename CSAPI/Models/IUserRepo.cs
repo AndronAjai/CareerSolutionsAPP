@@ -40,7 +40,6 @@ namespace CSAPI.Models
 
         public async Task<bool> AddUserAsync(User user)
         {
-            // Check if the BranchOffice exists before adding the user
             if (!await IsBranchOfficeExistsAsync(user.BranchOfficeID))
                 return false;
 
@@ -55,7 +54,6 @@ namespace CSAPI.Models
             if (updatedUser == null)
                 return false;
 
-            // Check if the BranchOffice exists before updating the user
             if (!await IsBranchOfficeExistsAsync(user.BranchOfficeID))
                 return false;
 

@@ -84,7 +84,7 @@ namespace CSAPI.Areas.EmployerArea.Models
             foreach (var skill in skills)
             {
                 var keySkill = _context.SkillRelations
-                    .AsEnumerable()  // Move to in-memory evaluation
+                    .AsEnumerable()  
                     .Where(ksr => ksr.SubSkill.Split(',').Contains(skill, StringComparer.OrdinalIgnoreCase))
                     .Select(ksr => ksr.KeySkill)
                     .FirstOrDefault();
@@ -109,31 +109,26 @@ namespace CSAPI.Areas.EmployerArea.Models
                               where job.JobID == id
                               select job).FirstOrDefault();
 
-            //Job jobfound = jobrequired.FirstOrDefault();
 
             if (jobrequired == null)
             {
-                return recommendedJobSeeker;  // Return empty if job not found
+                return recommendedJobSeeker; 
             }
 
-            // Convert job required skills to key skills
             string[] jobSkillsArray = jobrequired.RequiredSkills.Split(",");
             List<string> jobSkillsList = jobSkillsArray.ToList();
             List<string> jobKeySkills = ConvertSkillsToKeySkills(jobSkillsList);
 
-            // Get all job seekers
             jobSeekerList = _context.JobSeekers.ToList();
 
             foreach (JobSeeker jobseeker in jobSeekerList)
             {
                 int noOfSkills = 0;
 
-                // Convert jobseeker skills to key skills
                 string[] jobSeekerSkillsArray = jobseeker.KeySkills.Split(",");
                 List<string> jobSeekerSkillsList = jobSeekerSkillsArray.ToList();
                 List<string> jobSeekerKeySkills = ConvertSkillsToKeySkills(jobSeekerSkillsList);
 
-                // Compare job's key skills with job seeker's key skills
                 foreach (var seekerSkill in jobSeekerKeySkills)
                 {
                     foreach (var item in jobKeySkills)
@@ -145,13 +140,6 @@ namespace CSAPI.Areas.EmployerArea.Models
                     }
                 }
 
-                //foreach (var seekerSkill in jobSeekerKeySkills)
-                //{
-                //    if (jobKeySkills.Contains(seekerSkill, StringComparer.OrdinalIgnoreCase))
-                //    {
-                //        noOfSkills++;
-                //    }
-                //}
 
                 if (noOfSkills > 0)
                 {
@@ -160,63 +148,11 @@ namespace CSAPI.Areas.EmployerArea.Models
                 }
             }
 
-            // Sort the recommended job seekers by the number of matched skills
-            recommendedJobSeeker.Sort((x, y) => y.Item2.CompareTo(x.Item2)); // Sort in descending order
+            recommendedJobSeeker.Sort((x, y) => y.Item2.CompareTo(x.Item2)); //descending order
 
             return await Task.FromResult(recommendedJobSeeker);
         }
 
-
-        //public async Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int jobid)
-        //{
-        //    List<Tuple<JobSeeker,int>> recommendedJobSeeker = new List<Tuple<JobSeeker, int>>();
-        //    Tuple<JobSeeker, int> recommendedrow;
-        //    List<JobSeeker> jobSeekerList;
-
-        //    var jobrequired = from job in _context.Jobs
-        //                      where job.JobID == jobid
-        //                      select job;
-        //    Job jobfound = jobrequired.FirstOrDefault();
-        //    //List<string> skills =  jobSkills.ToList();
-        //    string[] JobSkill = jobfound.RequiredSkills.Split(",");
-
-        //    jobSeekerList = _context.JobSeekers.ToList();
-        //    //var List = from js in _context.JobSeekers
-        //    //           select js;
-
-
-        //    foreach (JobSeeker jobseeker in jobSeekerList)
-        //    {
-        //        bool condition = false;
-        //        int noOfSkills = 0;
-
-        //        //var Skill = jobseeker.KeySkills;
-        //        string[] Skill = jobseeker.KeySkills.Split(",");
-
-        //        //List<string> JobSeekerSkills = await Task.FromResult(Skill.ToList());
-        //        List<string> JobSeekerSkills = Skill.ToList();
-
-        //        foreach (var i in JobSeekerSkills)
-        //        {
-        //            noOfSkills = 0;
-        //            foreach (var j in JobSkill)
-        //            {
-        //                if (i == j)
-        //                {
-        //                    noOfSkills++;
-        //                    condition = true;
-        //                }
-        //            }
-        //            if (condition)
-        //            {
-        //                recommendedrow = new Tuple<JobSeeker, int>(jobseeker, noOfSkills);
-        //                recommendedJobSeeker.Add(recommendedrow);
-        //            }
-        //        }
-        //    }
-        //    recommendedJobSeeker.Sort((x, y) => x.Item2.CompareTo(y.Item2));
-        //    return await Task.FromResult(recommendedJobSeeker);
-        //}
 
         public async Task<List<JobSeeker>> GetRecommendationByIndustry(int id)
         {
@@ -285,11 +221,9 @@ namespace CSAPI.Areas.EmployerArea.Models
 
         public async Task SelectApplicationsForJobAsync(int jobId, int selectedApplicationId)
         {
-            // Get the selected application
             var appln = await _context.Applications.FindAsync(selectedApplicationId);
             appln.Status = "Accepted";
 
-            // Create notification for the accepted application
             JobStatusNotification jsnotify = new JobStatusNotification
             {
                 Msg = "Congrats, You are selected for this Job",
@@ -297,7 +231,6 @@ namespace CSAPI.Areas.EmployerArea.Models
             };
             await _context.JobStatusNotifications.AddAsync(jsnotify);
 
-            // Fetch all other applications for the same job
             var otherApplications = _context.Applications
                 .Where(a => a.JobID == jobId && a.ApplicationID != selectedApplicationId)
                 .ToList();
@@ -306,7 +239,6 @@ namespace CSAPI.Areas.EmployerArea.Models
             {
                 application.Status = "Rejected";
 
-                // Create notification for rejected applications
                 JobStatusNotification rejectionNotification = new JobStatusNotification
                 {
                     Msg = "Sorry, you were not selected for this Job",
@@ -316,7 +248,6 @@ namespace CSAPI.Areas.EmployerArea.Models
                 await _context.JobStatusNotifications.AddAsync(rejectionNotification);
             }
 
-            // Save all changes to the database
             await _context.SaveChangesAsync();
         }
 
