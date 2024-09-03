@@ -181,7 +181,7 @@ namespace CSAPI.Areas.Admin.Controllers
         //[AllowAnonymous]
         public async Task<ActionResult<JobSeeker>> FindJobSeeker(int id)
         {
-            var jobSeeker = await _JobSeekerRepo.FindByIdAsync(id);
+            var jobSeeker = await _JobSeekerRepo.FindAsync(id);
             if (jobSeeker == null)
             {
                 return NotFound();
@@ -193,13 +193,13 @@ namespace CSAPI.Areas.Admin.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> DeleteJobSeeker(int id)
         {
-            var js = await _JobSeekerRepo.FindByIdAsync(id);
+            var js = await _JobSeekerRepo.FindAsync(id);
             if (js == null)
             {
                 return NotFound();
             }
 
-            var success = await _JobSeekerRepo.DeleteJobSeekerAsync(id);
+            var success = await _JobSeekerRepo.DeleteJobSeekerAsync(js.UserID);
 
             if (!success)
             {

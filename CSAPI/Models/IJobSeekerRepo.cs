@@ -15,6 +15,7 @@ namespace CSAPI.Models
         Task<bool> DeleteJobSeekerAsync(int id);
         Task<bool> IsUserExistsAsync(int userId); 
         JobSeeker FindById(int id);
+        public Task<JobSeeker> FindAsync(int id);
     }
 
     public class JobSeekerRepo : IJobSeekerRepo
@@ -38,6 +39,11 @@ namespace CSAPI.Models
             .Select(a => a.JobSeekerID)
             .FirstOrDefaultAsync();
 
+            return await _context.JobSeekers.FindAsync(id);
+        }
+
+        public async Task<JobSeeker> FindAsync(int id)
+        {
             return await _context.JobSeekers.FindAsync(id);
         }
 

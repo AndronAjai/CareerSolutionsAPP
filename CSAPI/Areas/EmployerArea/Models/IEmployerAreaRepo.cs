@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks;
+using CSAPI.Models;
 
 namespace CSAPI.Areas.EmployerArea.Models
 {
@@ -22,10 +23,12 @@ namespace CSAPI.Areas.EmployerArea.Models
     public class EmployerAreaRepo : IEmployerAreaRepo
     {
         CareerSolutionsDB _context;
+        IJobsRepo _jobsRepo;
 
-        public EmployerAreaRepo(CareerSolutionsDB context)
+        public EmployerAreaRepo(CareerSolutionsDB context, IJobsRepo jobsRepo)
         {
             _context = context;
+            _jobsRepo = jobsRepo;
         }
         public int GetEmpID(int userID)
         {
@@ -76,35 +79,6 @@ namespace CSAPI.Areas.EmployerArea.Models
             return applications;
         }
 
-
-        private List<string> ConvertSkillsToKeySkills(List<string> skills)
-        {
-            List<string> keySkills = new List<string>();
-
-            foreach (var skill in skills)
-            {
-                var SkillRel = _context.SkillRelations;
-                foreach (var item in SkillRel)
-                {
-                    var subskill = item.SubSkill.Split(", ").ToList();
-                    string keySkill = null;
-
-                    if (subskill.Contains(skill, StringComparer.OrdinalIgnoreCase))
-                    {
-                        keySkill = item.KeySkill;
-                    }
-
-                    if (!string.IsNullOrEmpty(keySkill) && !keySkills.Contains(keySkill))
-                    {
-                        keySkills.Add(keySkill);
-                    }
-                }
-
-            }
-            return keySkills;
-        }
-
-
         public async Task<List<Tuple<JobSeeker, int>>> GetRecommendationBySkills(int id)
         {
             List<Tuple<JobSeeker, int>> recommendedJobSeeker = new List<Tuple<JobSeeker, int>>();
@@ -123,7 +97,7 @@ namespace CSAPI.Areas.EmployerArea.Models
 
             string[] jobSkillsArray = jobrequired.RequiredSkills.Split(",");
             List<string> jobSkillsList = jobSkillsArray.ToList();
-            List<string> jobKeySkills = ConvertSkillsToKeySkills(jobSkillsList);
+            List<string> jobKeySkills = _jobsRepo.ConvertSkillsToKeySkills(jobSkillsList);
 
             jobSeekerList = _context.JobSeekers.ToList();
 
@@ -133,7 +107,7 @@ namespace CSAPI.Areas.EmployerArea.Models
 
                 string[] jobSeekerSkillsArray = jobseeker.KeySkills.Split(",");
                 List<string> jobSeekerSkillsList = jobSeekerSkillsArray.ToList();
-                List<string> jobSeekerKeySkills = ConvertSkillsToKeySkills(jobSeekerSkillsList);
+                List<string> jobSeekerKeySkills = _jobsRepo.ConvertSkillsToKeySkills(jobSeekerSkillsList);
 
                 foreach (var seekerSkill in jobSeekerKeySkills)
                 {

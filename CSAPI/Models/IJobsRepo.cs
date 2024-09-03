@@ -18,6 +18,7 @@ namespace CSAPI.Models
         Task<List<Job>> filterbyind(string industry);
         Task<List<Job>> filterbyspec(string specialization);
         Task<List<Ranking>> GetJobs(int usrid);
+        List<string> ConvertSkillsToKeySkills(List<string> skills);
         }
     public class JobSeekerDTO
         {
@@ -67,7 +68,7 @@ namespace CSAPI.Models
             _context = context;
         }
 
-        private List<string> ConvertSkillsToKeySkills(List<string> skills)
+        public List<string> ConvertSkillsToKeySkills(List<string> skills)
         {
             HashSet<string> keySkills = new HashSet<string>();
 

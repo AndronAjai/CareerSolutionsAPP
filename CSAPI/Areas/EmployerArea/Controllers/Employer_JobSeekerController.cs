@@ -43,7 +43,7 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("JobSeeker/{id}")]
         public async Task<JobSeeker> GetJobSeeker(int id)
         {
-            var jobseeker = await _JobSeekerRepo.FindByIdAsync(id);
+            var jobseeker = await _JobSeekerRepo.FindAsync(id);
             return jobseeker;
         }
 
