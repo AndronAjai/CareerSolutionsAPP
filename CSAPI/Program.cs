@@ -10,10 +10,8 @@ using CSAPI.Areas.JobSeekers.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Configure Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -48,9 +46,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Register services and repositories
+
 builder.Services.AddDbContext<CareerSolutionsDB>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CnString")));
-builder.Services.AddTransient<IUserRepo, UserRepo>();  // Register UserRepo
+builder.Services.AddTransient<IUserRepo, UserRepo>();  
 builder.Services.AddTransient<ILogin, LoginRepo>();
 builder.Services.AddTransient<IJobsRepo, JobsRepo>();
 builder.Services.AddTransient<IJobSeekerRepo, JobSeekerRepo>();
@@ -62,7 +60,7 @@ builder.Services.AddTransient<INotificationRepo, NotificationRepo>();
 builder.Services.AddTransient<IJobStatusNotificationRepo, JobStatusNotificationRepo>();
 builder.Services.AddTransient<IJobSeekerAreaRepo, JobSeekerAreaRepo>();
 
-// Configure Authentication with JWT and Role-Based Authorization
+
 builder.Services.AddAuthentication(opt =>
 {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -94,7 +92,6 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 { 
     app.UseSwagger();
@@ -110,7 +107,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Define endpoint routing with role-based policies
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
