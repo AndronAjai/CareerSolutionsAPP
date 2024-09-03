@@ -13,7 +13,7 @@ namespace CSAPI.Models
         Task<bool> AddJobSeekerAsync(JobSeeker js);
         Task<bool> UpdateJobSeekerAsync(int id, JobSeeker js);
         Task<bool> DeleteJobSeekerAsync(int id);
-        Task<bool> IsUserExistsAsync(int userId); // Check if UserID exists in Users table
+        Task<bool> IsUserExistsAsync(int userId); 
         JobSeeker FindById(int id);
     }
 
@@ -45,7 +45,7 @@ namespace CSAPI.Models
         {
             if (!await IsUserExistsAsync(js.UserID))
             {
-                return false; // UserID does not exist, cannot create job seeker
+                return false;
             }
 
             _context.JobSeekers.Add(js);
@@ -78,7 +78,7 @@ namespace CSAPI.Models
             existingJobSeeker.ProfessionalDetails = js.ProfessionalDetails;
             existingJobSeeker.PreferredIndustry = js.PreferredIndustry;
             existingJobSeeker.PreferredSpecialization = js.PreferredSpecialization;
-            existingJobSeeker.UserID = js.UserID; // Ensure UserID is updated
+            existingJobSeeker.UserID = js.UserID; 
 
             await _context.SaveChangesAsync();
             return true;

@@ -106,16 +106,6 @@ namespace CSAPI.Models
         }
 
 
-        //public bool MatchingSkills(Job jobrow, JobSeekerDTO jspreferences)
-        //    {
-        //    string[] cs = jspreferences.KeySkills.Trim().ToLower().Split(',');
-
-
-        //    string[] ns = jobrow.RequiredSkills.Trim().ToLower().Split(',');
-
-        //    bool hasMatchingSkill = ns.Any(skill => cs.Contains(skill));
-        //    return hasMatchingSkill;
-        //    }
 
         public bool MatchingSpecialisation(Job jobrow, JobSeekerDTO jspreferences)
             {

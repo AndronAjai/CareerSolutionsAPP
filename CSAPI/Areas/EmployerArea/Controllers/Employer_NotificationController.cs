@@ -23,7 +23,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("AllNotifications")]
         public async Task<List<Tuple<Notification,string,int,string>>> ShowAllNotifications()
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);

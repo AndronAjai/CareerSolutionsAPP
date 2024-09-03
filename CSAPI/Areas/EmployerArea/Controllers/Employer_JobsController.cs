@@ -28,7 +28,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("AllJobs")]
         public async Task<IQueryable<Job>> ShowAllJobs()
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -46,7 +45,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpPost("AddJob")]
         public async Task<ActionResult> PostJob([FromBody] Job job)
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -62,7 +60,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpPut("UpdateJob/{id}")]
         public async Task<ActionResult> UpdateJob(int id, [FromBody] Job job)
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -78,11 +75,10 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpDelete("DeleteJob/{jobId}")]
         public async Task<ActionResult> DeleteJob(int jobId)
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
-            //int authenticatedEmployerId = int.Parse(User.FindFirst("EmployerID").Value);
+            
             var job = await _jobsRepo.FindByIdAsync(jobId);
 
             if (job == null || job.EmployerID != Empid)

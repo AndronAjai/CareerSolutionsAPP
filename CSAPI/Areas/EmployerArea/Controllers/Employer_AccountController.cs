@@ -24,7 +24,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpGet("MyAccount")]
         public async Task<ActionResult<Employer>> ShowMyAccount()
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -40,7 +39,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpPut("UpdateInfo")]
         public async Task<bool> UpdateInfo([FromBody] Employer updatedEmployer)
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
@@ -51,7 +49,6 @@ namespace CSAPI.Areas.EmployerArea.Controllers
         [HttpDelete("DeleteAccount")]
         public async Task<bool> DeleteAccount()
         {
-            //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;
             bool x = int.TryParse(userIdClaim, out var userIdCookie);
             int Empid = _eRepo.GetEmpID(userIdCookie);
