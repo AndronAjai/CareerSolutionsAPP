@@ -1,16 +1,16 @@
 # CAREER SOLUTIONS WEB PORTAL APPLICATION
----
+
 Establishing Good Connection is important between the JobSeeker and Employer.Employer Finding one with right skill and JobSeeker able to look for jobs that's matching
 his profile.
 ## Recommendation of the jobs can be listed in multiple ways 
----
+
 1. Filter by Industy Type
 2. Filter by Location
 3. Priority on Matching Skills
    3.1 Matching SubDomain with KeySkill 
 5. Priority on
 ## Apply Jobs
----
+
 1. Meet the Eligiblity
    1.1 Marks
    1.2 Application Deadline
@@ -21,7 +21,7 @@ his profile.
 ![DB_SCHEMA](https://github.com/AndronAjai/CareerSolutionsAPP/blob/master/job.png)
 
 ## Tools and Technologies
----
+
 1. .net core
    1.1 JWT
    1.2 Bcrypt
@@ -47,7 +47,7 @@ his profile.
     
 
 ## Directory structure of the web app is as follows:
----
+
 - Areas/
     - Controllers/
     - Models/
@@ -57,6 +57,8 @@ his profile.
 - Views/
 - Program.cs
 - appsettings.json
+
+---
 
   
 
