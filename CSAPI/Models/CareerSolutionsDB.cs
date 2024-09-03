@@ -24,10 +24,11 @@ namespace CSAPI.Models
         public DbSet<Job> Jobs { get; set; }
 
         public DbSet<JobApplication> Applications { get; set; }
-        // Syntax based  on ClassName(Entity) table name
+        
         public DbSet<BranchOffice> BranchOffices { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
+
         public DbSet<SkillRelation> SkillRelations { get; set; }
 
         public DbSet<JobStatusNotification> JobStatusNotifications { get; set; }
@@ -37,7 +38,6 @@ namespace CSAPI.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Define primary keys
             modelBuilder.Entity<User>()
                 .HasKey(u => u.UserID);
 
@@ -65,7 +65,7 @@ namespace CSAPI.Models
             modelBuilder.Entity<JobStatusNotification>()
                 .HasKey(jsn => jsn.SnID);
 
-            // Define foreign key relationships and behaviors
+
             modelBuilder.Entity<User>()
                 .HasOne<BranchOffice>()
                 .WithMany()
@@ -144,9 +144,6 @@ namespace CSAPI.Models
 
         public string? PhoneNumber { get; set; }
 
-        // Navigation properties
-
-        //public ICollection<User> Users { get; set; } = new List<User>();
 
     }
 
@@ -184,11 +181,7 @@ namespace CSAPI.Models
 
         [ForeignKey("BranchOffices")]
         public int? BranchOfficeID { get; set; }
-        //public string Salt { get; internal set; }
-
-        // Navigation properties
-
-        //public BranchOffice BranchOffice { get; set; }
+        
 
     }
 
@@ -246,12 +239,6 @@ namespace CSAPI.Models
         [ForeignKey("User")]
         public int UserID { get; set; }
 
-        // Navigation properties
-
-        //public ICollection<Application> Applications { get; set; } = new List<Application>();
-
-        //public User User { get; set; } // Navigation property to User
-
     }
 
     [Table("Employers")]
@@ -295,13 +282,6 @@ namespace CSAPI.Models
         [ForeignKey("User")]
         public int UserID { get; set; }
 
-        // Navigation properties
-
-        //public ICollection<Job> Jobs { get; set; } = new List<Job>();
-
-        //public ICollection<Application> Applications { get; set; } = new List<Application>();
-
-        //public User User { get; set; } // Navigation property to User
 
     }
 
@@ -360,11 +340,6 @@ namespace CSAPI.Models
 
         public string JobType { get; set; }
 
-        // Navigation properties
-
-        //public Employer Employer { get; set; }
-
-        //public ICollection<Application> Applications { get; set; } = new List<Application>();
 
     }
 
@@ -389,13 +364,6 @@ namespace CSAPI.Models
 
         public string Status { get; set; }
 
-        // Navigation properties
-
-        //public Job Job { get; set; }
-
-        //public JobSeeker JobSeeker { get; set; }
-        //public Employer Employer { get; set; }
-
     }
 
     [Table("Notifications")]
@@ -410,7 +378,6 @@ namespace CSAPI.Models
         [ForeignKey("Employers")]
         public int EmployerID { get; set; }
 
-        //[ForeignKey("Applications")]
         public int ApplicationID { get; set; }
 
         public string Message { get; set; }
