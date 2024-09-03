@@ -21,7 +21,7 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         }
 
         [HttpGet("AllNotifications")]
-        public async Task<List<Tuple<JobStatusNotification, int, int, string>>> ShowAllNotifications()
+        public async Task<List<Tuple<JobStatusNotification, int, string>>> ShowAllNotifications()
         {
             //var userIdCookie = Convert.ToInt32(Request.Cookies["UserId"]);
             var userIdClaim = User.FindFirst("UserId")?.Value;

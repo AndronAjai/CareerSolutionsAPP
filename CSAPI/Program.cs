@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using CSAPI.Controllers;
 using CSAPI.Areas.EmployerArea.Models;
+using CSAPI.Areas.JobSeekers.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,7 @@ builder.Services.AddTransient<IApplicationRepo, ApplicationRepo>();
 builder.Services.AddTransient<IEmployerAreaRepo, EmployerAreaRepo>();
 builder.Services.AddTransient<INotificationRepo, NotificationRepo>();
 builder.Services.AddTransient<IJobStatusNotificationRepo, JobStatusNotificationRepo>();
+builder.Services.AddTransient<IJobSeekerAreaRepo, JobSeekerAreaRepo>();
 
 // Configure Authentication with JWT and Role-Based Authorization
 builder.Services.AddAuthentication(opt =>

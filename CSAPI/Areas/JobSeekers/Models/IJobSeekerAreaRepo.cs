@@ -10,7 +10,7 @@ namespace CSAPI.Areas.JobSeekers.Models
     public interface IJobSeekerAreaRepo
     {
         public int GetJSID(int userID);
-        public Task<List<Tuple<JobStatusNotification, int, int, string>>> GetNotificationAsync(int jsid);
+        public Task<List<Tuple<JobStatusNotification, int, string>>> GetNotificationAsync(int jsid);
     }
         
     public class JobSeekerAreaRepo : IJobSeekerAreaRepo
@@ -24,16 +24,16 @@ namespace CSAPI.Areas.JobSeekers.Models
 
         public int GetJSID(int userID)
         {
-            var jsId = from e in _context.Employers
+            var jsId = from e in _context.JobSeekers
                         where e.UserID == userID
-                        select e.EmployerID;
+                        select e.JobSeekerID;
 
             var jsID = jsId.FirstOrDefault();
 
             return jsID;
         }
 
-        public async Task<List<Tuple<JobStatusNotification, int, int, string>>> GetNotificationAsync(int jsid)
+        public async Task<List<Tuple<JobStatusNotification, int, string>>> GetNotificationAsync(int jsid)
         {
 
             var NotiAppl = _context.JobStatusNotifications.Join(_context.Applications, n => n.ApplicationID, a => a.ApplicationID, (n, a) => new { n, a }).Join
@@ -51,12 +51,12 @@ namespace CSAPI.Areas.JobSeekers.Models
                 }).ToList();
 
 
-            List<Tuple<JobStatusNotification, int, int, string>> list = new List<Tuple<JobStatusNotification, int, int, string>>();
+            List<Tuple<JobStatusNotification, int, string>> list = new List<Tuple<JobStatusNotification, int, string>>();
             foreach (var item in NotiAppl)
             {
                 if(item.sid == jsid)
                 {
-                    Tuple<JobStatusNotification, int, int, string> tuple = new Tuple<JobStatusNotification, int, int, string>(item.noti, item.sid, item.job, item.jobtitle);
+                    Tuple<JobStatusNotification, int, string> tuple = new Tuple<JobStatusNotification, int, string>(item.noti, item.job, item.jobtitle);
                     list.Add(tuple);
                 }
             }
