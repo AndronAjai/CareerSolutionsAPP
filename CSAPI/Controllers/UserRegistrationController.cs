@@ -26,7 +26,12 @@ namespace CSAPI.Controllers
             {
                 return BadRequest("Invalid user registration request!");
             }
+            bool useridcheck = _repo.FindByNameAsync(user.Username);
 
+            if (!useridcheck)
+                {
+                return BadRequest("Username Already Exists");
+                }
             user.RegistrationDate = DateTime.Now;
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);

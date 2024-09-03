@@ -11,10 +11,12 @@ namespace CSAPI.Models
     {
         Task<List<User>> GetAllAsync();
         Task<User> FindByIdAsync(int id);
+        bool FindByNameAsync(string Username);
         Task<bool> AddUserAsync(User user);
         Task<bool> UpdateUserAsync(int id, User user);
         Task<bool> DeleteUserAsync(int id);
         Task<bool> UserExistsAsync(string username);
+
     }
 
     public class UserRepo : IUserRepo
@@ -86,5 +88,13 @@ namespace CSAPI.Models
         {
             throw new NotImplementedException();
         }
-    }
+        public bool FindByNameAsync(string usrname)
+            {
+            var usr = _context.Users.SingleOrDefault(u => u.Username == usrname);
+            if (usr == null)
+                { return true; }
+            return false;
+            }
+            
+        }
 }
