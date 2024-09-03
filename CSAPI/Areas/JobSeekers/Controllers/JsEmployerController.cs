@@ -25,6 +25,10 @@ namespace CSAPI.Areas.JobSeekers.Controllers
         public async Task<IActionResult> EmpInfo(int jobid)
             {
             var jsempinfo = await _AemRepo.FindByJobId(jobid);
+            if (jsempinfo == null)
+                {
+                return NotFound();
+                }
             return Ok(new { jsempinfo.CompanyName, jsempinfo.ContactPerson, jsempinfo.PhoneNumber, jsempinfo.CompanyAddress, jsempinfo.WebsiteURL});
             
             }
