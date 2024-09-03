@@ -35,7 +35,7 @@ namespace CSAPI.Models
         }
 
 
-        // c2 in Calling IsJobIdExistsAsync function
+        
         public async Task<bool> AddApplicationAsync(int usrid,int jobid)
 
         {
