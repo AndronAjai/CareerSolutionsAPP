@@ -83,18 +83,24 @@ namespace CSAPI.Areas.EmployerArea.Models
 
             foreach (var skill in skills)
             {
-                var keySkill = _context.SkillRelations
-                    .AsEnumerable()  
-                    .Where(ksr => ksr.SubSkill.Split(',').Contains(skill, StringComparer.OrdinalIgnoreCase))
-                    .Select(ksr => ksr.KeySkill)
-                    .FirstOrDefault();
-
-                if (!string.IsNullOrEmpty(keySkill) && !keySkills.Contains(keySkill))
+                var SkillRel = _context.SkillRelations;
+                foreach (var item in SkillRel)
                 {
-                    keySkills.Add(keySkill);
-                }
-            }
+                    var subskill = item.SubSkill.Split(", ").ToList();
+                    string keySkill = null;
 
+                    if (subskill.Contains(skill, StringComparer.OrdinalIgnoreCase))
+                    {
+                        keySkill = item.KeySkill;
+                    }
+
+                    if (!string.IsNullOrEmpty(keySkill) && !keySkills.Contains(keySkill))
+                    {
+                        keySkills.Add(keySkill);
+                    }
+                }
+
+            }
             return keySkills;
         }
 
