@@ -23,7 +23,6 @@ namespace CSAPI.Controllers
         }
 
         [HttpPost("login")]
-        [AllowAnonymous]
         public IActionResult LoginUser([FromBody] Login user)
         {
             if (user == null)
@@ -33,21 +32,6 @@ namespace CSAPI.Controllers
 
             if (_login.ValidateUser(user.UserName, user.Password, user.Role,out int uid))
             {
-
-                //addednow
-                //var cookieOptions = new CookieOptions
-                //{
-
-                //    Expires = DateTimeOffset.UtcNow.AddMinutes(30), // Set cookie expiration time
-                //    HttpOnly = true, // Make the cookie inaccessible to JavaScript
-                //    Secure = true, // Only send cookie over HTTPS
-                //    SameSite = SameSiteMode.Strict // Enforce SameSite policy
-
-                //};
-
-                //// Add the UserId cookie
-                //Response.Cookies.Append("UserId", uid.ToString(), cookieOptions);
-                //addednow--
 
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSetting["JWT:Secret"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
@@ -69,7 +53,6 @@ namespace CSAPI.Controllers
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
-                // Return token and role in response
                 return Ok(new { Token = tokenString, Role = user.Role, UserId= uid });
             }
 
