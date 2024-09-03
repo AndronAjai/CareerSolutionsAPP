@@ -48,17 +48,17 @@ builder.Services.AddSwaggerGen(options =>
 
 
 builder.Services.AddDbContext<CareerSolutionsDB>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CnString")));
-builder.Services.AddTransient<IUserRepo, UserRepo>();  
-builder.Services.AddTransient<ILogin, LoginRepo>();
-builder.Services.AddTransient<IJobsRepo, JobsRepo>();
-builder.Services.AddTransient<IJobSeekerRepo, JobSeekerRepo>();
-builder.Services.AddTransient<IEmployerRepo, EmployerRepo>();
-builder.Services.AddTransient<IBranchOfficeRepo, BranchOfficesRepo>();
-builder.Services.AddTransient<IApplicationRepo, ApplicationRepo>();
-builder.Services.AddTransient<IEmployerAreaRepo, EmployerAreaRepo>();
-builder.Services.AddTransient<INotificationRepo, NotificationRepo>();
-builder.Services.AddTransient<IJobStatusNotificationRepo, JobStatusNotificationRepo>();
-builder.Services.AddTransient<IJobSeekerAreaRepo, JobSeekerAreaRepo>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<ILogin, LoginRepo>();
+builder.Services.AddScoped<IJobsRepo, JobsRepo>();
+builder.Services.AddScoped<IJobSeekerRepo, JobSeekerRepo>();
+builder.Services.AddScoped<IEmployerRepo, EmployerRepo>();
+builder.Services.AddScoped<IBranchOfficeRepo, BranchOfficesRepo>();
+builder.Services.AddScoped<IApplicationRepo, ApplicationRepo>();
+builder.Services.AddScoped<IEmployerAreaRepo, EmployerAreaRepo>();
+builder.Services.AddScoped<INotificationRepo, NotificationRepo>();
+builder.Services.AddScoped<IJobStatusNotificationRepo, JobStatusNotificationRepo>();
+builder.Services.AddScoped<IJobSeekerAreaRepo, JobSeekerAreaRepo>();
 
 
 builder.Services.AddAuthentication(opt =>
